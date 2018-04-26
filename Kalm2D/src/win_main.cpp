@@ -12,7 +12,6 @@ int main(int argc, char *argv[])
 {
 
     printf("%s", WELCOME_MSG.c_str());
-
     InitializeGraphicsContext();
 
     /*

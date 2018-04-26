@@ -7,6 +7,5 @@
 #include <intrin.h>
 
 #include "kalm_shared.h"
-#include "k_types.h"
 
 #endif /* end of include guard: WIN_MAIN_H_ */

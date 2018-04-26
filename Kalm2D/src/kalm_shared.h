@@ -2,12 +2,13 @@
 #define KALM_SHARED_H_
 
 #include <string>
+#include <cstdlib>
 
 #include "stdafx.h"
 #include "glfw/glfw3.h"
 #include "glfw/glfw3native.h"
 #include "linmath.h"
-#include "k_types.h"
+#include "Types.h"
 
 #define PRINTSTR
 
