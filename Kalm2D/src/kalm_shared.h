@@ -1,7 +1,9 @@
 #ifndef KALM_SHARED_H_
 #define KALM_SHARED_H_
 
-#include "glfw3.h"
+#include "glfw/glfw3.h"
+#include "glfw/glfw3native.h"
+#include "linmath.h"
 #include "k_types.h"
 
 /* holds toggle states */
