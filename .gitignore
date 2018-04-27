@@ -3,18 +3,6 @@
 
 # Created by https://www.gitignore.io/api/lua,vim,cmake,windows,visualstudio
 
-### CMake ###
-CMakeCache.txt
-CMakeFiles
-CMakeScripts
-Testing
-Makefile
-cmake_install.cmake
-install_manifest.txt
-compile_commands.json
-CTestTestfile.cmake
-build
-
 ### Lua ###
 # Compiled Lua sources
 luac.out
@@ -56,6 +44,9 @@ luac.out
 *.i*86
 *.x86_64
 *.hex
+
+# Mapfile
+*.map
 
 
 ### Vim ###

@@ -2,18 +2,18 @@
 #define KALM_SHARED_H_
 
 #include <string>
+#include <cstring>
+#include <cstdio>
 #include <cstdlib>
-
 #include "stdafx.h"
-#include "glfw/glfw3.h"
-#include "glfw/glfw3native.h"
-#include "linmath.h"
 #include "Types.h"
 
-#define PRINTSTR
+#define KCL_IMPLEMENTATION
+#include "kcl.hpp"
 
-b32 InitializeGraphicsContext();
-b32 KalmLoop();
-void KalmTerminate();
+
+struct gameImport_t {
+    i32             version;
+};
 
 #endif /* end of include guard: KALM_SHARED_H_ */
