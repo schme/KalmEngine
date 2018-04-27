@@ -3,14 +3,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27428.2037
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "Kalm2D", "Kalm2D.exe", "{1F8310F2-A535-4885-8D06-57445184334C}"
+Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "Kalm2D", "Kalm2D.exe", "{8B53CFC4-0A8B-4D5E-80FD-2A3B42374654}"
 	ProjectSection(DebuggerProjectSystem) = preProject
 		PortSupplier = 00000000-0000-0000-0000-000000000000
 		Executable = C:\Users\kaspe\koodi\Kalm2D\Kalm2D.exe
 		RemoteMachine = SHODAN
 		StartingDirectory = C:\Users\kaspe\koodi\Kalm2D
 		Environment = Default
-		LaunchingEngine = 00000000-0000-0000-0000-000000000000
+		LaunchingEngine = 3b476d35-a401-11d2-aad4-00c04f990171
 		UseLegacyDebugEngines = No
 		LaunchSQLEngine = No
 		AttachLaunchAction = No
@@ -21,12 +21,12 @@ Global
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{1F8310F2-A535-4885-8D06-57445184334C}.Release|x64.ActiveCfg = Release|x64
+		{8B53CFC4-0A8B-4D5E-80FD-2A3B42374654}.Release|x64.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {76E19961-A193-4422-A07E-78B310034EA0}
+		SolutionGuid = {2FCD8C14-E71D-4B34-9638-94B609425DBC}
 	EndGlobalSection
 EndGlobal

@@ -1,13 +1,15 @@
 
 #include <windows.h>
-#include "win_main.h"
+#include "win_Kalm2D.h"
 
+#include "Systems.h"
 #include "Memory.cpp"
+#include "Filesystem.cpp"
 
 /** GetGameAPI function definition */
 typedef gameExport_t* (*GameAPI)( gameImport_t *);
 
-static const u32 memoryByteSize = 64*1024;
+static const u32 memoryByteSize = 32*1024;
 
 gameImport_t g_gameImport = {};
 gameExport_t * g_gameExport = nullptr;
@@ -37,7 +39,6 @@ gameExport_t * win_LoadGame() {
 
     return g_gameExport;
 }
-
 
 int main(int argc, char *argv[])
 {

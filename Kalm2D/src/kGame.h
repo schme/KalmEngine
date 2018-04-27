@@ -7,6 +7,7 @@
  */
 
 #include "kalm_shared.h"
+#include "Memory.h"
 
 struct gameImport_t;
 struct gameExport_t;
@@ -26,7 +27,6 @@ struct gameExport_t {
 };
 
 struct gameImport_t {
-    i32             version;
-    void *          memorySystem;
+    i32                     version;
+    MemorySystem *          memorySystem;
 };
-

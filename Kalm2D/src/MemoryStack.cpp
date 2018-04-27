@@ -34,7 +34,7 @@ kMemoryStack::kMemoryStack( u32 size) :
             this->topMark = markerFromVoid(this->storage);
             this->maxMark = markerFromVoid(this->storage) + this->capacity;
         } else {
-            PRINT_STR( "kMemoryStack: Constructor could not get storage");
+            PRINTL_STR( "kMemoryStack: Constructor could not get storage");
         }
 }
 
@@ -51,7 +51,7 @@ kMemoryStack::kMemoryStack( const kMemoryStack &orig) {
                 this->topMark = markerFromVoid(this->storage);
 
             } else {
-                PRINT_STR( "kMemoryStack: Constructor could not get storage");
+                PRINTL_STR( "kMemoryStack: Constructor could not get storage");
             }
         }
 }
@@ -73,7 +73,7 @@ kMemoryStack& kMemoryStack::operator=( const kMemoryStack &orig) {
         this->topMark = markerFromVoid(this->storage);
 
     } else {
-        PRINT_STR( "kMemoryStack: operator= overload could not get storage");
+        PRINTL_STR( "kMemoryStack: operator= overload could not get storage");
     }
     return *this;
 }
@@ -104,8 +104,8 @@ void kMemoryStack::clear() {
 /* Allocate size_bytes area with no concern for alignment */
 void *kMemoryStack::alloc( u32 size_bytes ) {
     //TODO(Kasper): Check if needs to be >=
-    if( markerFromVoid(this->storage) + capacity > (this->topMark + size_bytes)) {
-        PRINT_STR( "Tried to allocate more memory than kMemoryStack has available");
+    if( this->maxMark < (this->topMark + size_bytes)) {
+        PRINTL_STR( "Tried to allocate more memory than kMemoryStack has available");
         return nullptr;
     }
 
@@ -119,7 +119,8 @@ void *kMemoryStack::alloc( u32 size_bytes ) {
 
 /* Allocate size_bytes area with aligned to byte_alignment */
 void *kMemoryStack::allocAligned( u32 size_bytes, u32 byte_alignment) {
-    //TODO(Kasper): ASSERT((alignment & (alignment - 1)) = 0); // pwr of 2
+    //ASSERT((alignment & (alignment - 1)) == 0); // pwr of 2
+
     u32 expandSize_bytes = size_bytes + byte_alignment;
     u64 rawAddress = markerFromVoid( alloc( expandSize_bytes));
     u32 mask = (byte_alignment - 1);

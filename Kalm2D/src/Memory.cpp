@@ -20,6 +20,6 @@ void *kMemory::allocAligned( u32 size_bytes, u32 alignment) {
     return this->stack.allocAligned( size_bytes, alignment);
 }
 
-void kMemory::free( kMemoryStack::Marker mark ) {
+void kMemory::free( Marker mark ) {
     this->stack.freeToMarker( mark );
 }

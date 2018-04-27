@@ -5,7 +5,7 @@
  * Created: 27/04/2018
  */
 
-#include "Kalm2D.h"
+#include "kGame2D.h"
 #include "glad.c"
 
 static void KeyCallback( GLFWwindow* window, const i32 key, const i32 scancode, const i32 action, const i32 mods);
@@ -22,6 +22,7 @@ b32 InitializeGlfw() {
     glfwSetErrorCallback(ErrorCallback);
     return true;
 }
+
 
 b32 InitializePlatformSystem() {
 
@@ -92,11 +93,6 @@ b32 InitializePlatformSystem() {
 }
 
 
-b32 InitializeMemorySystem() {
-    return true;
-}
-
-
 /**
  * Kalm2D
  */
@@ -108,11 +104,17 @@ gameExport_t Kalm2D::gameExport = {};
 
 b32 Kalm2D::Initialize() {
 
-    if( !InitializeGlfw() ) { return false; }
-    if( !InitializePlatformSystem() ) { return false; }
-    if( !InitializeMemorySystem() ) { return false; }
+    //LoadExe();
 
-    return false;
+    if( !InitializeGlfw() ) { return false; }
+    this->someMemory = this->system->memorySystem->alloc( 64 );
+    if( !InitializePlatformSystem() ) { return false; }
+    if( !this->someMemory) {
+        PRINTL_STR( "Game: Failed to receive memory from the Memory subsystem");
+        return false;
+    }
+
+    return true;
 }
 
 

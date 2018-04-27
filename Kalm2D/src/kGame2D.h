@@ -2,7 +2,7 @@
 #define KALM2D_H_
 
 #include "kalm_shared.h"
-#include "win_main.h"
+#include "win_Kalm2D.h"
 
 #include <glad/glad.h>
 #include "glfw/glfw3.h"
@@ -24,6 +24,7 @@ class Kalm2D : public kGame {
         i32 Loop ();
         void Terminate();
     private:
+        void * someMemory;
 };
 
 #endif /* end of include guard: KALM2D_H_ */
