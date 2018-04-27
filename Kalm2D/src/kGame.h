@@ -8,14 +8,25 @@
 
 #include "kalm_shared.h"
 
+struct gameImport_t;
+struct gameExport_t;
+
 class kGame {
     public:
-    virtual b32 Initialize( gameImport_t* import) = 0;
+    virtual b32 Initialize() = 0;
     virtual i32 Loop () = 0;
     virtual void Terminate() = 0;
 };
 
-struct engineAPI_t {
-    kGame *engine;
+extern "C"
+gameExport_t * GetGameAPI( gameImport_t * system);
+
+struct gameExport_t {
+    kGame *game;
+};
+
+struct gameImport_t {
+    i32             version;
+    void *          memorySystem;
 };
 

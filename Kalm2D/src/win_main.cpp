@@ -2,9 +2,17 @@
 #include <windows.h>
 #include "win_main.h"
 
+#include "Memory.cpp"
+
+/** GetGameAPI function definition */
+typedef gameExport_t* (*GameAPI)( gameImport_t *);
+
 static const u32 memoryByteSize = 64*1024;
-static gameImport_t systemExport;
-static engineAPI_t engineAPI;
+
+gameImport_t g_gameImport = {};
+gameExport_t * g_gameExport = nullptr;
+
+//gameExport_t * GetGameAPI( gameImport_t *import);
 
 const std::string WELCOME_MSG(std::string() +
         "\n\nKalm2D OpenGL Engine\n" +
@@ -13,19 +21,21 @@ const std::string WELCOME_MSG(std::string() +
         "any@kaspersauramo.me\n\n"
 );
 
-engineAPI_t win_loadGame() {
-    engineAPI_t api = {};
-
+gameExport_t * win_LoadGame() {
     HMODULE dll = LoadLibrary("Game64.dll");
+    GameAPI gameAPI = nullptr;
     if( dll ) {
         PRINTL_STR( "Game64.dll loaded");
 
-        api.engine = (kGame *)GetProcAddress( dll, "GetAPI");
-        if( api.engine ) {
-            PRINTL_STR( "GetAPI found");
+        /* Create a coherent function call for this */
+        gameAPI = (GameAPI)(GetProcAddress( dll, "GetGameAPI"));
+        if( gameAPI) {
+            PRINTL_STR( "GetGameAPI found");
         }
     }
-    return api;
+    g_gameExport = (*gameAPI)( &g_gameImport);
+
+    return g_gameExport;
 }
 
 
@@ -36,24 +46,23 @@ int main(int argc, char *argv[])
     /** initialize subsystems */
     kMemory memory( memoryByteSize);
 
-    engineAPI = win_loadGame();
+    /** prepare an export for game.dll */
+    g_gameImport.version = 1;
+    g_gameImport.memorySystem = &memory;
 
-    /** prepare an export for the engine */
-    systemExport.version = 1;
-    //systemExport.memorySystem = &memory;
+    win_LoadGame();
 
-    /** prepare engine */
-    //Kalm2D engine;
-
-    //engine.Initialize( &systemExport);
+    kGame *game = g_gameExport->game;
+    /** prepare game */
+    game->Initialize();
 
     /*
      * main loop
      */
-    //engine.Loop();
+    game->Loop();
 
     /** destroy things */
-    //engine.Terminate();
+    game->Terminate();
 
     return EXIT_SUCCESS;
 }

@@ -12,8 +12,4 @@
 #include "kcl.hpp"
 
 
-struct gameImport_t {
-    i32             version;
-};
-
 #endif /* end of include guard: KALM_SHARED_H_ */

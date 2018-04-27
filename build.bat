@@ -15,9 +15,9 @@ set SRC= %PROJ%\src
 
 REM IF NOT EXIST build\ mkdir build\
 
-del *.pdb > NUL 2> NUL
+REM del *.pdb > NUL 2> NUL
 
-cl %CommonCompilerFlags% %src%\kalm2d.cpp %src%\glad.c -FmKalm2D.map /LD /DLL /link %CommonLinkerFlags% opengl32.lib glfw3dll.lib -out:Game64.dll -EXPORT:GetAPI
-cl %CommonCompilerFlags% %src%\win_main.cpp %src%\Memory.cpp %src%\MemoryStack.cpp -Fmwin_main.map /link %CommonLinkerFlags% -out:Kalm2D.exe
+cl %CommonCompilerFlags% %src%\kalm2d.cpp -FmKalm2D.map /LD /DLL /link %CommonLinkerFlags% opengl32.lib glfw3dll.lib -out:Game64.dll -EXPORT:GetGameAPI
+cl %CommonCompilerFlags% %src%\win_main.cpp -Fmwin_main.map /link %CommonLinkerFlags% -out:Kalm2D.exe 
 
 popd

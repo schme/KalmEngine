@@ -1,27 +1,21 @@
 /**
  * Kalm2D
  *
- * Copyright (C) 2018 Kasper Sauramo - All Rights Reserved
- * Created: 27/04/2018 
+ * Copyright (C) 2018 Kasper Sauramo
+ * Created: 27/04/2018
  */
 
 #include "Kalm2D.h"
+#include "glad.c"
 
 static void KeyCallback( GLFWwindow* window, const i32 key, const i32 scancode, const i32 action, const i32 mods);
 static void ErrorCallback( const i32 error, const char* description);
 static void ResizeCallback( GLFWwindow* window, const i32 numer, const i32 denom);
 
 
-//BOOL WINAPI DllMain( HINSTANCE hinstDLL,
-        //DWORD fdwReason,
-        //LPVOID lpReserved ) {
-    //return true;
-//}
-
-
 b32 InitializeGlfw() {
     if (!glfwInit()) {
-        PRINT_STR("Failed to initialize glfw");
+        PRINTL_STR("Failed to initialize glfw");
         return false;
     }
 
@@ -32,7 +26,7 @@ b32 InitializeGlfw() {
 b32 InitializePlatformSystem() {
 
 #ifdef GLAD_DEBUG
-    PRINT_STR("GLAD_DEBUG defined at compile time");
+    PRINTL_STR("GLAD_DEBUG defined at compile time");
     // before every opengl call call pre_gl_call
     glad_set_pre_callback(pre_gl_call);
     // post callback checks for glGetError by default
@@ -40,7 +34,6 @@ b32 InitializePlatformSystem() {
     // (glClear could be replaced with your own function)
     glad_debug_glClear = glad_glClear;
 #endif
-
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, GL_Version_Major);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, GL_Version_Minor);
@@ -54,23 +47,24 @@ b32 InitializePlatformSystem() {
     glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
     glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
     glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
-    Kalm2D::window = glfwCreateWindow(mode->width, mode->height , title, monitor, nullptr);
+    /* full screen */
+    //Kalm2D::window = glfwCreateWindow(mode->width, mode->height, title, monitor, nullptr);
+    Kalm2D::window = glfwCreateWindow( (u32)(mode->width*0.6f), (u32)(mode->height*0.6f), title, nullptr, nullptr);
     if (!Kalm2D::window)
     {
-        PRINT_STR("Failed to create Window");
+        PRINTL_STR("Failed to create Window");
         return false;
     }
 
     glfwMakeContextCurrent(Kalm2D::window);
 
     if (!gladLoadGL()) {
-        PRINT_STR("Failed to initialize OpenGL context");
+        PRINTL_STR("Failed to initialize OpenGL context");
         return false;
     }
-    PRINT_STR( "Got OpenGL context");
+    PRINTL_STR( "Got OpenGL context");
     //gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
 
-    printf("OpenGL %d.%d\n", GLVersion.major, GLVersion.minor);
     if (GLVersion.major < 2) {
         printf("Your system doesn't support OpenGL >= 2!\n");
         return false;
@@ -109,10 +103,10 @@ b32 InitializeMemorySystem() {
 
 GLFWwindow *Kalm2D::window = nullptr;
 gameImport_t * Kalm2D::system = nullptr;
+gameExport_t Kalm2D::gameExport = {};
 
-b32 Kalm2D::Initialize( gameImport_t *import ) {
 
-    this->system = import;
+b32 Kalm2D::Initialize() {
 
     if( !InitializeGlfw() ) { return false; }
     if( !InitializePlatformSystem() ) { return false; }
@@ -150,12 +144,13 @@ void Kalm2D::Terminate() {
  * end of Kalm2D
  */
 
+gameExport_t * GetGameAPI( gameImport_t * system) {
 
-engineAPI_t GetAPI() {
     static Kalm2D engine;
-    engineAPI_t newApi;
-    newApi.engine = &engine;
-    return newApi;
+    engine.system = system;
+    engine.gameExport.game = &engine;
+
+    return &engine.gameExport;
 }
 
 

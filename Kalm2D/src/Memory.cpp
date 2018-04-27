@@ -2,6 +2,8 @@
 #include <windows.h>
 #include "Memory.h"
 
+#include "MemoryStack.cpp"
+
 /**
  * kMemory
  */
