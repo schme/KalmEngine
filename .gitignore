@@ -1,5 +1,6 @@
 Assets/
 assets/*
+Debug/
 
 # Missing for some reason
 *.idb
