@@ -12,6 +12,8 @@
 struct gameImport_t;
 struct gameExport_t;
 
+const char * title = "Kalm2D";
+
 class kGame {
     public:
     virtual b32 Initialize() = 0;
@@ -28,6 +30,8 @@ struct gameExport_t {
 
 struct gameImport_t {
     i32                     version;
+    CommonSystem *          commonSystem;
     MemorySystem *          memorySystem;
     FileSystem *            fileSystem;
+    RenderSystem *          renderSystem;
 };

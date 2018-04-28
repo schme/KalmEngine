@@ -9,9 +9,9 @@
 class kMemory : public MemorySystem {
     public:
     kMemory( u32 byte_size);
-    void *alloc( u32 size_bytes );
-    void *allocAligned( u32 size_bytes, u32 alignment );
-    void free( Marker mark );
+    void *Alloc( u32 size_bytes );
+    void *AllocAligned( u32 size_bytes, u32 alignment );
+    void Free( Marker mark );
 
     private:
     kMemoryStack stack;
