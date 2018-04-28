@@ -13,6 +13,18 @@ static void ErrorCallback( const i32 error, const char* description);
 static void ResizeCallback( GLFWwindow* window, const i32 numer, const i32 denom);
 
 
+/** Entry point for Kalm2D.exe to the Game64.dll */
+gameExport_t * GetGameAPI( gameImport_t * system) {
+
+    static Kalm2D engine;
+    engine.system = system;
+    engine.gameExport.game = &engine;
+
+    return &engine.gameExport;
+}
+
+
+
 b32 InitializeGlfw() {
     if (!glfwInit()) {
         PRINTL_STR("Failed to initialize glfw");
@@ -107,12 +119,29 @@ b32 Kalm2D::Initialize() {
     //LoadExe();
 
     if( !InitializeGlfw() ) { return false; }
-    this->someMemory = this->system->memorySystem->alloc( 64 );
     if( !InitializePlatformSystem() ) { return false; }
-    if( !this->someMemory) {
-        PRINTL_STR( "Game: Failed to receive memory from the Memory subsystem");
-        return false;
+
+    /** Memory */
+
+    /** Filesystem */
+
+
+    /** TODO(Kasper): Testing things */
+
+    const char *filename = "Assets/Sprites/ram.bmp";
+    u64 file_size = 0;
+    this->system->fileSystem->GetWholeFileSize( filename, &file_size );
+    PRINT_STR( "file_size: "); printf("%lluKb\n", file_size/1024);
+    void * fileBuffer = this->system->memorySystem->alloc( (u32)file_size );
+    if(! this->system->fileSystem->ReadWholeFile( filename, (u32)file_size, fileBuffer )) {
+        PRINT_STR( "FAIL load file ");
+        PRINTL_STR( filename);
+    } else {
+        PRINT_STR( "SUCCESS load file ");
+        PRINTL_STR( filename);
     }
+
+
 
     return true;
 }
@@ -145,15 +174,6 @@ void Kalm2D::Terminate() {
 /**
  * end of Kalm2D
  */
-
-gameExport_t * GetGameAPI( gameImport_t * system) {
-
-    static Kalm2D engine;
-    engine.system = system;
-    engine.gameExport.game = &engine;
-
-    return &engine.gameExport;
-}
 
 
 /**

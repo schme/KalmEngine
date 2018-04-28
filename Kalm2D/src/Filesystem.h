@@ -7,16 +7,19 @@
  */
 
 #include "Types.h"
+#include "Systems.h"
 
 #ifndef FILESYSTEM_H_
 #define FILESYSTEM_H_
 
 
-class kFilesystem {
+class kFilesystem : public FileSystem {
     public:
-        i32 LoadFile( const char *filename, void *buffer) const;
-        u64 GetFileSize( const char *filename ) const;
+        b32 ReadWholeFile( const char *filename, const u32 buffer_size, void *buffer) const;
+        b32 WriteWholeFile( const char *filename, const u32 buffer_size, const void *buffer) const;
+        b32 GetWholeFileSize( const char *filename, u64 *file_size ) const;
     private:
+        void ReportLastError() const;
 };
 
 #endif /* end of include guard: FILESYSTEM_H_ */

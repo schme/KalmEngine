@@ -24,7 +24,6 @@ class Kalm2D : public kGame {
         i32 Loop ();
         void Terminate();
     private:
-        void * someMemory;
 };
 
 #endif /* end of include guard: KALM2D_H_ */

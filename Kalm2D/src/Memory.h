@@ -17,6 +17,5 @@ class kMemory : public MemorySystem {
     kMemoryStack stack;
 };
 
-//extern "C" MemorySystem * GetMemorySystem();
 
 #endif /* end of include guard: KMEMORY_H_ */

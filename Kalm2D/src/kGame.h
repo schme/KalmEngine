@@ -29,4 +29,5 @@ struct gameExport_t {
 struct gameImport_t {
     i32                     version;
     MemorySystem *          memorySystem;
+    FileSystem *            fileSystem;
 };

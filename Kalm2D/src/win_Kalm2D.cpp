@@ -46,10 +46,12 @@ int main(int argc, char *argv[])
 
     /** initialize subsystems */
     kMemory memory( memoryByteSize);
+    kFilesystem fileSystem;
 
     /** prepare an export for game.dll */
     g_gameImport.version = 1;
     g_gameImport.memorySystem = &memory;
+    g_gameImport.fileSystem = &fileSystem;
 
     win_LoadGame();
 
