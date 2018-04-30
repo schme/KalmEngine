@@ -10,6 +10,10 @@
 #include "WinBase.h"
 #include "MemoryStack.h"
 
+
+//TODO(Kasper): Change mark to be relative from the storage (as it stands it's kinda useless);
+
+
 kMemoryStack::kMemoryStack() :
     storage(nullptr),
     topMark(0U),
@@ -26,13 +30,13 @@ kMemoryStack::kMemoryStack( u32 size) :
 
         if( size == 0) { return; }
 
-        this->storage = this->reserve(size);
+        this->storage = this->Reserve(size);
 
         /* check we got the memory */
         if( this->storage) {
             this->capacity = size;
-            this->topMark = markerFromVoid(this->storage);
-            this->maxMark = markerFromVoid(this->storage) + this->capacity;
+            this->topMark = MarkerFromVoid(this->storage);
+            this->maxMark = MarkerFromVoid(this->storage) + this->capacity;
         } else {
             PRINTL_STR( "kMemoryStack: Constructor could not get storage");
         }
@@ -40,15 +44,15 @@ kMemoryStack::kMemoryStack( u32 size) :
 
 
 kMemoryStack::kMemoryStack( const kMemoryStack &orig) {
-        this->clear();
+        this->Clear();
         if( orig.capacity > 0) {
             this->capacity = orig.capacity;
-            this->storage = this->reserve( orig.capacity);
+            this->storage = this->Reserve( orig.capacity);
             if( this->storage) {
                 /* copy the storage over */
                 std::memcpy( this->storage, orig.storage, orig.capacity);
-                this->maxMark = markerFromVoid(this->storage) + this->capacity;
-                this->topMark = markerFromVoid(this->storage);
+                this->maxMark = MarkerFromVoid(this->storage) + this->capacity;
+                this->topMark = MarkerFromVoid(this->storage);
 
             } else {
                 PRINTL_STR( "kMemoryStack: Constructor could not get storage");
@@ -58,19 +62,19 @@ kMemoryStack::kMemoryStack( const kMemoryStack &orig) {
 
 
 kMemoryStack::~kMemoryStack() {
-    this->clear();
+    this->Clear();
 }
 
 
 kMemoryStack& kMemoryStack::operator=( const kMemoryStack &orig) {
-    this->clear();
+    this->Clear();
     this->capacity = orig.capacity;
-    this->storage = this->reserve( orig.capacity);
+    this->storage = this->Reserve( orig.capacity);
     if( this->storage) {
         /* copy the storage over */
         std::memcpy( this->storage, orig.storage, orig.capacity);
-        this->maxMark = markerFromVoid(this->storage) + this->capacity;
-        this->topMark = markerFromVoid(this->storage);
+        this->maxMark = MarkerFromVoid(this->storage) + this->capacity;
+        this->topMark = MarkerFromVoid(this->storage);
 
     } else {
         PRINTL_STR( "kMemoryStack: operator= overload could not get storage");
@@ -79,7 +83,11 @@ kMemoryStack& kMemoryStack::operator=( const kMemoryStack &orig) {
 }
 
 
-void* kMemoryStack::reserve( const u32 bytes) {
+kMemoryStack::Marker kMemoryStack::GetMarker() const {
+    return this->topMark;
+}
+
+void* kMemoryStack::Reserve( const u32 bytes) {
     if( bytes == 0) {
         return nullptr;
     }
@@ -88,12 +96,12 @@ void* kMemoryStack::reserve( const u32 bytes) {
     return newStorage;
 }
 
-void kMemoryStack::freeToMarker( Marker marker) {
+void kMemoryStack::FreeToMarker( Marker marker) {
     this->topMark = marker;
 }
 
-void kMemoryStack::clear() {
-    this->topMark = markerFromVoid(this->storage);
+void kMemoryStack::Clear() {
+    this->topMark = MarkerFromVoid(this->storage);
     this->maxMark = this->topMark;
     this->capacity = 0;
 
@@ -102,14 +110,14 @@ void kMemoryStack::clear() {
 }
 
 /* Allocate size_bytes area with no concern for alignment */
-void *kMemoryStack::alloc( u32 size_bytes ) {
+void *kMemoryStack::Alloc( u32 size_bytes ) {
     //TODO(Kasper): Check if needs to be >=
     if( this->maxMark < (this->topMark + size_bytes)) {
         PRINTL_STR( "Tried to allocate more memory than kMemoryStack has available");
         return nullptr;
     }
 
-    void *return_ptr = voidFromMarker(this->topMark);
+    void *return_ptr = VoidFromMarker(this->topMark);
     this->topMark += size_bytes;
     this->capacity += size_bytes;
 
@@ -118,11 +126,11 @@ void *kMemoryStack::alloc( u32 size_bytes ) {
 
 
 /* Allocate size_bytes area with aligned to byte_alignment */
-void *kMemoryStack::allocAligned( u32 size_bytes, u32 byte_alignment) {
+void *kMemoryStack::AllocAligned( u32 size_bytes, u32 byte_alignment) {
     //ASSERT((alignment & (alignment - 1)) == 0); // pwr of 2
 
     u32 expandSize_bytes = size_bytes + byte_alignment;
-    u64 rawAddress = markerFromVoid( alloc( expandSize_bytes));
+    u64 rawAddress = MarkerFromVoid( Alloc( expandSize_bytes));
     u32 mask = (byte_alignment - 1);
     u64 alignOffsetAmount = (rawAddress & mask);
     ptrdiff_t adjustment = byte_alignment - alignOffsetAmount;
@@ -131,11 +139,11 @@ void *kMemoryStack::allocAligned( u32 size_bytes, u32 byte_alignment) {
     return (void*)(alignedAddress);
 }
 
-void *kMemoryStack::voidFromMarker( Marker mark) const {
+void *kMemoryStack::VoidFromMarker( Marker mark) const {
     return reinterpret_cast<void*>(mark);
 }
 
-kMemoryStack::Marker kMemoryStack::markerFromVoid( void *ptr) const {
+kMemoryStack::Marker kMemoryStack::MarkerFromVoid( void *ptr) const {
     return reinterpret_cast<u64>(ptr);
 }
 

@@ -1,16 +1,19 @@
 
-#include <windows.h>
+#include "stdafx.h"
 #include "win_Kalm2D.h"
 
 #include "Systems.h"
 #include "glad.c"
+#include "SystemsLocal.h"
+
 #include "CommonSystem.cpp"
 #include "Memory.cpp"
 #include "Filesystem.cpp"
 #include "Render.cpp"
+#include "Assets.cpp"
 
 const u8 GL_Version_Major = 3;
-const u8 GL_Version_Minor = 1;
+const u8 GL_Version_Minor = 3;
 
 static const u32 memoryByteSize = 32*1024;
 
@@ -28,7 +31,7 @@ const std::string WELCOME_MSG(std::string() +
         "\n\nKalm2D OpenGL Engine\n" +
         "\n(c) Kasper Sauramo, 2018\n" +
         "Compiled " + __DATE__ + " " + __TIME__ "\n" +
-        "any@kaspersauramo.me\n\n"
+        "kasper@kaspersauramo.me\n\n"
 );
 
 gameExport_t * win_LoadGame() {
@@ -55,9 +58,8 @@ b32 InitializeGlfw() {
         PRINTL_STR("Failed to initialize glfw");
         return false;
     }
-
+    //TODO(Kasper): Move to Common
     glfwSetErrorCallback(ErrorCallback);
-
 
 #ifdef GLAD_DEBUG
     // before every opengl call call pre_gl_call
@@ -70,19 +72,12 @@ b32 InitializeGlfw() {
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, GL_Version_Major);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, GL_Version_Minor);
+    //TODO(Kasper): What do Opengl profiles do?
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     GLFWmonitor *monitor = glfwGetPrimaryMonitor();
 
-    /* Windowed Fullscreen */
-
-    const GLFWvidmode* mode = glfwGetVideoMode(monitor);
-    glfwWindowHint(GLFW_RED_BITS, mode->redBits);
-    glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
-    glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
-    glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
-    /** Passing in a monitor gives fullscreen */
-    //Kalm2D::window = glfwCreateWindow(mode->width, mode->height, title, monitor, nullptr);
-    g_window = glfwCreateWindow( (u32)(mode->width*0.6f), (u32)(mode->height*0.6f), title, nullptr, nullptr);
+    g_window = glfwCreateWindow( 1280, 680, title, nullptr, nullptr);
     if (!g_window)
     {
         PRINTL_STR("Failed to create Window");
@@ -106,10 +101,8 @@ b32 InitializeGlfw() {
     printf("OpenGL %s, GLSL %s\n", glGetString(GL_VERSION),
            glGetString(GL_SHADING_LANGUAGE_VERSION));
 
-
     /* VSYNC */
     glfwSwapInterval(1);
-
     /*
      * TODO(Kasper): OpenGL error checks
      */
@@ -132,14 +125,25 @@ int main(int argc, char *argv[])
     }
 
     /** initialize subsystems */
-    kCommonSystem commonSystem;
+    /* memory */
     kMemory memory( memoryByteSize);
+    g_Memory = &memory;
+    /* common */
+    kCommonSystem commonSystem;
+    g_Common = &commonSystem;
+    /* filesystem */
     kFilesystem fileSystem;
+    g_Filesystem = &fileSystem;
+    /* renderer */
     kRender render;
+    g_Render = &render;
+    /* assets */
+    kAssets assetSystem;
+    g_Assets = &assetSystem;
 
+    /** Init needs the window */
     commonSystem.SetWindow( g_window );
     commonSystem.Initialize();
-    /** Init needs the window */
     render.SetWindow( g_window );
     render.Initialize();
 
@@ -150,6 +154,7 @@ int main(int argc, char *argv[])
     g_gameImport.memorySystem = &memory;
     g_gameImport.fileSystem = &fileSystem;
     g_gameImport.renderSystem = &render;
+    g_gameImport.assetSystem = &assetSystem;
 
     /** load game API */
     win_LoadGame();

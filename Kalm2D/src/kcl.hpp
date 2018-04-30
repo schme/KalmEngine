@@ -6,8 +6,8 @@
  * Created: 25/04/2018
  */
 
+#include <cstdio>
 #include "Types.h"
-
 
 #ifndef KCL_HPP_
 #define KCL_HPP_
@@ -16,25 +16,24 @@
 
 
 #define PRINTL_STR( string)\
-    printf("%s\n", (string))
+    printf("%s(%d): %s\n", __FILE__, __LINE__, (string))
 
 #define PRINT_STR( string)\
-    printf("%s", (string))
+    printf("%s(%d): %s", __FILE__, __LINE__, (string))
 
 #if K_ASSERT
 
 //TODO(Kasper): Doesn't actually work, do something with it
 
-#define debugBreak() asm { int 3 }
+#define debugBreak() //asm { int 3 }
 
 #define ASSERT(expr)\
-    if( expr ) { }\
+    if( (expr) ){}\
     else {\
         ReportAssertionFailure(#expr,\
                 __FILE__, __LINE__);\
-        debugBreak();\
+        throw kException( #expr);\
     }
-
 
 void ReportAssertionFailure( const char *expression, const char *file, const i32 line);
 
@@ -50,11 +49,37 @@ public:
 private:
 };
 
-#if KCL_IMPLEMENTATION
+u32 safeCastU32ToU16( u64 value);
+u16 safeCastU32ToU16( u32 value);
+
+
+/**
+ * Implementations
+ */
+
+#ifdef KCL_IMPLEMENTATION
+
+
+u32 safeCastU64ToU32( u64 value ) {
+    if(( 0xFFFFFFFF00000000 & value ) == 0) {
+        return (u32)value;
+    } else {
+        throw( kException( "safeCastU64ToU32 was not safe"));
+    }
+}
+
+u16 safeCastU32ToU16( u32 value ) {
+    if(( 0xFFFF0000 & value ) == 0) {
+        return (u16)value;
+    } else {
+        throw( kException( "safeCastU32ToU16 was not safe"));
+    }
+}
+
 
 #if K_ASSERT
 void ReportAssertionFailure( const char *expression, const char *file, const i32 line) {
-    printf( "%s FAILED -- %s: %s\n", expression, file, line);
+    printf( "ASSERT: %s FAILED -- %s: %d\n", expression, file, line);
 }
 
 #endif

@@ -6,13 +6,14 @@
  * Created: 27/04/2018
  */
 
+#ifndef KGAME_H_
+#define KGAME_H_
+
 #include "kalm_shared.h"
-#include "Memory.h"
+#include "Systems.h"
 
 struct gameImport_t;
 struct gameExport_t;
-
-const char * title = "Kalm2D";
 
 class kGame {
     public:
@@ -34,4 +35,8 @@ struct gameImport_t {
     MemorySystem *          memorySystem;
     FileSystem *            fileSystem;
     RenderSystem *          renderSystem;
+    AssetSystem *           assetSystem;
 };
+
+
+#endif /* end of include guard: KGAME_H_ */

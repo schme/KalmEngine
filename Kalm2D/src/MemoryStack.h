@@ -18,11 +18,11 @@ class kMemoryStack {
 
         ~kMemoryStack();
 
-        void* alloc( u32 size_bytes);
-        void* allocAligned( u32 size_bytes, u32 alignment);
-        Marker getMarker();
-        void freeToMarker(Marker marker);
-        void clear();
+        void* Alloc( u32 size_bytes);
+        void* AllocAligned( u32 size_bytes, u32 alignment);
+        Marker GetMarker() const;
+        void FreeToMarker(Marker marker);
+        void Clear();
 
     private:
         void *storage;
@@ -30,9 +30,9 @@ class kMemoryStack {
         Marker maxMark;
         u32 capacity;
 
-        void *reserve( const u32 bytes );
-        void *voidFromMarker( Marker mark) const;
-        Marker markerFromVoid( void* ptr) const;
+        void *Reserve( const u32 bytes );
+        void *VoidFromMarker( Marker mark) const;
+        Marker MarkerFromVoid( void* ptr) const;
 };
 
 

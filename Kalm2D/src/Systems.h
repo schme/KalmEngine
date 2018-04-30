@@ -30,7 +30,7 @@ class FileSystem {
 
 class MemorySystem {
     public:
-    typedef u32     Marker;
+    typedef u64     Marker;
     virtual void *  Alloc( u32 size_bytes ) =0;
     virtual void *  AllocAligned( u32 size_bytes, u32 alignment ) =0;
     virtual void    Free( Marker mark ) =0;
@@ -39,6 +39,12 @@ class MemorySystem {
 class RenderSystem {
     public:
     virtual void    Draw() const =0;
+    virtual void    DrawTestImage( kImage_t *image) const =0;       //TODO(Kasper): Remove
+};
+
+class AssetSystem {
+    public:
+        virtual kImage_t *GetImage(const char *filename) const =0;
 };
 
 #endif /* end of include guard: SYSTEMS_H_ */
