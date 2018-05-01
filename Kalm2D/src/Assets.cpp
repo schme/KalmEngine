@@ -30,6 +30,7 @@ kImage_t* kAssets::GetImage( const char *filename) const {
     if( !imageObject) {
         PRINTL_STR( "Loading image file failed.");
     }
+    std::free( fileBuffer);
 
     return imageObject;
 }
@@ -43,8 +44,10 @@ kImage_t* kAssets::GetImage( const char *filename) const {
 kImage_t* kAssets::LoadBMPFile( const char * filename, const void *filebuffer) const {
     BitmapHeader_t header = *((BitmapHeader_t*)filebuffer);
 
-    //TODO(Kasper): Check compression
-    if( header.type != 0x4D42)  {  // "BM"
+    /** gimp seems to give compression value 3, and that apparently means no compression, so check only
+     * for the 2 different compression types we know we can't handle, RLE-8 and RLE-4.
+     * We'll shoot ourselves in the foot later! */
+    if( header.type != 0x4D42 && header.compression != 1 && header.compression != 2 )  {  // "BM"
         PRINT_STR("Tried to read a non BMP file as BMP, or the BMP type is not recognized: ");
         PRINTL_STR( filename );
     }
@@ -56,7 +59,36 @@ kImage_t* kAssets::LoadBMPFile( const char * filename, const void *filebuffer) c
     imageObject->imageBuffer = g_Memory->AllocAligned( header.sizeOfImageData, header.bitsPerPixel);
 
     void *startOfImage = (u8*)filebuffer + header.bytesToImage;
-    std::memcpy( imageObject->imageBuffer, startOfImage, header.sizeOfImageData);
+
+    /** Here we assume an ABGR format (0xRRGGBBAA), which can't be used in core OpenGL, so we swizzle them 
+     *  to RGBA (0xAABBGGRR) */
+
+    //TODO(Kasper): This is starting to become a bit sketchy, even for me. Can we get the color masks at least
+    // from the headers?
+    u32 alphaMask = 0x000000FF;
+    u32 blueMask = 0x0000FF00;
+    u32 greenMask = 0x00FF0000;
+    u32 redMask = 0xFF000000;
+
+    u32 *ptr_i = (u32*)startOfImage;
+    u32 *ptr_j = (u32*)(imageObject->imageBuffer);
+
+    for (u32 i = 0; i < header.sizeOfImageData / 4; ++i) {
+        u32 swizzledColor = {};
+
+        u32 redByte = (*ptr_i) & redMask;
+        u32 greenByte = (*ptr_i) & greenMask;
+        u32 blueByte = (*ptr_i) & blueMask;
+        u32 alphaByte = (*ptr_i) & alphaMask;
+
+        swizzledColor = ( redByte >> 24) |
+                        ( greenByte >> 8) |
+                        ( blueByte << 8) |
+                        ( alphaByte << 24);
+
+        *ptr_j++ = swizzledColor;
+        ptr_i++;
+    }
 
     return imageObject;
 }

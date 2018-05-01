@@ -35,7 +35,6 @@ b32 Kalm2D::Initialize() {
 
     /** TODO(Kasper): Testing image loading */
 
-    const char *filename = "Assets/Sprites/ram.bmp";
 #if 0
     u64 file_size = 0;
     this->system->fileSystem->GetWholeFileSize( filename, &file_size );
@@ -50,7 +49,6 @@ b32 Kalm2D::Initialize() {
     }
 #endif
 
-    kImage_t *imagePtr = this->system->assetSystem->GetImage( filename);
 
     return true;
 }
