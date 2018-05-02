@@ -3,13 +3,29 @@
 #include "win_Kalm2D.h"
 
 #include "Systems.h"
-#include "glad.c"
+#include "../../glad/glad.h"
 
 #include "CommonSystem.cpp"
 #include "Memory.cpp"
 #include "Filesystem.cpp"
 #include "Render.cpp"
 #include "Assets.cpp"
+
+#undef GLAD_DEBUG
+
+
+// GLAD_DEBUG is only defined if the c-debug generator was used
+#ifdef GLAD_DEBUG
+// logs every gl call to the console
+void pre_gl_call(const char *name, void *funcptr, int len_args, ...) {
+    printf("Calling: %s (%d arguments)\n", name, len_args);
+}
+
+void pre_gl_clear(u32 thing) {
+    printf("glClear() thing: %u\n", thing);
+}
+#endif
+
 
 const u8 GL_Version_Major = 3;
 const u8 GL_Version_Minor = 3;
@@ -66,7 +82,7 @@ b32 InitializeGlfw() {
     // post callback checks for glGetError by default
     // don't use the callback for glClear
     // (glClear could be replaced with your own function)
-    glad_debug_glClear = glad_glClear;
+    glad_debug_glClear = pre_gl_clear;
 #endif
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, GL_Version_Major);
@@ -85,12 +101,11 @@ b32 InitializeGlfw() {
 
     glfwMakeContextCurrent(g_window);
 
-    if (!gladLoadGL()) {
+    if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
         PRINTL_STR("Failed to initialize OpenGL context");
         return false;
     }
     PRINTL_STR( "Got OpenGL context");
-    //gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
 
     if (GLVersion.major < 2) {
         printf("Your system doesn't support OpenGL >= 2!\n");

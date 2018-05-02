@@ -1,6 +1,6 @@
 Assets/
-assets/*
 Debug/
+glad/
 
 # Missing for some reason
 *.idb
