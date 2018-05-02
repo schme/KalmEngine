@@ -30,8 +30,8 @@ kImage_t* kAssets::GetImage( const char *filename) const {
     if( !imageObject) {
         PRINTL_STR( "Loading image file failed.");
     }
-    std::free( fileBuffer);
 
+    std::free( fileBuffer);
     return imageObject;
 }
 
