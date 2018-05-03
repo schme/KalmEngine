@@ -11,6 +11,8 @@
 #define CAMERA_H_
 
 class kCamera : public kObject {
+    public:
+    vec3 direction;
 };
 
 #endif /* end of include guard: CAMERA_H_ */

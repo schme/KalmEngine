@@ -3,12 +3,14 @@
 REM -WX: treat warnings as errors
 REM 4100: unreferenced parameter
 REM 4189: initialized but not referenced
+REM 4458: declaration hides class member
+REM 4201: anonymous structs
 REM EHsc: unwind semantics for C++ exceptions
 
 
 set PROJ=Kalm2D
 
-set CommonCompilerFlags= -nologo -WX -Oi -Gm -GR -W4 -Zi -Zo -EHsc -wd4100 -wd4189 -I:%PROJ%\include
+set CommonCompilerFlags= -nologo -WX -Oi -Gm -GR -W4 -Zi -Zo -EHsc -wd4100 -wd4189 -wd4458 -wd4201 -I:%PROJ%\include
 set CommonCompilerFlags= -DKALM2D_WIN32=1 -DK_ASSERT=1 %CommonCompilerFlags%
 set CommonLinkerFlags= /nologo /LIBPATH:%PROJ%\lib -incremental:no user32.lib gdi32.lib winmm.lib kernel32.lib /NODEFAULTLIB:msvcrt.lib -MACHINE:x64
 

@@ -6,7 +6,9 @@
  */
 
 #define KMATH_IMPLEMENTATION
+#define KVEC_IMPLEMENTATION
 #include "kGame2D.h"
+#include "AABB.cpp"
 #include "Player.cpp"
 #include "Camera.cpp"
 #include "Object.cpp"
@@ -47,7 +49,7 @@ i32 Kalm2D::Loop() {
 
         //static r64 lastTime = 0;
         //static r64 time = glfwGetTime();
-        
+
         this->currentScene->Run();
         this->currentScene->SendRenderCommands();
 
@@ -94,6 +96,12 @@ kScene *Kalm2D::CreateTestScene() {
 
     scene->player = player;
     scene->camera = camera;
+
+    scene->player->position = vec3( 0.0f);
+    scene->player->aabb.center = scene->player->position;
+    scene->player->aabb.half = vec3( 1.0f);
+    scene->camera->position = vec3( 0.0f, 5.0f, 0.0f);
+    scene->camera->direction = Normalized(vec3( 0.0f, -1.0f, 0.0f));
 
     return scene;
 }

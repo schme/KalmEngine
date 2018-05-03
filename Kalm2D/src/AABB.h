@@ -1,9 +1,10 @@
 #ifndef AABB_H_
 #define AABB_H_
 
-#include "kVec3.hpp"
+#include "kVec.hpp"
+#include "Component.h"
 
-class AABB {
+class kAABB : kComponent {
 public:
     vec3 center;
     vec3 half;

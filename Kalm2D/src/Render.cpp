@@ -18,6 +18,7 @@ void kRender::Initialize() {
     glfwSetFramebufferSizeCallback( kRender::window, FramebufferResizeCallback);
     glfwSetWindowSizeCallback( kRender::window, ResizeCallback);
 
+
     i32 width, height;
     glfwGetFramebufferSize( kRender::window, &width, &height);
     glViewport(0, 0, width, height);
@@ -47,7 +48,7 @@ void ResizeCallback( GLFWwindow* wnd, const i32 numer, const i32 denom) {
 }
 
 void FramebufferResizeCallback( GLFWwindow* wnd, const i32 width, const i32 height) {
-    glViewport(0, 0, width, height);
+    glViewport(0, 0, frameBufferWidth, frameBufferHeight);
 }
 
 
