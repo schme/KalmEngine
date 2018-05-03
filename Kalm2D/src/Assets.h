@@ -10,15 +10,16 @@
 #define ASSETS_H_
 
 
-
 #include "kalm_shared.h"
 #include "Systems.h"
 #include "SystemsLocal.h"
+#include "Shader.h"
 
 class kAssets : public AssetSystem {
     public:
     /** AssetSystem overrides */
     kImage_t *GetImage( const char *filename) const;
+    kShader_t *GetShader( const char *filename) const;
 
     /** kAssets methods */
     private:

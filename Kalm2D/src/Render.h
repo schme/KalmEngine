@@ -12,7 +12,6 @@
 #include "Systems.h"
 #include "glfw/glfw3.h"
 
-
 class kRender : public RenderSystem {
     public:
 

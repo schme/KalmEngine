@@ -20,7 +20,7 @@ union vec2 {
     struct {
         f32 u, v;
     };
-    f32 E[2];
+    f32 Q[2];
 };
 
 union vec3 {
@@ -41,7 +41,7 @@ union vec3 {
         vec2 uv;
         f32 ignored2_;
     };
-    f32 E[3];
+    f32 Q[3];
 };
 
 union vec4 {
@@ -79,12 +79,35 @@ union vec4 {
         vec2 zw;
     };
     struct {
-        f32 E[4];
+        f32 Q[4];
     };
+
+    inline f32 operator[]( u32 i ) {
+        return Q[i];
+    }
 };
 
-struct m4x4 {
-    f32 E[4][4];
+
+/**
+ * E[COLUMN][ROW]
+ * COLUMN MAJOR
+ * Lets respect the mathematicians!
+ */
+union mat4 {
+    struct {
+        f32 A[4][4];
+    };
+    vec4 Q[4];
+
+    inline vec4 operator[]( u32 i ) {
+        return Q[i];
+    }
+};
+
+
+struct mat4_inv {
+    mat4 forward;
+    mat4 inverse;
 };
 
 
@@ -107,6 +130,17 @@ inline vec3 Vec3( f32 v ) {
     result.x = v;
     result.y = v;
     result.z = v;
+
+    return result;
+}
+
+inline vec4 Vec4( f32 x, f32 y, f32 z, f32 w ) {
+    vec4 result;
+
+    result.x = x;
+    result.y = y;
+    result.z = z;
+    result.w = w;
 
     return result;
 }
@@ -170,6 +204,18 @@ inline vec3& operator/=( vec3 &a, f32 b) {
     a.y = a.y / b;
     a.z = a.z / b;
     return a;
+}
+
+inline mat4 operator*(mat4 A, mat4 B) {
+    mat4 M = {};
+    for( int r = 0; r < 4; ++r ) {              /* Rows of A */
+        for( int c = 0; c < 4; ++c ) {          /* Column of B */
+            for( int i=0; i < 4; ++i ) {        /* Columns of A, rows of B */
+                M.A[r][c] += A.A[r][i] * B.A[i][c];
+            }
+        }
+    }
+    return M;
 }
 
 #endif /* end of include guard: KVECTOR_H_ */

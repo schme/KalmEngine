@@ -5,8 +5,6 @@
  * Created: 27/04/2018
  */
 
-#define KMATH_IMPLEMENTATION
-#define KVEC_IMPLEMENTATION
 #include "kGame2D.h"
 #include "AABB.cpp"
 #include "Player.cpp"
@@ -94,14 +92,16 @@ kScene *Kalm2D::CreateTestScene() {
     kPlayer * player = (kPlayer*)GetMemory( sizeof( kPlayer));
     kCamera * camera = (kCamera*)GetMemory( sizeof( kCamera));
 
+
+    player->position = {};
+    player->aabb.center = player->position;
+    player->aabb.half = Vec3( 1.0f);
+    camera->position = Vec3( 0.0f, 5.0f, 0.0f);
+    camera->targetPosition = player->position;
+    /** positive y is the up axis */
+
     scene->player = player;
     scene->camera = camera;
-
-    scene->player->position = {};
-    scene->player->aabb.center = scene->player->position;
-    scene->player->aabb.half = Vec3( 1.0f);
-    scene->camera->position = Vec3( 0.0f, 5.0f, 0.0f);
-    scene->camera->direction = Vec3( 0.0f, -1.0f, 0.0f);
 
     return scene;
 }
