@@ -42,4 +42,3 @@ typedef real32 f32;
 typedef real64 f64;
 
 #endif /* end of include guard: K_TYPES_H_ */
-

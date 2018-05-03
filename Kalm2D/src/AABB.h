@@ -1,7 +1,7 @@
 #ifndef AABB_H_
 #define AABB_H_
 
-#include "kVec.hpp"
+#include "kVector.h"
 #include "Component.h"
 
 class kAABB : kComponent {

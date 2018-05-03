@@ -14,9 +14,9 @@
 
 #include <stdexcept>
 
-#define Kilobytes( kilo ) (1024 * (kilo))
-#define Megabytes( mega ) (1024 * Kilobytes( (mega )))
-#define Gigabytes( giga ) (1024 * Megabytes( (giga )))
+#define Kilobytes( value ) (1024LL * (value))
+#define Megabytes( value ) (1024LL * Kilobytes( (value)))
+#define Gigabytes( value ) (1024LL * Megabytes( (value)))
 
 
 #define PRINTL_STR( string)\

@@ -9,7 +9,7 @@
 #ifndef OBJECT_H_
 #define OBJECT_H_
 
-#include "kMath.hpp"
+#include "kMath.h"
 
 class kObject {
     public:

@@ -97,11 +97,11 @@ kScene *Kalm2D::CreateTestScene() {
     scene->player = player;
     scene->camera = camera;
 
-    scene->player->position = vec3( 0.0f);
+    scene->player->position = {};
     scene->player->aabb.center = scene->player->position;
-    scene->player->aabb.half = vec3( 1.0f);
-    scene->camera->position = vec3( 0.0f, 5.0f, 0.0f);
-    scene->camera->direction = Normalized(vec3( 0.0f, -1.0f, 0.0f));
+    scene->player->aabb.half = Vec3( 1.0f);
+    scene->camera->position = Vec3( 0.0f, 5.0f, 0.0f);
+    scene->camera->direction = Vec3( 0.0f, -1.0f, 0.0f);
 
     return scene;
 }

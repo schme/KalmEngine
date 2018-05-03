@@ -7,6 +7,7 @@
 #include <cstdlib>
 #include "stdafx.h"
 #include "Types.h"
+#include "kMath.h"
 
 #define KCL_IMPLEMENTATION
 #include "kcl.hpp"
