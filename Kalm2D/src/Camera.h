@@ -13,6 +13,4 @@
 class kCamera : public kObject {
 };
 
-
-
 #endif /* end of include guard: CAMERA_H_ */

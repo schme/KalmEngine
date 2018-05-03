@@ -13,6 +13,4 @@
 class kPlayer : public kObject {
 };
 
-
-
 #endif /* end of include guard: PLAYER_H_ */

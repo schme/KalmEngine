@@ -11,6 +11,7 @@
 
 #include "kalm_shared.h"
 #include "Systems.h"
+#include "kMath.hpp"
 
 const u32 frameBufferWidth = 1280;
 const u32 frameBufferHeight = 720;

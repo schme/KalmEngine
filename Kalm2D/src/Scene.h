@@ -10,15 +10,27 @@
 #define KSCENE_H_
 
 #include "Player.h"
+#include "Camera.h"
 
+/**
+ * kScene
+ *
+ * All scene objects have a camera and a player
+ */
 class kScene {
     public:
-    void Run();
-    void Render();
-    private:
-    kPlayer player;
+    kPlayer *player;
+    kCamera *camera;
 
-    kPlayer GetPlayer() const;
+    void Run();
+    void SendRenderCommands();
+
+    kPlayer& GetPlayer() const;
+    kCamera& GetCamera() const;
+    void SetPlayer( kPlayer *newPlayer );
+    void SetCamera( kCamera *newCamera );
+
+    private:
 };
 
 

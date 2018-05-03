@@ -9,7 +9,14 @@
 #ifndef OBJECT_H_
 #define OBJECT_H_
 
+#include "kMath.hpp"
+
 class kObject {
+    public:
+    vec3 position;
+
+    void Run() {}
+    void SendRenderCommands() {}
 };
 
 

@@ -18,7 +18,6 @@ class kRender : public RenderSystem {
 
         /** RenderSystem overrides */
         void Draw() const;
-        void DrawTestImage( kImage_t *image) const;
 
         /** SystemLocal methods */
         void Initialize();

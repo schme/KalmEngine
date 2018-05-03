@@ -39,7 +39,6 @@ class MemorySystem {
 class RenderSystem {
     public:
     virtual void    Draw() const =0;
-    virtual void    DrawTestImage( kImage_t *image) const =0;       //TODO(Kasper): Remove
 };
 
 class AssetSystem {
