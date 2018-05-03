@@ -30,7 +30,7 @@ void pre_gl_clear(u32 thing) {
 const u8 GL_Version_Major = 3;
 const u8 GL_Version_Minor = 3;
 
-static const u32 memoryByteSize = 32*1024;
+static const u32 memoryByteSize = Megabytes( 64 );
 
 GLFWwindow* g_window = nullptr;
 
@@ -92,7 +92,7 @@ b32 InitializeGlfw() {
 
     GLFWmonitor *monitor = glfwGetPrimaryMonitor();
 
-    g_window = glfwCreateWindow( 1280, 680, title, nullptr, nullptr);
+    g_window = glfwCreateWindow( frameBufferWidth, frameBufferHeight, title, nullptr, nullptr);
     if (!g_window)
     {
         PRINTL_STR("Failed to create Window");

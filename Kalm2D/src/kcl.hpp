@@ -6,13 +6,17 @@
  * Created: 25/04/2018
  */
 
-#include <cstdio>
-#include "Types.h"
-
 #ifndef KCL_HPP_
 #define KCL_HPP_
 
+#include <cstdio>
+#include "Types.h"
+
 #include <stdexcept>
+
+#define Kilobytes( kilo ) (1024 * (kilo))
+#define Megabytes( mega ) (1024 * Kilobytes( (mega )))
+#define Gigabytes( giga ) (1024 * Megabytes( (giga )))
 
 
 #define PRINTL_STR( string)\

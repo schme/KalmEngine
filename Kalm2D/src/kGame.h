@@ -12,6 +12,9 @@
 #include "kalm_shared.h"
 #include "Systems.h"
 
+const u32 frameBufferWidth = 1280;
+const u32 frameBufferHeight = 720;
+
 struct gameImport_t;
 struct gameExport_t;
 

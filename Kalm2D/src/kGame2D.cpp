@@ -17,7 +17,6 @@ gameExport_t * GetGameAPI( gameImport_t * system) {
 }
 
 
-
 /**
  * Kalm2D
  */
@@ -34,21 +33,6 @@ b32 Kalm2D::Initialize() {
 
 
     /** TODO(Kasper): Testing image loading */
-
-#if 0
-    u64 file_size = 0;
-    this->system->fileSystem->GetWholeFileSize( filename, &file_size );
-    PRINT_STR( "file_size: "); printf("%lluKb\n", file_size/1024);
-    void * fileBuffer = this->system->memorySystem->Alloc( (u32)file_size );
-    if(! this->system->fileSystem->ReadWholeFile( filename, (u32)file_size, fileBuffer )) {
-        PRINT_STR( "FAIL load file ");
-        PRINTL_STR( filename);
-    } else {
-        PRINT_STR( "SUCCESS load file ");
-        PRINTL_STR( filename);
-    }
-#endif
-
 
     return true;
 }
@@ -80,5 +64,3 @@ void Kalm2D::Terminate() {
 /**
  * end of Kalm2D
  */
-
-

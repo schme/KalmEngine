@@ -151,7 +151,7 @@ void kRender::Initialize() {
 
     glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, imagePtr->width, imagePtr->height, 0, GL_RGBA,
             GL_UNSIGNED_BYTE, imagePtr->imageBuffer);
-    //glGenerateMipmap( GL_TEXTURE_2D);
+    glGenerateMipmap( GL_TEXTURE_2D);
 
     glBindVertexArray(0);
     glBindBuffer( GL_ARRAY_BUFFER, 0);

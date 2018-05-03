@@ -14,8 +14,8 @@ set CommonLinkerFlags= /nologo /LIBPATH:%PROJ%\lib -incremental:no user32.lib gd
 
 set SRC= %PROJ%\src
 
-rem Figure out a better way to solve this
-rem cl %CommonCompilerFlags% glad\glad.c -Fm /LD
+rem Figure out a better way to do this
+cl %CommonCompilerFlags% glad\glad.c -Fm /LD
 
 cl %CommonCompilerFlags% %src%\win_Kalm2D.cpp -Fm /link %CommonLinkerFlags% opengl32.lib glfw3dll.lib glad.obj -out:Kalm2D.exe
 

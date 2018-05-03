@@ -3,6 +3,7 @@
 
 #include "kalm_shared.h"
 #include "kGame.h"
+#include "Scene.h"
 
 class Kalm2D : public kGame {
     public:
