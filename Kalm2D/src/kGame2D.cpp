@@ -30,6 +30,15 @@ gameImport_t * Kalm2D::system = nullptr;
 gameExport_t Kalm2D::gameExport = {};
 
 
+void Kalm2D::RunCurrentScene() {
+    /** Run Logic on Objects */
+}
+
+void Kalm2D::RenderCurrentScene() {
+    /** Setup per-frame modifications */
+}
+
+
 b32 Kalm2D::Initialize() {
 
     this->currentScene = CreateTestScene();
@@ -47,9 +56,11 @@ i32 Kalm2D::Loop() {
 
         //static r64 lastTime = 0;
         //static r64 time = glfwGetTime();
+        
+        /** Get input */
 
-        this->currentScene->Run();
-        this->currentScene->SendRenderCommands();
+        RunCurrentScene();
+        RenderCurrentScene();
 
         this->system->renderSystem->Draw();
         //lastTime = time;
@@ -68,7 +79,7 @@ void Kalm2D::Terminate() {
  */
 
 
-void Kalm2D::SetCurrentScene( kScene *scene) {
+void Kalm2D::SetCurrentScene( kScene_t *scene) {
     this->currentScene = scene;
 }
 
@@ -83,15 +94,14 @@ void * Kalm2D::GetMemory( u32 bytes ) {
 
 /**
  * Dev function to quickly set a test scene. This should be somewhere else
- * and scenes shouldn't be loaded from C++
+ * and scenes shouldn't be loaded from C++, but created scripts presumably
  */
-kScene *Kalm2D::CreateTestScene() {
-    kScene * scene = (kScene*)GetMemory(sizeof( kScene));
+kScene_t * Kalm2D::CreateTestScene() {
+    kScene_t * scene = (kScene_t*)GetMemory(sizeof( kScene_t));
     ASSERT( scene );
 
     kPlayer * player = (kPlayer*)GetMemory( sizeof( kPlayer));
     kCamera * camera = (kCamera*)GetMemory( sizeof( kCamera));
-
 
     player->position = {};
     player->aabb.center = player->position;

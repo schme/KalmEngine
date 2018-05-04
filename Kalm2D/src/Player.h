@@ -14,6 +14,8 @@
 class kPlayer : public kObject {
     public:
     kAABB aabb;
+
+    f32 *GetVertices( u32 &numberOfVertices ) const;
 };
 
 #endif /* end of include guard: PLAYER_H_ */

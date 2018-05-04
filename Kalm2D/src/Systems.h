@@ -44,6 +44,7 @@ class RenderSystem {
 class AssetSystem {
     public:
         virtual kImage_t *GetImage(const char *filename) const =0;
+        virtual kScene_t *LoadScene() const =0;
 };
 
 #endif /* end of include guard: SYSTEMS_H_ */

@@ -14,14 +14,16 @@ class Kalm2D : public kGame {
         i32 Loop ();
         void Terminate();
     private:
-        kScene *currentScene = nullptr;
+        kScene_t *currentScene = nullptr;
 
-        void SetCurrentScene( kScene *scene);
+        void SetCurrentScene( kScene_t *scene);
         void *GetMemory( u32 bytes );
 
+        void RunCurrentScene();
+        void RenderCurrentScene();
         /** Dev method, normally we'd load one, not create it.
          *  Some other class will do the creating */
-        kScene* CreateTestScene();
+        kScene_t* CreateTestScene();
 };
 
 #endif /* end of include guard: KALM2D_H_ */

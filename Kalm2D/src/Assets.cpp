@@ -8,6 +8,25 @@
 
 #include "Assets.h"
 
+renderBufferGroup_t renderGroups[1];
+
+void kAssets::LoadScene( kScene_t *scene) const {
+    /** compile and store shaders */
+    /** create vertice group */
+    CreateVerticeGroups( scene);
+
+    /** create intermediate render commands */
+}
+
+void kAssets::CreateVerticeGroups( kScene_t *scene) const {
+    renderBufferGroup_t group = {};
+    group.ID = 0;
+    group.vertices = scene->player->GetVertices( group.numberOfVertices);
+    group.shaderID = 0;
+
+    renderGroups[ group.ID] = group;
+}
+
 /**
  * Currently supports only BMP files
  */

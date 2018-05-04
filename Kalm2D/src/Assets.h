@@ -13,22 +13,34 @@
 #include "kalm_shared.h"
 #include "Systems.h"
 #include "SystemsLocal.h"
+#include "Scene.h"
 #include "Shader.h"
 
 class kAssets : public AssetSystem {
     public:
     /** AssetSystem overrides */
     kImage_t *GetImage( const char *filename) const;
-    kShader_t *GetShader( const char *filename) const;
 
     /** kAssets methods */
+    void LoadScene( kScene_t *scene) const;
     private:
+    kShader_t *GetShader( const char *filename) const;
     kImage_t *LoadBMPFile( const char *filename, const void *filebuffer ) const;
+    void CreateVerticeGroups( kScene_t *scene) const;
+};
+
+
+struct renderBufferGroup_t {
+    f32 *vertices;
+    u32 ID;
+    u32 numberOfVertices;
+    u32 shaderID;
 };
 
 
 /**
  * Gathered from: http://www.fastgraph.com/help/bmp_header_format.html
+ * TODO(Kasper): Move to a separate fileformat collection -file
  */
 #pragma pack(push, 1)
 struct BitmapHeader_t {

@@ -11,6 +11,7 @@
 
 #include "Systems.h"
 #include "glfw/glfw3.h"
+#include "Scene.h"
 
 class kRender : public RenderSystem {
     public:
@@ -21,8 +22,11 @@ class kRender : public RenderSystem {
         /** SystemLocal methods */
         void Initialize();
         void SetWindow( GLFWwindow * window);
+        void LoadScene( kScene_t *scene);
+
     private:
         GLFWwindow *    window;
+        void RenderCurrentScene() const;
         void PrintOpenGLProgramError( u32 program, const char *message = "") const;
         void PrintOpenGLShaderError( u32 shader, const char *message = "") const;
 };
