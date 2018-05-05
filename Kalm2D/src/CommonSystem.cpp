@@ -16,6 +16,10 @@ void kCommonSystem::SetWindow( GLFWwindow *new_window) {
     this->window = new_window;
 }
 
+f64 kCommonSystem::GetTime() const {
+    return glfwGetTime();
+}
+
 b32 kCommonSystem::IfWindowShouldClose() const {
     //TODO(Kasper): Implement this here!
     return glfwWindowShouldClose( this->window);

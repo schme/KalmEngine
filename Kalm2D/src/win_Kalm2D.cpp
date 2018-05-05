@@ -156,12 +156,6 @@ int main(int argc, char *argv[])
     kAssets assetSystem;
     g_Assets = &assetSystem;
 
-    /** Init needs the window */
-    commonSystem.SetWindow( g_window );
-    commonSystem.Initialize();
-    render.SetWindow( g_window );
-    render.Initialize();
-
     /** prepare an export for game.dll */
     g_gameImport.version = 1;
 
@@ -173,8 +167,14 @@ int main(int argc, char *argv[])
 
     /** load game API */
     win_LoadGame();
-
     kGame *game = g_gameExport->game;
+
+    /** Init needs the window */
+    commonSystem.SetWindow( g_window );
+    commonSystem.Initialize();
+    render.SetWindow( g_window );
+    render.Initialize();
+
     /** prepare game */
     game->Initialize();
 

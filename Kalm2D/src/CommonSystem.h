@@ -17,6 +17,7 @@ class kCommonSystem : public CommonSystem {
         void    Initialize();
         void    SetWindow( GLFWwindow *new_window);
         b32     IfWindowShouldClose() const;
+        f64     GetTime() const;
     private:
         GLFWwindow *    window;
 };

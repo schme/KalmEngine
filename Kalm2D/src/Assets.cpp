@@ -8,23 +8,33 @@
 
 #include "Assets.h"
 
-renderBufferGroup_t renderGroups[1];
+renderBufferGroup_t renderGroup;
 
-void kAssets::LoadScene( kScene_t *scene) const {
-    /** compile and store shaders */
-    /** create vertice group */
-    CreateVerticeGroups( scene);
-
-    /** create intermediate render commands */
+renderBufferGroup_t* kAssets::GetBufferGroup() const {
+    return &renderGroup;
 }
 
-void kAssets::CreateVerticeGroups( kScene_t *scene) const {
-    renderBufferGroup_t group = {};
-    group.ID = 0;
-    group.vertices = scene->player->GetVertices( group.numberOfVertices);
-    group.shaderID = 0;
+void kAssets::LoadScene( kScene_t *scene) const {
 
-    renderGroups[ group.ID] = group;
+    /** TODO(Kasper): Get shaders from the scene information. Materials etc. */
+    kShaderLoader shaderLoader;
+    /** compile and store shaders */
+    kShader_t shader = shaderLoader.LoadShaders();
+    /** create vertice group */
+    CreateVerticeGroup( scene, shader);
+
+    /** load data to the renderer */
+    g_Render->LoadScene( scene );
+
+}
+
+void kAssets::CreateVerticeGroup( kScene_t *scene, kShader_t shader) const {
+    renderBufferGroup_t group = {};
+    group.shader = shader;
+    group.ID = 0;
+    group.elements = GetAABBVertices( scene->player->aabb);
+
+    renderGroup = group;
 }
 
 /**
@@ -39,8 +49,7 @@ kImage_t* kAssets::GetImage( const char *filename) const {
     // TODO(Kasper): Allocate memory for the filebuffer from the memory system instead */
     void * fileBuffer = std::malloc( fileSize);
     if( ! fileBuffer ) {
-        PRINTL_STR( "Could not receive filebuffer");
-    }
+        PRINTL_STR( "Could not receive filebuffer"); }
     if( ! g_Filesystem->ReadWholeFile( filename, (u32)fileSize, fileBuffer)) {
         printf("kAssets: Reading file: %s (filesize: %llu) to buffer failed\n", filename, fileSize);
         return nullptr;
@@ -79,7 +88,7 @@ kImage_t* kAssets::LoadBMPFile( const char * filename, const void *filebuffer) c
 
     void *startOfImage = (u8*)filebuffer + header.bytesToImage;
 
-    /** Here we assume an ABGR format (0xRRGGBBAA), which can't be used in core OpenGL, so we swizzle them 
+    /** Here we assume an ABGR format (0xRRGGBBAA), which can't be used in core OpenGL, so we swizzle them
      *  to RGBA (0xAABBGGRR) */
 
     //TODO(Kasper): This is starting to become a bit sketchy, even for me. Can we get the color masks at least
@@ -110,4 +119,46 @@ kImage_t* kAssets::LoadBMPFile( const char * filename, const void *filebuffer) c
     }
 
     return imageObject;
+}
+
+/** Corners + Element indices */
+vertsAndIndices_t* kAssets::GetAABBVertices( const kAABB &aabb) const {
+
+    /** 3 floats per corner, 8 corners */
+    u32 nrOfVerts = 3*8;
+    /** 3 floats per triangle, 2 triangles per side, 6 sides */
+    u32 nrOfIndices = 3*2*6;
+
+    vertsAndIndices_t* result = (vertsAndIndices_t*)g_Memory->Alloc( sizeof(vertsAndIndices_t));
+    result->vertices = (f32*)g_Memory->Alloc( nrOfVerts * sizeof(f32) );
+    result->indices = (u32*)g_Memory->Alloc( nrOfIndices * sizeof(f32) );
+
+    /** corners */
+    vec3 vertice_array[8] = {
+        aabb.center - aabb.half,
+        aabb.center + Vec3( aabb.half.x, -aabb.half.y, -aabb.half.z),
+        aabb.center + Vec3( -aabb.half.x, -aabb.half.y, aabb.half.z),
+        aabb.center + Vec3( aabb.half.x, -aabb.half.y, aabb.half.z),
+        aabb.center + Vec3( -aabb.half.x, aabb.half.y, -aabb.half.z),
+        aabb.center + Vec3( aabb.half.x, aabb.half.y, -aabb.half.z),
+        aabb.center + Vec3( -aabb.half.x, aabb.half.y, aabb.half.z),
+        aabb.center + aabb.half
+    };
+    u32 index_array[3*2*6] = {
+        0, 2, 1,    3, 1, 2,    /** bottom */
+        4, 6, 0,    2, 0, 6,
+        7, 2, 6,    3, 2, 7,
+        5, 3, 7,    1, 3, 5,
+        0, 1, 5,    4, 0, 5,
+        6, 4, 5,    7, 6, 5     /** top */
+    };
+
+
+    std::memcpy( result->vertices, vertice_array, nrOfVerts * sizeof(f32));
+    std::memcpy( result->indices, index_array, nrOfIndices * sizeof(u32));
+
+    result->vertices_n = nrOfVerts;
+    result->indices_n = nrOfIndices;
+
+    return result;
 }

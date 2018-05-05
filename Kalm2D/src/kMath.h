@@ -8,6 +8,8 @@
  * Created: 03/05/2018
  */
 
+#define PI 3.14159265359f
+
 #ifndef KMATH_H_
 #define KMATH_H_
 
@@ -44,6 +46,10 @@ inline vec3 Cross( vec3 a, vec3 b ) {
     return result;
 }
 
+inline f32 Radians( f32 degrees ) {
+    return degrees * PI / 180.0f;
+}
+
 /** TODO(Kasper): Optimise */
 inline vec4 Transform( mat4 A, vec4 p) {
     vec4 r;
@@ -56,6 +62,33 @@ inline vec4 Transform( mat4 A, vec4 p) {
     return r;
 }
 
+inline mat4 GetIdentityMat() {
+    mat4 M = {{{
+        { 1.0f, 0.0f, 0.0f, 0.0f },
+        { 0.0f, 1.0f, 0.0f, 0.0f },
+        { 0.0f, 0.0f, 1.0f, 0.0f },
+        { 0.0f, 0.0f, 0.0f, 1.0f }
+    }}};
+    return M;
+}
+
+static mat4
+Translate( mat4 A, vec3 t ) {
+    mat4 M = A;
+    M.A[0][3] += t.x;
+    M.A[1][3] += t.y;
+    M.A[2][3] += t.z;
+    return M;
+}
+
+static mat4
+Translate( vec3 t ) {
+    mat4 M = GetIdentityMat();
+    M.A[0][3] += t.x;
+    M.A[1][3] += t.y;
+    M.A[2][3] += t.z;
+    return M;
+}
 
 inline mat4 RotationX( f32 angle) {
     f32 c = cosf( angle );
@@ -106,23 +139,32 @@ inline mat4 Transpose( mat4 A ) {
     return M;
 }
 
-inline mat4 GetIdentityMat() {
+inline mat4
+GetPerspectiveMat( f32 FOV, f32 aspect, f32 nearPlane, f32 farPlane ) {
+    f32 n = nearPlane;
+    f32 f = farPlane;
+    f32 scale = tanf( FOV * 0.5f * PI / 180.0f) * n;
+    f32 r = aspect * scale;
+    f32 l = -r;
+    f32 t = scale;
+    f32 b = -t;
+
     mat4 M = {{{
-        { 1.0f, 0.0f, 0.0f, 0.0f },
-        { 0.0f, 1.0f, 0.0f, 0.0f },
-        { 0.0f, 0.0f, 1.0f, 0.0f },
-        { 0.0f, 0.0f, 0.0f, 1.0f }
+        { (2*n)/(r-l),           0,              0,  0 },
+        {           0, (2*n)/(t-b),              0,  0 },
+        { (r+l)/(r-l), (t+b)/(t-b),   -(f+n)/(f-n), -1 },
+        {           0,           0, (-2*f*n)/(f-n),  0 }
     }}};
+
     return M;
 }
 
-#if 1
 /**
  * eg. ( width/height, 0.1f, 100.0f)
  * Returns inverse mat
  */
-inline mat4_inv 
-GetOrthoMat( f32 aspect, f32 nearPlane, f32 farPlane ) 
+inline mat4_inv
+GetInvOrthoMat( f32 aspect, f32 nearPlane, f32 farPlane )
 {
     f32 f = farPlane;
     f32 n = nearPlane;
@@ -153,7 +195,7 @@ GetOrthoMat( f32 aspect, f32 nearPlane, f32 farPlane )
  * eg. ( 90.0f, width/height, 0.1f, 100.0f)
  * Returns inverse mat
  */
-inline mat4_inv GetPerspectiveMat( f32 FOV, f32 aspect, f32 nearPlane, f32 farPlane ) {
+inline mat4_inv GetInvPerspectiveMat( f32 FOV, f32 aspect, f32 nearPlane, f32 farPlane ) {
     f32 n = nearPlane;
     f32 f = farPlane;
 
@@ -179,17 +221,6 @@ inline mat4_inv GetPerspectiveMat( f32 FOV, f32 aspect, f32 nearPlane, f32 farPl
     };
     return M;
 }
-#endif
-
-static mat4
-Translate( mat4 A, vec3 t ) {
-    mat4 M = A;
-    M.A[0][3] += t.x;
-    M.A[1][3] += t.y;
-    M.A[2][3] += t.z;
-    return M;
-}
-
 
 inline mat4
 Columns3x3( vec3 x, vec3 y, vec3 z) {

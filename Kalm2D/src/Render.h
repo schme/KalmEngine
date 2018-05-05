@@ -23,6 +23,8 @@ class kRender : public RenderSystem {
         void Initialize();
         void SetWindow( GLFWwindow * window);
         void LoadScene( kScene_t *scene);
+        void SetGroupModelView( mat4 modelView);
+        void SetPerspective( mat4 perspective);
 
     private:
         GLFWwindow *    window;

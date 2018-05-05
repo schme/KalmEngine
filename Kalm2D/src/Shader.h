@@ -2,38 +2,52 @@
  *
  * Shader.h shaderloader
  *
- * TODO(Kasper): ERROR CHECKING
- *
  * Copyright (C) 2018 Kasper Sauramo
- * Created: 03/05/2018 
+ * Created: 03/05/2018
  */
 #ifndef SHADER_H_
 #define SHADER_H_
-
-#define SHADER_FOLDER "../../Shaders"
 
 #include "glad/glad.h"
 #include "kalm_shared.h"
 #include "SystemsLocal.h"
 
-enum ShaderType_t { SHADER_VERTEX, SHADER_FRAGMENT, SHADER_GEOMETRY, SHADER_TESSEVAL, SHADER_TESSCNTRL };
-
-typedef const char ShaderName[50];
+enum ShaderType_t { SHADER_VERTEX, SHADER_FRAGMENT };
 
 struct kShader_t {
-    ShaderName names[5];
     u32 ID;
-    b32 loaded[5];
+    void Use() {
+        glUseProgram(ID);
+    }
+    void SetInt( const char *name, s32 value ) const {
+        glUniform1i( glGetUniformLocation(ID, name), value);
+    }
+    void SetFloat( const char *name, f32 value ) const {
+        glUniform1f( glGetUniformLocation(ID, name), value);
+    };
+    void SetVec2( const char *name, vec2 value ) const {
+        glUniform2fv( glGetUniformLocation(ID, name), 1, value.Q);
+    };
+    void SetVec3( const char *name, vec3 value ) const {
+        glUniform3fv( glGetUniformLocation(ID, name), 1, value.Q);
+    };
+    void SetVec4( const char *name, vec4 value ) const {
+        glUniform4fv( glGetUniformLocation(ID, name), 1, value.Q);
+    };
 };
+
 
 class kShaderLoader {
+    static kShader_t shaders[5];
+
     public:
-    void LoadShader( kShader_t *shader, const char *filename, ShaderType_t type );
+    kShader_t LoadShaders();
+    void LoadShader( kShader_t * shader, const char *vertexCode, const char *fragmentCode );
     private:
-    void CompileShader( const char *shaderCode, u32 ID );
-    void CheckCompileErrors( u32 ID, ShaderType_t type);
-    void CheckLinkErrors( u32 ID );
+    void CheckCompileErrors( u32 ID, const char* type) const ;
 };
 
+#include "../../Shaders/through.frag"
+#include "../../Shaders/through.vert"
 
 #endif /* end of include guard: SHADER_H_ */

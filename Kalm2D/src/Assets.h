@@ -10,11 +10,19 @@
 #define ASSETS_H_
 
 
+#include "Object.h"
 #include "kalm_shared.h"
 #include "Systems.h"
 #include "SystemsLocal.h"
 #include "Scene.h"
 #include "Shader.h"
+
+struct renderBufferGroup_t {
+    u32 ID;
+    kShader_t shader;
+    mat4 modelView;
+    vertsAndIndices_t *elements;
+};
 
 class kAssets : public AssetSystem {
     public:
@@ -22,20 +30,16 @@ class kAssets : public AssetSystem {
     kImage_t *GetImage( const char *filename) const;
 
     /** kAssets methods */
+    renderBufferGroup_t* GetBufferGroup() const;
     void LoadScene( kScene_t *scene) const;
+
     private:
     kShader_t *GetShader( const char *filename) const;
     kImage_t *LoadBMPFile( const char *filename, const void *filebuffer ) const;
-    void CreateVerticeGroups( kScene_t *scene) const;
+    void CreateVerticeGroup( kScene_t *scene, kShader_t shader) const;
+    vertsAndIndices_t *GetAABBVertices(const kAABB &aabb) const ;
 };
 
-
-struct renderBufferGroup_t {
-    f32 *vertices;
-    u32 ID;
-    u32 numberOfVertices;
-    u32 shaderID;
-};
 
 
 /**

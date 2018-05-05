@@ -10,6 +10,8 @@ class Kalm2D : public kGame {
         static gameImport_t * system;
         static gameExport_t gameExport;
 
+        static void *GetMemory( u32 bytes );
+
         b32 Initialize();
         i32 Loop ();
         void Terminate();
@@ -17,7 +19,6 @@ class Kalm2D : public kGame {
         kScene_t *currentScene = nullptr;
 
         void SetCurrentScene( kScene_t *scene);
-        void *GetMemory( u32 bytes );
 
         void RunCurrentScene();
         void RenderCurrentScene();
@@ -25,5 +26,6 @@ class Kalm2D : public kGame {
          *  Some other class will do the creating */
         kScene_t* CreateTestScene();
 };
+
 
 #endif /* end of include guard: KALM2D_H_ */

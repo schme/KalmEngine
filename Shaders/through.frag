@@ -1,5 +1,9 @@
+const char *through_frag = R"foo(
 #version 330 core
+out vec4 FragColor;
 
 void main()
-    gl_FragColor = vec4( 0.0f, 0.8f, 0.8f, 1.0f);
+{
+    FragColor = vec4( 0.0f, 0.8f, 0.8f, 1.0f);
 }
+)foo";
