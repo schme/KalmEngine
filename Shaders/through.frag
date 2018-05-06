@@ -1,9 +1,15 @@
 const char *through_frag = R"foo(
+
 #version 330 core
 out vec4 FragColor;
 
+in vec2 TexCoord;
+
+uniform sampler2D texture0;
+
 void main()
 {
-    FragColor = vec4( 0.0f, 0.8f, 0.8f, 1.0f);
+    FragColor =  texture( texture0, TexCoord);
 }
+
 )foo";

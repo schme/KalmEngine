@@ -1,6 +1,7 @@
 Assets/
 Debug/
 glad/
+KalmEngine/include/
 
 # Missing for some reason
 *.idb

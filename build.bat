@@ -9,7 +9,7 @@ REM 4505: unreferenced local function removed
 REM EHsc: unwind semantics for C++ exceptions
 
 
-set PROJ=Kalm2D
+set PROJ=KalmEngine
 
 set CommonCompilerFlags= -nologo -WX -Oi -Gm -GR -W4 -Zi -Zo -EHsc -wd4100 -wd4189 -wd4458 -wd4201 -wd4505 -I:%PROJ%\include
 set CommonCompilerFlags= -DKALM2D_WIN32=1 -DK_ASSERT=1 %CommonCompilerFlags%
@@ -20,6 +20,6 @@ set SRC= %PROJ%\src
 rem Figure out a better way to do this
 rem cl %CommonCompilerFlags% glad\glad.c -Fm /LD
 
-cl %CommonCompilerFlags% %src%\win_Kalm2D.cpp -Fm /link %CommonLinkerFlags% opengl32.lib glfw3dll.lib glad.obj -out:Kalm2D.exe
+cl %CommonCompilerFlags% %src%\Sys_Kalm.cpp -Fm /link %CommonLinkerFlags% opengl32.lib glfw3dll.lib glad.obj -out:Kalm.exe
 
-cl %CommonCompilerFlags% %src%\kGame2D.cpp -Fm /LD /link %CommonLinkerFlags% -EXPORT:GetGameAPI -out:Game64.dll
+cl %CommonCompilerFlags% %src%\KalmGame.cpp -Fm /LD /link %CommonLinkerFlags% -EXPORT:GetGameAPI -out:Game64.dll
