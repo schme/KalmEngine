@@ -11,11 +11,11 @@ class KalmGame : public kGame {
         static gameImport_t * system;
         static gameExport_t gameExport;
 
-        static void *GetMemory( u32 bytes );
-
         b32 Initialize();
         i32 Loop ();
         void Terminate();
+
+        static void *GetMemory( u32 bytes );
     private:
         kScene_t *currentScene = nullptr;
 

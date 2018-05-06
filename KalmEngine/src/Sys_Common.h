@@ -10,7 +10,7 @@
 
 #include "Systems.h"
 #include "Types.h"
-#include "glfw/glfw3.h"
+#include "../include/glfw/glfw3.h"
 
 class kCommonSystem : public CommonSystem {
     public:
@@ -18,6 +18,7 @@ class kCommonSystem : public CommonSystem {
         void    SetWindow( GLFWwindow *new_window);
         b32     IfWindowShouldClose() const;
         f64     GetTime() const;
+        void    PollEvents() const;
     private:
         GLFWwindow *    window;
 };

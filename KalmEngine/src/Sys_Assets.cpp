@@ -8,35 +8,14 @@
 
 #include "Sys_Assets.h"
 
-renderBufferGroup_t renderGroup;
-
-renderBufferGroup_t* kAssets::GetBufferGroup() const {
-    return &renderGroup;
-}
-
 void kAssets::LoadScene( kScene_t *scene) const {
 
     /** TODO(Kasper): Get shaders from the scene information. Materials etc. */
-    kShaderLoader shaderLoader;
+
     /** compile and store shaders */
-    kShader_t shader = shaderLoader.LoadShaders();
     /** textures */
     /** create vertice group */
-    CreateVerticeGroup( scene, shader);
     /** load data to the renderer */
-    g_Render->LoadScene( scene );
-
-    kImage_t* image0 = this->GetImage( "Assets/textures/grin.bmp");
-    g_Render->LoadTexture( image0 );
-}
-
-void kAssets::CreateVerticeGroup( kScene_t *scene, kShader_t shader) const {
-    renderBufferGroup_t group = {};
-    group.shader = shader;
-    group.ID = 0;
-    group.elements = GetAABBVertices( scene->player->aabb);
-
-    renderGroup = group;
 }
 
 /**
@@ -124,17 +103,15 @@ kImage_t* kAssets::LoadBMPFile( const char * filename, const void *filebuffer) c
 }
 
 /** Corners + Element indices */
-vertsAndIndices_t* kAssets::GetAABBVertices( const kAABB &aabb) const {
+vertices_t* kAssets::GetAABBVertices( const kAABB &aabb) const {
 
     /** 3 floats per corner, 8 corners */
     u32 nrOfVerts = 3*8;
     /** 3 floats per triangle, 2 triangles per side, 6 sides */
     u32 nrOfIndices = 3*2*6;
-    u32 nrOfTexCoords = 2*6;
 
-    vertsAndIndices_t* result = (vertsAndIndices_t*)g_Memory->Alloc( sizeof(vertsAndIndices_t));
+    vertices_t* result = (vertices_t*)g_Memory->Alloc( sizeof(vertices_t));
     result->vertices = (f32*)g_Memory->Alloc( nrOfVerts * sizeof(f32) );
-    result->texcoords = (f32*)g_Memory->Alloc( nrOfTexCoords * sizeof(f32) );
     result->indices = (u32*)g_Memory->Alloc( nrOfIndices * sizeof(f32) );
 
     /** corners + texture coords*/
@@ -148,22 +125,6 @@ vertsAndIndices_t* kAssets::GetAABBVertices( const kAABB &aabb) const {
         aabb.center + Vec3( -aabb.half.x, aabb.half.y, aabb.half.z),
         aabb.center + aabb.half
     };
-    f32 texture_array[] = {
-        0.0f, 0.0f,
-        0.0f, 1.0f,
-        1.0f, 1.0f,
-        1.0f, 0.0f,
-        0.0f, 0.0f,
-        1.0f, 1.0f,
-    };
-    //u32 index_array[] = {
-        //0, 2, 1,    3, 1, 2,    [>* bottom <]
-        //4, 6, 0,    2, 0, 6,
-        //7, 2, 6,    3, 2, 7,
-        //5, 3, 7,    1, 3, 5,
-        //0, 1, 5,    4, 0, 5,
-        //6, 4, 5,    7, 6, 5     [>* top <]
-    //};
     /** Wind clockwise */
     u32 index_array[] = {
         0, 4, 5,    1, 0, 5,    /** front */
@@ -175,11 +136,9 @@ vertsAndIndices_t* kAssets::GetAABBVertices( const kAABB &aabb) const {
     };
 
     std::memcpy( result->vertices, vertice_array, nrOfVerts * sizeof(f32));
-    std::memcpy( result->texcoords, texture_array, nrOfTexCoords * sizeof(f32));
     std::memcpy( result->indices, index_array, nrOfIndices * sizeof(u32));
 
     result->vertices_n = nrOfVerts;
-    result->texcoords_n = nrOfTexCoords;
     result->indices_n = nrOfIndices;
 
     return result;

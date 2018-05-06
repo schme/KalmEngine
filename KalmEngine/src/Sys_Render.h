@@ -10,7 +10,7 @@
 #define RENDER_H_
 
 #include "Systems.h"
-#include "glfw/glfw3.h"
+#include "../include/glfw/glfw3.h"
 #include "Scene.h"
 
 class kRender : public RenderSystem {

@@ -17,6 +17,7 @@ class CommonSystem {
     public:
     virtual b32     IfWindowShouldClose() const =0;
     virtual f64     GetTime() const =0;
+    virtual void    PollEvents() const =0;
 };
 
 class FileSystem {

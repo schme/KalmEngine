@@ -1,9 +1,10 @@
 
 #include "stdafx.h"
 #include "Sys_Kalm.h"
+#include "KalmTypes.h"
 
 #include "Systems.h"
-#include "../../glad/glad.h"
+#include "../include/glad/glad.h"
 
 #include "Sys_Common.cpp"
 #include "Sys_Memory.cpp"

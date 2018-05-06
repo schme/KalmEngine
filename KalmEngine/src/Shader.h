@@ -8,13 +8,14 @@
 #ifndef SHADER_H_
 #define SHADER_H_
 
-#include "glad/glad.h"
+#include "../../glad/glad.h"
 #include "Types.h"
 #include "kVector.h"
 
 enum ShaderType_t { SHADER_VERTEX, SHADER_FRAGMENT };
 
-struct kShader_t {
+class Shader {
+    public:
     u32 ID;
     void Use() {
         glUseProgram(ID);
@@ -38,11 +39,11 @@ struct kShader_t {
 
 
 class kShaderLoader {
-    static kShader_t shaders[5];
+    static Shader shaders[5];
 
     public:
-    kShader_t LoadShaders();
-    void LoadShader( kShader_t * shader, const char *vertexCode, const char *fragmentCode );
+    Shader LoadShaders();
+    void LoadShader( Shader * shader, const char *vertexCode, const char *fragmentCode );
     private:
     void CheckCompileErrors( u32 ID, const char* type) const ;
 };

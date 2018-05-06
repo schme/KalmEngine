@@ -1,6 +1,8 @@
 /**
  *
- * kGame Interface
+ * kGame  Interface
+ *
+ * Shared for the Sys_Kalm module
  *
  * Copyright (C) 2018 Kasper Sauramo
  * Created: 27/04/2018

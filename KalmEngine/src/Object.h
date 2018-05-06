@@ -18,14 +18,14 @@ class kObject {
 
     void Run() {}
 
-    vertsAndIndices_t* GetVertices() const {
+    vertices_t* GetVertices() const {
         return nullptr;
     }
 };
 
 
 class kCube : kObject {
-    vertsAndIndices_t* GetVertices() const {
+    vertices_t* GetVertices() const {
         return nullptr;
     }
 };

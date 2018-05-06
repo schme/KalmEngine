@@ -13,14 +13,13 @@
 #include "Shader.cpp"
 
 const u32 VERTEX_ARRAYS = 1;
-const u32 VERTEX_BUFFERS = 2;
+const u32 VERTEX_BUFFERS = 1;
 const u32 ELEMENT_BUFFERS = VERTEX_BUFFERS;
 const u32 SHADER_PROGRAMS = 1;
 const u32 TEXTURES = 1;
 
 static u32 VertexArrays[VERTEX_ARRAYS];
 static u32 VertexBuffers[VERTEX_BUFFERS];
-static u32 TextureCoords[TEXTURES]; // just a vertex buffer
 static u32 ElementBuffers[ELEMENT_BUFFERS];
 static u32 ShaderPrograms[SHADER_PROGRAMS];
 static u32 Textures[TEXTURES];
@@ -30,7 +29,6 @@ static u32 currentSceneID = 0;
 
 static void ResizeCallback( GLFWwindow* window, const i32 numer, const i32 denom);
 static void FramebufferResizeCallback( GLFWwindow *window, const i32 width, const i32 height);
-
 
 static mat4 perspectiveMatrix = {};
 
@@ -50,46 +48,15 @@ void kRender::LoadTexture( kImage_t* image) {
 
 void kRender::LoadScene( kScene_t *scene) {
 
-    currentSceneID = scene->ID;
-    renderBufferGroup_t *group = g_Assets->GetBufferGroup();
-    currentGroup = group;
-
-    currentGroup->shader.Use();
-    currentGroup->shader.SetInt( "texture0", 0);
-
-    s32 perspectiveLoc = glGetUniformLocation( currentGroup->shader.ID, "perspective");
-    glUniformMatrix4fv( perspectiveLoc, 1, GL_FALSE, (f32*)perspectiveMatrix.A);
-
-    glBindVertexArray( VertexArrays[ scene->ID ] );
-
-    glBindBuffer( GL_ARRAY_BUFFER, VertexBuffers[ group->ID]);
-    glBufferData( GL_ARRAY_BUFFER, group->elements->vertices_n * sizeof(f32), group->elements->vertices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-    glEnableVertexAttribArray(0);
-
-    // ADHOC TEXTURE ADDITION
-    glBindBuffer( GL_ARRAY_BUFFER, TextureCoords[ group->ID ]);
-    glBufferData( GL_ARRAY_BUFFER, group->elements->texcoords_n * sizeof(f32), group->elements->texcoords, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
-    glEnableVertexAttribArray(1);
-
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ElementBuffers[ group->ID]);
-    glBufferData( GL_ELEMENT_ARRAY_BUFFER, group->elements->indices_n * sizeof(u32), group->elements->indices, GL_STATIC_DRAW);
-
 }
 
 
 void kRender::RenderCurrentScene() const {
     //glPolygonMode( GL_FRONT_AND_BACK, GL_LINE);
 
+    //currentGroup->shader.Use();
 
-    currentGroup->shader.Use();
-    glActiveTexture( GL_TEXTURE0 );
-    glBindTexture( GL_TEXTURE_2D, Textures[0] );
-
-    glDrawElements( GL_TRIANGLES, currentGroup->elements->indices_n, GL_UNSIGNED_INT, 0);
+    //glDrawElements();
 }
 
 void kRender::SetWindow( GLFWwindow * new_window ) {
@@ -103,13 +70,12 @@ void kRender::Draw() const {
     RenderCurrentScene();
 
     glfwSwapBuffers((GLFWwindow*)window);
-    glfwPollEvents();   //TODO(Kasper): Where is this supposed to be?
 }
 
 
 void kRender::Initialize() {
 
-    glClearColor( 0.1f, 0.1f, 0.1f, 1.0f);
+    glClearColor( 0.05f, 0.05f, 0.05f, 1.0f);
     glEnable( GL_DEPTH_TEST);
 
     glfwSetFramebufferSizeCallback( kRender::window, FramebufferResizeCallback);
@@ -121,7 +87,6 @@ void kRender::Initialize() {
 
     glGenVertexArrays( VERTEX_ARRAYS, VertexArrays);
     glGenBuffers( VERTEX_BUFFERS, VertexBuffers);
-    glGenBuffers( TEXTURES, TextureCoords);
     glGenBuffers( ELEMENT_BUFFERS, ElementBuffers);
 }
 

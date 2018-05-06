@@ -37,20 +37,10 @@ void KalmGame::RunCurrentScene() {
 void KalmGame::RenderCurrentScene() {
     /** Setup per-frame modifications */
 
-    mat4 model = RotationX( PI * 0.2f*(f32)sin( system->commonSystem->GetTime()));
-    model = model * RotationY( PI * 0.2f*(f32)sin( system->commonSystem->GetTime()));
-    //mat4 model = RotationY( glm::radians(-55.0f)) * RotationZ( glm::radians(-55.0f));
-    mat4 view = Transpose(Translate( Vec3( 0.0f, 0.0f, -4.0f)));
-    mat4 modelView = model * view;
-    this->system->renderSystem->SetGroupModelView( modelView );
 }
 
 
 b32 KalmGame::Initialize() {
-
-    mat4 perspective = GetPerspectiveMat( 60.0f, (f32)frameBufferWidth / (f32)frameBufferHeight, 0.1f, 100.0f);
-    this->system->renderSystem->SetPerspective( perspective );
-    this->currentScene = CreateTestScene();
 
     return true;
 }
@@ -75,6 +65,7 @@ i32 KalmGame::Loop() {
         RenderCurrentScene();
 
         this->system->renderSystem->Draw();
+        this->system->commonSystem->PollEvents();
 
         lastTime = time;
     }

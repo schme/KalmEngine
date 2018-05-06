@@ -8,15 +8,15 @@
 
 #include "Shader.h"
 
-kShader_t kShaderLoader::shaders[5] = {};
+Shader kShaderLoader::shaders[5] = {};
 
-kShader_t kShaderLoader::LoadShaders() {
+Shader kShaderLoader::LoadShaders() {
     LoadShader( &shaders[0], through_vert, through_frag);
     return shaders[0];
 }
 
 
-void kShaderLoader::LoadShader( kShader_t * shader, const char *vertexCode, const char *fragmentCode ) {
+void kShaderLoader::LoadShader( Shader * shader, const char *vertexCode, const char *fragmentCode ) {
     u32 vertex, fragment;
 
     /** vertex */

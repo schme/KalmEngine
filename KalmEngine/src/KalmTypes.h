@@ -2,26 +2,33 @@
  *
  * GameTypes.h
  *
- * A collection of data types, structures, classes and methods used 
+ * A collection of data types, structures, classes and methods used
  * for communication between the modules.
  *
  * Copyright (C) 2018 Kasper Sauramo
- * Created: 06/05/2018 
+ * Created: 06/05/2018
  */
 #ifndef KALMTYPES_H_
 #define KALMTYPES_H_
 
 #include "Types.h"
+#include "kVector.h"
+#include "Shader.h"
 
-struct vertsAndIndices_t {
+/**
+ * A struct for storing vertices in a way OpenGL can 
+ * easily consume them up
+ */
+struct vertices_t {
     u32 vertices_n;
-    u32 texcoords_n;
     u32 indices_n;
     f32 *vertices;
-    f32 *texcoords;
     u32 *indices;
 };
 
+/**
+ * A loaded image to pass around
+ */
 struct kImage_t {
     u16 width;
     u16 height;
@@ -32,5 +39,11 @@ struct kImage_t {
     void *imageBuffer;
 };
 
+struct renderBufferGroup_t {
+    u32 ID;
+    Shader shader;
+    mat4 modelView;
+    vertices_t *groupVerts;
+};
 
 #endif /* end of include guard: KALMTYPES_H_ */

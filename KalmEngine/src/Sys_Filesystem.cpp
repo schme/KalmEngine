@@ -29,7 +29,7 @@ i32 kFilesystem::ReadWholeFile( const char *filename, const u32 buffer_size, voi
     }
 
     b32 success = 0;
-    success = ReadFile( file, buffer, buffer_size, &bytes_read, &overlapped); 
+    success = ReadFile( file, buffer, buffer_size, &bytes_read, &overlapped);
 
     if( !success) {
         PRINT_STR( "FAIL Reading file: ");
@@ -78,7 +78,7 @@ void kFilesystem::ReportLastError() const {
         void * lpMsgBuf;
 
         DWORD err = GetLastError();
-        FormatMessage( 
+        FormatMessage(
                 FORMAT_MESSAGE_ALLOCATE_BUFFER |
                 FORMAT_MESSAGE_FROM_SYSTEM |
                 FORMAT_MESSAGE_IGNORE_INSERTS,

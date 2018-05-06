@@ -17,7 +17,9 @@ kMemory::kMemory( u32 byte_size) {
 
 
 void *kMemory::Alloc( u32 size_bytes ) {
-    return this->stack.Alloc( size_bytes );
+    void *memory = this->stack.Alloc( size_bytes );
+    ASSERT( memory );
+    return memory;
 }
 
 void *kMemory::AllocAligned( u32 size_bytes, u32 alignment) {

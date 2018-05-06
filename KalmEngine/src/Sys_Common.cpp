@@ -2,6 +2,9 @@
  *
  * kCommonSystem.cpp
  *
+ * Consists of Input, Timers, Messages and other miscellenious
+ * functions
+ *
  * Copyright (C) 2018 Kasper Sauramo
  * Created: 28/04/2018
  */
@@ -21,8 +24,11 @@ f64 kCommonSystem::GetTime() const {
 }
 
 b32 kCommonSystem::IfWindowShouldClose() const {
-    //TODO(Kasper): Implement this here!
     return glfwWindowShouldClose( this->window);
+}
+
+void kCommonSystem::PollEvents() const {
+    glfwPollEvents();
 }
 
 void KeyCallback(GLFWwindow* wnd, const i32 key, const i32 scancode, const i32 action, const i32 mods) {
