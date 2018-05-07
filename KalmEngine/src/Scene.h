@@ -5,7 +5,6 @@
  * Copyright (C) 2018 Kasper Sauramo
  * Created: 03/05/2018
  */
-
 #ifndef KSCENE_H_
 #define KSCENE_H_
 
@@ -23,6 +22,9 @@ struct kScene_t {
     u32 ID;
     kPlayer *player;
     kCamera *camera;
+
+    /* TODO(Kasper): Make dynamic */
+    kObject *objects[5] = {};
 
     private:
 };

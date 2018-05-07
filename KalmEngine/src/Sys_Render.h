@@ -18,14 +18,16 @@ class kRender : public RenderSystem {
 
         /** RenderSystem overrides */
         void Draw() const;
+        void LoadTestScene( kScene_t *scene ) const;
+        void DrawTestScene( kScene_t *scene) const;
+        void SetProjectionMatrix( mat4 projection);
+        void SetModelViewMatrix( mat4 modelView) const;
 
         /** SystemLocal methods */
         void Initialize();
         void SetWindow( GLFWwindow * window);
         void LoadTexture( kTexture_t* image);
         void LoadScene( kScene_t *scene);
-        void SetGroupModelView( mat4 modelView);
-        void SetPerspectiveMatrix( mat4 perspective);
         void LoadVertices( kMesh_t *verts, const u32 buffer_id ) const;
 
     private:

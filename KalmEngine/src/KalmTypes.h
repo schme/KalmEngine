@@ -18,6 +18,7 @@
 /**
  * A struct for storing vertices in a way OpenGL can
  * easily consume them up
+ * TODO(Kasper): Make indices byte-sized to reduce GPU memory cost?
  */
 struct kMesh_t {
     b32 hasVertices = 0;

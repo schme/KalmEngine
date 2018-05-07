@@ -55,7 +55,7 @@ kMesh_t * MeshLoader::LoadPLY( const char *filename) const {
             }
         }
 
-        std::shared_ptr<tinyply::PlyData> vertices, normals, colors, indices, texcoords;
+        std::shared_ptr<tinyply::PlyData> vertices, normals, colors, faces, texcoords;
 
         // The header information can be used to programmatically extract properties on elements
         // known to exist in the file header prior to reading the data. For brevity of this sample, properties
@@ -66,10 +66,10 @@ kMesh_t * MeshLoader::LoadPLY( const char *filename) const {
         try { normals = file.request_properties_from_element("vertex", { "nx", "ny", "nz" }); }
         catch (const std::exception & e) { std::cerr << "tinyply exception: " << e.what() << std::endl; }
 
-        //try { colors = file.request_properties_from_element("vertex", { "red", "green", "blue", "alpha" }); }
-        //catch (const std::exception & e) { std::cerr << "tinyply exception: " << e.what() << std::endl; }
+        try { colors = file.request_properties_from_element("vertex", { "red", "green", "blue", "alpha" }); }
+        catch (const std::exception & e) { std::cerr << "tinyply exception: " << e.what() << std::endl; }
 
-        try { indices = file.request_properties_from_element("face", { "vertex_indices" }); }
+        try { faces = file.request_properties_from_element("face", { "vertex_indices" }); }
         catch (const std::exception & e) { std::cerr << "tinyply exception: " << e.what() << std::endl; }
 
         try { texcoords = file.request_properties_from_element("face", { "texcoord" }); }
@@ -84,14 +84,14 @@ kMesh_t * MeshLoader::LoadPLY( const char *filename) const {
         std::cout << "Parsing took " << after - before << " ms: " << std::endl;
         if (vertices) std::cout << "\tRead " << vertices->count << " total vertices "<< std::endl;
         if (normals) std::cout << "\tRead " << normals->count << " total vertex normals " << std::endl;
-        //if (colors) std::cout << "\tRead " << colors->count << " total vertex colors "<< std::endl;
-        if (indices) std::cout << "\tRead " << indices->count << " total indices " << std::endl;
+        if (colors) std::cout << "\tRead " << colors->count << " total vertex colors "<< std::endl;
+        if (faces) std::cout << "\tRead " << faces->count << " total faces " << std::endl;
         if (texcoords) std::cout << "\tRead " << texcoords->count << " total texcoords " << std::endl;
 
         /** Fit in a kMesh_t */
         {
             /** we don't handle meshes without indices or vertices, so just bail out screaming for now*/
-            ASSERT( indices && vertices);
+            ASSERT( faces && vertices);
 
             result = (kMesh_t*)g_Memory->Alloc( sizeof( kMesh_t));
             ASSERT( result );
@@ -124,9 +124,9 @@ kMesh_t * MeshLoader::LoadPLY( const char *filename) const {
                 norm_bytes = normals->buffer.size_bytes();
                 norm_buffer = (float3*)normals->buffer.get();
             }
-            if( indices ) {
-                indx_n = (u32)indices->count;
-                indx_bytes = indices->buffer.size_bytes();
+            if( faces ) {
+                indx_n = (u32)faces->count * 3;
+                indx_bytes = faces->buffer.size_bytes();
             }
             if( texcoords ) {
                 hasTexcoords = 1;
@@ -160,7 +160,7 @@ kMesh_t * MeshLoader::LoadPLY( const char *filename) const {
             }
 
             g_Memory->Free( stackMark);
-            std::memcpy( result->indices, indices->buffer.get(), indx_bytes);
+            std::memcpy( result->indices, faces->buffer.get(), indx_bytes);
 
             result->hasVertices = hasVertices;
             result->hasNormals = hasNormals;

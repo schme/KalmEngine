@@ -9,7 +9,6 @@
 #ifndef PLAYER_H_
 #define PLAYER_H_
 
-#include "Systems.h"
 #include "Object.h"
 #include "AABB.h"
 

@@ -1,16 +1,14 @@
 const char *through_vert = R"foo(
 #version 330 core
-layout (location = 0) in vec3 aPos;
-layout (location = 1) in vec3 aTexCoord;
-
-out vec2 TexCoord;
+layout (location = 0) in vec3 position;
+layout (location = 1) in vec3 normal;
+layout (location = 2) in vec2 texCoord;
 
 uniform mat4 modelView;
-uniform mat4 perspective;
+uniform mat4 projection;
 
 void main()
 {
-    gl_Position = perspective * modelView * vec4(aPos, 1.0);
-    TexCoord = vec2( aTexCoord.xy );
+    gl_Position = projection * modelView * vec4(position, 1.0);
 }
 )foo";

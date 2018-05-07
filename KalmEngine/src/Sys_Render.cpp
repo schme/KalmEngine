@@ -9,6 +9,7 @@
 #include "Types.h"
 #include "Sys_Render.h"
 #include "Sys_Shared.h"
+#include "KalmShared.h"
 
 #include "Shader.cpp"
 
@@ -17,7 +18,7 @@ static void FramebufferResizeCallback( GLFWwindow *window, const i32 width, cons
 
 
 const u32 VERTEX_ARRAYS = 1;
-const u32 VERTEX_BUFFERS = 1;
+const u32 VERTEX_BUFFERS = 5;
 const u32 ELEMENT_BUFFERS = VERTEX_BUFFERS;
 const u32 SHADER_PROGRAMS = 1;
 const u32 TEXTURES = 1;
@@ -28,10 +29,12 @@ static u32 ElementBuffers[ELEMENT_BUFFERS];
 static u32 ShaderPrograms[SHADER_PROGRAMS];
 static u32 Textures[TEXTURES];
 
-static renderBufferGroup_t *currentGroup = nullptr;
+/** TODO(Kasper): Figure out how best to do multiple shaders */
+static Shader shader = {};
 static u32 currentSceneID = 0;
 
-static mat4 perspectiveMatrix = {};
+static kMesh_t *currentMesh = nullptr;
+static mat4 projectionMatrix = {};
 
 void kRender::LoadTexture( kTexture_t* text) {
 
@@ -48,31 +51,79 @@ void kRender::LoadTexture( kTexture_t* text) {
 }
 
 
-void kRender::LoadVertices( kMesh_t *verts, const u32 buffer_id) const {
+/**
+ * TODO(Kasper): Extremely unsafe and specific
+ */
+void kRender::LoadTestScene( kScene_t *scene ) const {
+
+    /** shader */
+    kShaderLoader shaderLoader;
+    shaderLoader.LoadShader( &shader, through_vert, through_frag);
+
+    MeshComponent* meshComp = (MeshComponent*)scene->objects[0]->components[0];
+    kMesh_t *mesh = meshComp->mesh;
+    currentMesh = mesh;
+
+    mat4 p = GetPerspectiveMat( 90.0f, (f32)frameBufferWidth / (f32)frameBufferHeight, 0.1f, 100.0f);
+    projectionMatrix = p;
+    shader.Use();
+    shader.SetMat4( "projection", p);
+
+    this->LoadVertices( currentMesh, 0);
+
+}
+
+void kRender::LoadVertices( kMesh_t *mesh, const u32 buffer_id) const {
 
     glBindVertexArray( VertexArrays[ 0 ]);
 
     glBindBuffer( GL_ARRAY_BUFFER, VertexBuffers[ buffer_id ]);
-    glBufferData( GL_ARRAY_BUFFER, verts->vertices_n * sizeof( f32), verts->vertices, GL_STATIC_DRAW);
+    glBufferData( GL_ARRAY_BUFFER, mesh->vertices_n * 3 * sizeof( f32), mesh->vertices, GL_STATIC_DRAW);
 
     glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ElementBuffers[ buffer_id ]);
-    glBufferData( GL_ELEMENT_ARRAY_BUFFER, verts->indices_n * sizeof( u32), verts->indices, GL_STATIC_DRAW);
+    glBufferData( GL_ELEMENT_ARRAY_BUFFER, mesh->indices_n * sizeof( u32), mesh->indices, GL_STATIC_DRAW);
 
     /* f32[3] position, f32[3] normal, f32[2] texCoord */
-    const u32 stride = (3 + 3 + 2) * sizeof(f32);
+    const u32 stride = (3 * mesh->hasVertices + 3 * mesh->hasNormals + 2 * mesh->hasTexcoords) * sizeof(f32);
 
     /* position */
     glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
     glEnableVertexAttribArray(0);
 
-    /* normal */
-    glVertexAttribPointer( 1, 3, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(f32)));
-    glEnableVertexAttribArray(1);
+    if( mesh->hasNormals) {
+        /* normal */
+        glVertexAttribPointer( 1, 3, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(f32)));
+        glEnableVertexAttribArray(1);
+    }
 
-    /* texcoord */
-    glVertexAttribPointer( 2, 2, GL_FLOAT, GL_FALSE, stride, (void*)(6 * sizeof(f32)));
-    glEnableVertexAttribArray(2);
+    if( mesh->hasTexcoords) {
+        /* texcoord */
+        glVertexAttribPointer( 2, 2, GL_FLOAT, GL_FALSE, stride, (void*)(6 * sizeof(f32)));
+        glEnableVertexAttribArray(2);
+    }
 
+}
+
+void kRender::DrawTestScene( kScene_t *scene) const {
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    //glPolygonMode( GL_FRONT_AND_BACK, GL_FILL);
+
+    shader.Use();
+
+    for( int i=0; i < 5; ++i) {
+
+        mat4 model = RotationX( PI * 0.2f);
+        //model = model * Translate( model, scene->objects[i]->position );
+        mat4 view = Transpose( Translate( Vec3( 0.0f, 0.0f, -4.0f)));
+
+        mat4 modelViewMatrix = model * view;
+        this->SetModelViewMatrix( modelViewMatrix);
+
+        glDrawElements( GL_TRIANGLES, currentMesh->indices_n, GL_UNSIGNED_INT, 0);
+    }
+
+    glfwSwapBuffers((GLFWwindow*)window);
 }
 
 
@@ -81,8 +132,6 @@ void kRender::Draw() const {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     //glPolygonMode( GL_FRONT_AND_BACK, GL_LINE);
 
-
-    //glDrawElements();
     glfwSwapBuffers((GLFWwindow*)window);
 }
 
@@ -93,7 +142,7 @@ void kRender::SetWindow( GLFWwindow * new_window ) {
 
 void kRender::Initialize() {
 
-    glClearColor( 0.05f, 0.05f, 0.05f, 1.0f);
+    glClearColor( 0.10f, 0.10f, 0.10f, 1.0f);
     glEnable( GL_DEPTH_TEST);
 
     glfwSetFramebufferSizeCallback( kRender::window, FramebufferResizeCallback);
@@ -110,18 +159,20 @@ void kRender::Initialize() {
 }
 
 
-/**
- * Changes infrequently
- */
-void kRender::SetPerspectiveMatrix( mat4 perspective ) {
-    perspectiveMatrix = perspective;
+void kRender::SetModelViewMatrix( mat4 modelView ) const {
+    shader.Use();
+    shader.SetMat4( "modelView", modelView );
 }
 
-void kRender::SetGroupModelView( mat4 modelView ) {
-    currentGroup->shader.Use();
-    currentGroup->modelView = modelView;
-    s32 modelViewLoc = glGetUniformLocation( currentGroup->shader.ID, "modelView");
-    glUniformMatrix4fv( modelViewLoc, 1, GL_FALSE, (f32*)currentGroup->modelView.A);
+
+/**
+ * Changes infrequently
+ * TODO(Kasper): Constify
+ */
+void kRender::SetProjectionMatrix( mat4 projection ) {
+    projectionMatrix = projection;
+    shader.Use();
+    shader.SetMat4( "projection", projection);
 }
 
 
@@ -147,9 +198,9 @@ void kRender::PrintOpenGLProgramError( u32 program, const char *message) const {
     PRINTL_STR( infoLog);
 }
 
-void kRender::PrintOpenGLShaderError( u32 shader, const char *message) const {
+void kRender::PrintOpenGLShaderError( u32 shaderID, const char *message) const {
     char infoLog[512];
-    glGetShaderInfoLog( shader, 512, NULL, infoLog);
+    glGetShaderInfoLog( shaderID, 512, NULL, infoLog);
     PRINTL_STR(message);
     PRINTL_STR( infoLog);
 }

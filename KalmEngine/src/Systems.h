@@ -38,8 +38,11 @@ class MemorySystem {
 class RenderSystem {
     public:
     virtual void    Draw() const =0;
-    virtual void    SetGroupModelView( mat4 modelView) =0;
-    virtual void    SetPerspectiveMatrix( mat4 perspective) =0;
+    virtual void    SetModelViewMatrix( mat4 modelView) const =0;
+    virtual void    SetProjectionMatrix( mat4 projection) =0;
+
+    virtual void    LoadTestScene( kScene_t *scene) const =0;
+    virtual void    DrawTestScene( kScene_t *scene) const =0;
 };
 
 class AssetSystem {

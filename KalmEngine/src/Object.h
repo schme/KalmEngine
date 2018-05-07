@@ -11,10 +11,17 @@
 
 #include "kVector.h"
 #include "KalmTypes.h"
+#include "Component.h"
 
 class kObject {
     public:
     vec3 position = {};
+
+    /* TODO(Kasper): make dynamic*/
+    kObject *children[5] = {};
+
+    /* TODO(Kasper): make dynamic*/
+    kComponent *components[5] = {};
 
     void Run() {}
 };

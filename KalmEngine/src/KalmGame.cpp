@@ -51,12 +51,35 @@ kScene_t * KalmGame::CreateTestScene() {
     scene->player = player;
     scene->camera = camera;
 
+    kMesh_t *mesh = g_System->assetSystem->LoadMesh( "Assets/Models/icosahedron.ply" );
+
+    vec3 testPositions[] = {
+        Vec3( 0.0f, 0.0f, 0.0f),
+        Vec3( 0.2f, 2.1f, 2.0f),
+        Vec3( 3.2f, 3.1f, 10.0f),
+        Vec3( -2.2f, -1.1f, 2.0f),
+        Vec3( -4.2f, 0.1f, -2.0f)
+    };
+
+    for( int i=0; i < 5; ++i ) {
+        kObject *obj = (kObject*)GetMemory( sizeof( kObject ));
+        MeshComponent *meshComp = (MeshComponent*)GetMemory( sizeof( MeshComponent));
+        meshComp->mesh = mesh;
+        obj->components[0] = meshComp;
+        obj->position = testPositions[i];
+        scene->objects[i] = obj;
+    }
+
+
     return scene;
+}
+
+void KalmGame::LoadTestScene( kScene_t *scene) {
+    g_System->renderSystem->LoadTestScene( scene );
 }
 
 void KalmGame::LoadScene( kScene_t *scene ) {
 
-    kMesh_t *mesh = g_System->assetSystem->LoadMesh( "Assets/Models/icosahedron.ply" );
 
 }
 
@@ -82,22 +105,23 @@ b32 KalmGame::Initialize() {
 i32 KalmGame::Loop() {
 
     kScene_t *testScene = this->CreateTestScene();
-    this->LoadScene( testScene);
     this->SetCurrentScene( testScene );
+    this->LoadTestScene( testScene);
 
     while(!g_System->commonSystem->IfWindowShouldClose()) {
+
+        /** Get input */
 
         static r64 lastTime = 0;
         static r64 time = g_System->commonSystem->GetTime();
 
-        /** Get input */
 
         RunCurrentScene();
         RenderCurrentScene();
 
-        g_System->renderSystem->Draw();
-        g_System->commonSystem->PollEvents();
+        g_System->renderSystem->DrawTestScene( currentScene);
 
+        g_System->commonSystem->PollEvents();
         lastTime = time;
     }
     return true;
