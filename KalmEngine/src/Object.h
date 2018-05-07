@@ -17,17 +17,7 @@ class kObject {
     vec3 position = {};
 
     void Run() {}
-
-    kMesh_t* GetVertices() const {
-        return nullptr;
-    }
 };
 
-
-class kCube : kObject {
-    kMesh_t* GetVertices() const {
-        return nullptr;
-    }
-};
 
 #endif /* end of include guard: OBJECT_H_ */

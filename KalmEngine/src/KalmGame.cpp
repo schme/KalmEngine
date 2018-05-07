@@ -6,6 +6,7 @@
  */
 
 #include "KalmGame.h"
+#include "GameShared.h"
 #include "AABB.cpp"
 #include "Player.cpp"
 #include "Camera.cpp"
@@ -16,7 +17,7 @@
 gameExport_t * GetGameAPI( gameImport_t * system) {
 
     static KalmGame engine;
-    engine.system = system;
+    g_System = system;
     engine.gameExport.game = &engine;
     return &engine.gameExport;
 }
@@ -25,74 +26,7 @@ gameExport_t * GetGameAPI( gameImport_t * system) {
 /**
  * KalmGame
  */
-
-gameImport_t * KalmGame::system = nullptr;
 gameExport_t KalmGame::gameExport = {};
-
-
-void KalmGame::RunCurrentScene() {
-    /** Run Logic on Objects */
-}
-
-void KalmGame::RenderCurrentScene() {
-    /** Setup per-frame modifications */
-
-}
-
-
-b32 KalmGame::Initialize() {
-
-    return true;
-}
-
-
-/**
- * Main Loop
- */
-i32 KalmGame::Loop() {
-
-
-    while(!this->system->commonSystem->IfWindowShouldClose()) {
-
-        static r64 lastTime = 0;
-        static r64 time = this->system->commonSystem->GetTime();
-
-        /** Get input */
-
-        RunCurrentScene();
-        RenderCurrentScene();
-
-        this->system->renderSystem->Draw();
-        this->system->commonSystem->PollEvents();
-
-        lastTime = time;
-    }
-    return true;
-}
-
-
-void KalmGame::Terminate() {
-
-}
-
-
-/**
- * Private
- */
-
-
-void KalmGame::SetCurrentScene( kScene_t *scene) {
-    this->currentScene = scene;
-}
-
-
-void * KalmGame::GetMemory( u32 bytes ) {
-    void *memory = nullptr;
-    memory = KalmGame::system->memorySystem->Alloc( bytes );
-    ASSERT( memory );
-    return memory;
-}
-
 
 /**
  * Dev function to quickly set a test scene. This should be somewhere else
@@ -119,6 +53,72 @@ kScene_t * KalmGame::CreateTestScene() {
 
     return scene;
 }
+
+void KalmGame::LoadScene( kScene_t *scene ) {
+
+    kMesh_t *mesh = g_System->assetSystem->LoadMesh( "Assets/Models/icosahedron.ply" );
+
+}
+
+void KalmGame::RunCurrentScene() {
+    /** Run Logic on Objects */
+}
+
+void KalmGame::RenderCurrentScene() {
+    /** Setup per-frame modifications */
+
+}
+
+
+b32 KalmGame::Initialize() {
+
+    return true;
+}
+
+
+/**
+ * Main Loop
+ */
+i32 KalmGame::Loop() {
+
+    kScene_t *testScene = this->CreateTestScene();
+    this->LoadScene( testScene);
+    this->SetCurrentScene( testScene );
+
+    while(!g_System->commonSystem->IfWindowShouldClose()) {
+
+        static r64 lastTime = 0;
+        static r64 time = g_System->commonSystem->GetTime();
+
+        /** Get input */
+
+        RunCurrentScene();
+        RenderCurrentScene();
+
+        g_System->renderSystem->Draw();
+        g_System->commonSystem->PollEvents();
+
+        lastTime = time;
+    }
+    return true;
+}
+
+
+void KalmGame::Terminate() {
+
+}
+
+
+/**
+ * Private
+ */
+
+
+void KalmGame::SetCurrentScene( kScene_t *scene) {
+    this->currentScene = scene;
+}
+
+
 
 
 /**

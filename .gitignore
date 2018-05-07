@@ -2,6 +2,7 @@ Assets/
 Debug/
 glad/
 KalmEngine/include/
+tinyply/
 
 # Missing for some reason
 *.idb

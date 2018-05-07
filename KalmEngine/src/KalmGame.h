@@ -8,18 +8,17 @@
 
 class KalmGame : public kGame {
     public:
-        static gameImport_t * system;
         static gameExport_t gameExport;
 
         b32 Initialize();
         i32 Loop ();
         void Terminate();
 
-        static void *GetMemory( u32 bytes );
     private:
         kScene_t *currentScene = nullptr;
-
         void SetCurrentScene( kScene_t *scene);
+
+        void LoadScene( kScene_t* scene );
 
         void RunCurrentScene();
         void RenderCurrentScene();

@@ -20,6 +20,9 @@
  * easily consume them up
  */
 struct kMesh_t {
+    b32 hasVertices = 0;
+    b32 hasNormals = 0;
+    b32 hasTexcoords = 0;
     u32 vertices_n;
     u32 indices_n;
     f32 *vertices;
