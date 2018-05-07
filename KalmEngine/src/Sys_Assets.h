@@ -12,7 +12,7 @@
 
 #include "Sys_Shared.h"
 #include "Sys_ImageLoader.h"
-#include "Object.h"
+#include "Sys_MeshLoader.h"
 #include "KalmTypes.h"
 #include "Systems.h"
 #include "Scene.h"
@@ -21,8 +21,10 @@
 class kAssets : public AssetSystem {
     public:
     ImageLoader imageLoader;
+    MeshLoader meshLoader;
     /** AssetSystem overrides */
     kImage_t *LoadImage( const char *filename) const;
+    kMesh_t *LoadMesh( const char *filename ) const;
     private:
 };
 

@@ -10,7 +10,12 @@
 #include "Sys_Assets.h"
 
 #include "Sys_ImageLoader.cpp"
+#include "Sys_MeshLoader.cpp"
 
 kImage_t* kAssets::LoadImage( const char *filename) const {
     return this->imageLoader.LoadImage( filename );
+}
+
+kMesh_t* kAssets::LoadMesh( const char *filename) const {
+    return this->meshLoader.LoadMesh( filename );
 }

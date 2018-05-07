@@ -45,6 +45,7 @@ class RenderSystem {
 class AssetSystem {
     public:
     virtual kImage_t*   LoadImage( const char *filename) const =0;
+    virtual kMesh_t*    LoadMesh( const char *filename) const =0;
 };
 
 #endif /* end of include guard: SYSTEMS_H_ */
