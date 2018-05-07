@@ -52,8 +52,6 @@ b32 KalmGame::Initialize() {
 i32 KalmGame::Loop() {
 
 
-    this->system->assetSystem->LoadScene( this->currentScene );
-
     while(!this->system->commonSystem->IfWindowShouldClose()) {
 
         static r64 lastTime = 0;

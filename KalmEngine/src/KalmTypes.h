@@ -16,10 +16,10 @@
 #include "Shader.h"
 
 /**
- * A struct for storing vertices in a way OpenGL can 
+ * A struct for storing vertices in a way OpenGL can
  * easily consume them up
  */
-struct vertices_t {
+struct kMesh_t {
     u32 vertices_n;
     u32 indices_n;
     f32 *vertices;
@@ -39,11 +39,16 @@ struct kImage_t {
     void *imageBuffer;
 };
 
+struct kTexture_t {
+    u32 ID;
+    kImage_t *image;
+};
+
 struct renderBufferGroup_t {
     u32 ID;
     Shader shader;
     mat4 modelView;
-    vertices_t *groupVerts;
+    kMesh_t *groupVerts;
 };
 
 #endif /* end of include guard: KALMTYPES_H_ */

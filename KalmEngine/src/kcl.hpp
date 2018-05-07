@@ -53,7 +53,7 @@ public:
 private:
 };
 
-u32 safeCastU32ToU16( u64 value);
+u32 safeCastU64ToU32( u64 value);
 u16 safeCastU32ToU16( u32 value);
 
 

@@ -22,14 +22,14 @@ class kRender : public RenderSystem {
         /** SystemLocal methods */
         void Initialize();
         void SetWindow( GLFWwindow * window);
-        void LoadTexture( kImage_t* image);
+        void LoadTexture( kTexture_t* image);
         void LoadScene( kScene_t *scene);
         void SetGroupModelView( mat4 modelView);
-        void SetPerspective( mat4 perspective);
+        void SetPerspectiveMatrix( mat4 perspective);
+        void LoadVertices( kMesh_t *verts, const u32 buffer_id ) const;
 
     private:
         GLFWwindow *    window;
-        void RenderCurrentScene() const;
         void PrintOpenGLProgramError( u32 program, const char *message = "") const;
         void PrintOpenGLShaderError( u32 shader, const char *message = "") const;
 };

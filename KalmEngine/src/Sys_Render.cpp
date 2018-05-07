@@ -12,6 +12,10 @@
 
 #include "Shader.cpp"
 
+static void ResizeCallback( GLFWwindow* window, const i32 numer, const i32 denom);
+static void FramebufferResizeCallback( GLFWwindow *window, const i32 width, const i32 height);
+
+
 const u32 VERTEX_ARRAYS = 1;
 const u32 VERTEX_BUFFERS = 1;
 const u32 ELEMENT_BUFFERS = VERTEX_BUFFERS;
@@ -27,14 +31,11 @@ static u32 Textures[TEXTURES];
 static renderBufferGroup_t *currentGroup = nullptr;
 static u32 currentSceneID = 0;
 
-static void ResizeCallback( GLFWwindow* window, const i32 numer, const i32 denom);
-static void FramebufferResizeCallback( GLFWwindow *window, const i32 width, const i32 height);
-
 static mat4 perspectiveMatrix = {};
 
-void kRender::LoadTexture( kImage_t* image) {
-    glGenTextures( TEXTURES, Textures);
-    glBindTexture( GL_TEXTURE_2D, Textures[0]);
+void kRender::LoadTexture( kTexture_t* text) {
+
+    glBindTexture( GL_TEXTURE_2D, Textures[text->ID]);
 
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
@@ -42,36 +43,53 @@ void kRender::LoadTexture( kImage_t* image) {
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, image->width, image->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image->imageBuffer);
+    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, text->image->width, text->image->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, text->image->imageBuffer);
     glGenerateMipmap( GL_TEXTURE_2D);
 }
 
-void kRender::LoadScene( kScene_t *scene) {
+
+void kRender::LoadVertices( kMesh_t *verts, const u32 buffer_id) const {
+
+    glBindVertexArray( VertexArrays[ 0 ]);
+
+    glBindBuffer( GL_ARRAY_BUFFER, VertexBuffers[ buffer_id ]);
+    glBufferData( GL_ARRAY_BUFFER, verts->vertices_n * sizeof( f32), verts->vertices, GL_STATIC_DRAW);
+
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ElementBuffers[ buffer_id ]);
+    glBufferData( GL_ELEMENT_ARRAY_BUFFER, verts->indices_n * sizeof( u32), verts->indices, GL_STATIC_DRAW);
+
+    /* f32[3] position, f32[3] normal, f32[2] texCoord */
+    const u32 stride = (3 + 3 + 2) * sizeof(f32);
+
+    /* position */
+    glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
+    glEnableVertexAttribArray(0);
+
+    /* normal */
+    glVertexAttribPointer( 1, 3, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(f32)));
+    glEnableVertexAttribArray(1);
+
+    /* texcoord */
+    glVertexAttribPointer( 2, 2, GL_FLOAT, GL_FALSE, stride, (void*)(6 * sizeof(f32)));
+    glEnableVertexAttribArray(2);
 
 }
 
-
-void kRender::RenderCurrentScene() const {
-    //glPolygonMode( GL_FRONT_AND_BACK, GL_LINE);
-
-    //currentGroup->shader.Use();
-
-    //glDrawElements();
-}
-
-void kRender::SetWindow( GLFWwindow * new_window ) {
-    this->window = new_window;
-}
 
 void kRender::Draw() const {
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    //glPolygonMode( GL_FRONT_AND_BACK, GL_LINE);
 
-    RenderCurrentScene();
 
+    //glDrawElements();
     glfwSwapBuffers((GLFWwindow*)window);
 }
 
+
+void kRender::SetWindow( GLFWwindow * new_window ) {
+    this->window = new_window;
+}
 
 void kRender::Initialize() {
 
@@ -88,10 +106,14 @@ void kRender::Initialize() {
     glGenVertexArrays( VERTEX_ARRAYS, VertexArrays);
     glGenBuffers( VERTEX_BUFFERS, VertexBuffers);
     glGenBuffers( ELEMENT_BUFFERS, ElementBuffers);
+    glGenTextures( TEXTURES, Textures);
 }
 
 
-void kRender::SetPerspective( mat4 perspective ) {
+/**
+ * Changes infrequently
+ */
+void kRender::SetPerspectiveMatrix( mat4 perspective ) {
     perspectiveMatrix = perspective;
 }
 
@@ -102,6 +124,10 @@ void kRender::SetGroupModelView( mat4 modelView ) {
     glUniformMatrix4fv( modelViewLoc, 1, GL_FALSE, (f32*)currentGroup->modelView.A);
 }
 
+
+/**
+ * GENERAL
+ */
 
 void ResizeCallback( GLFWwindow* wnd, const i32 numer, const i32 denom) {
     i32 width, height;

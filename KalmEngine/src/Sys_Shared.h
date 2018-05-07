@@ -1,8 +1,6 @@
-#ifndef SYSTEMSLOCAL_H_
-#define SYSTEMSLOCAL_H_
+#ifndef SYS_SHARED_H_
+#define SYS_SHARED_H_
 
-#include "KalmShared.h"
-#include "Systems.h"
 #include "Sys_Memory.h"
 #include "Sys_Assets.h"
 #include "Sys_Common.h"
@@ -19,4 +17,4 @@ static kAssets * g_Assets           = nullptr;
 static kFilesystem * g_Filesystem   = nullptr;
 static kRender * g_Render           = nullptr;
 
-#endif /* end of include guard: SYSTEMSLOCAL_H_ */
+#endif /* end of include guard: SYS_SHARED_H_ */

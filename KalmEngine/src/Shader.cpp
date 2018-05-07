@@ -2,18 +2,11 @@
  *
  * Shader.cpp shaderloader
  *
- * Copyright (C) 2018 Kasper Sauramo
  * Created: 03/05/2018
  */
 
 #include "Shader.h"
-
-Shader kShaderLoader::shaders[5] = {};
-
-Shader kShaderLoader::LoadShaders() {
-    LoadShader( &shaders[0], through_vert, through_frag);
-    return shaders[0];
-}
+#include "CommonIncludes.h"
 
 
 void kShaderLoader::LoadShader( Shader * shader, const char *vertexCode, const char *fragmentCode ) {
@@ -34,7 +27,6 @@ void kShaderLoader::LoadShader( Shader * shader, const char *vertexCode, const c
     /** other shaders */
 
     /** shader program */
-
     shader->ID = glCreateProgram();
     glAttachShader( shader->ID, vertex);
     glAttachShader( shader->ID, fragment);
@@ -65,4 +57,10 @@ void kShaderLoader::CheckCompileErrors(GLuint shader, const char* type) const {
             printf( "Failed shader linking: %s\n%s\n", type, infoLog);
         }
     }
+}
+
+
+Shader kShaderLoader::GetShader( const u32 program_id ) const {
+    ASSERT( program_id < SHADER_PROGRAMS_N );
+    return programs[ program_id ];
 }

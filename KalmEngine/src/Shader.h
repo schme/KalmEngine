@@ -2,17 +2,19 @@
  *
  * Shader.h shaderloader
  *
- * Copyright (C) 2018 Kasper Sauramo
+ * Adapted from Joey de Vries' (@JoeyDeVriez in twitter)
+ * Shader class from http://learnopengl.com
+ *
  * Created: 03/05/2018
  */
 #ifndef SHADER_H_
 #define SHADER_H_
 
-#include "../../glad/glad.h"
+#include "../include/glad/glad.h"
 #include "Types.h"
 #include "kVector.h"
 
-enum ShaderType_t { SHADER_VERTEX, SHADER_FRAGMENT };
+#define SHADER_PROGRAMS_N 1
 
 class Shader {
     public:
@@ -35,15 +37,17 @@ class Shader {
     void SetVec4( const char *name, vec4 value ) const {
         glUniform4fv( glGetUniformLocation(ID, name), 1, value.Q);
     };
+    void SetMat4( const char *name, mat4 value ) const {
+        glUniformMatrix4fv( glGetUniformLocation(ID, name), GL_FALSE, 1, (f32*)value.A);
+    };
 };
 
 
 class kShaderLoader {
-    static Shader shaders[5];
-
+    Shader programs[ SHADER_PROGRAMS_N ];
     public:
-    Shader LoadShaders();
     void LoadShader( Shader * shader, const char *vertexCode, const char *fragmentCode );
+    Shader GetShader( const u32 program_id ) const;
     private:
     void CheckCompileErrors( u32 ID, const char* type) const ;
 };

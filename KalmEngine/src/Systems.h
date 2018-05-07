@@ -39,14 +39,12 @@ class RenderSystem {
     public:
     virtual void    Draw() const =0;
     virtual void    SetGroupModelView( mat4 modelView) =0;
-    virtual void    SetPerspective( mat4 perspective) =0;
+    virtual void    SetPerspectiveMatrix( mat4 perspective) =0;
 };
 
 class AssetSystem {
     public:
-    virtual kImage_t*   GetImage( const char *filename) const =0;
-    virtual void        LoadScene( kScene_t *scene) const =0;
-    //virtual kScene_t * LoadScene(u32 ID) const =0;
+    virtual kImage_t*   LoadImage( const char *filename) const =0;
 };
 
 #endif /* end of include guard: SYSTEMS_H_ */
