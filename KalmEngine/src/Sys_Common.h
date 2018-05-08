@@ -15,13 +15,13 @@
 #include "KalmShared.h"
 
 class kCommonSystem : public CommonSystem {
-    static gameInput_t inputState[2];
-    static gameInput_t *oldState;
-    static gameInput_t *newState;
 
     public:
+        gameInput_t inputState[2] = {};
+        gameInput_t *oldState = &inputState[0];
+        gameInput_t *newState = &inputState[1];
 
-        gameInput_t *   GetInput();
+        gameInput_t *   GetInputState();
         gameInput_t *   GetOldState();
         gameInput_t *   GetNewState();
         void            SwapAndClearState();

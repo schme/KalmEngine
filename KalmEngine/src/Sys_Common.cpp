@@ -16,9 +16,9 @@ static void KeyCallback( GLFWwindow* window, const i32 key, const i32 scancode, 
 static void CursorPositionCallback( GLFWwindow* wnd, const f64 posx, const f64 posy);
 static void MouseButtonCallback( GLFWwindow* wnd, const i32 button, const i32 action, const i32 mods);
 
-gameInput_t kCommonSystem::inputState[2] = {};
-gameInput_t *kCommonSystem::oldState = &kCommonSystem::inputState[0];
-gameInput_t *kCommonSystem::newState = &kCommonSystem::inputState[1];
+//gameInput_t kCommonSystem::inputState[2] = {};
+//gameInput_t *kCommonSystem::oldState = &kCommonSystem::inputState[0];
+//gameInput_t *kCommonSystem::newState = &kCommonSystem::inputState[1];
 
 void kCommonSystem::Initialize() {
     glfwSetKeyCallback( this->window, KeyCallback);
@@ -30,7 +30,7 @@ void kCommonSystem::SetWindow( GLFWwindow *new_window) {
     this->window = new_window;
 }
 
-gameInput_t *kCommonSystem::GetInput() {
+gameInput_t *kCommonSystem::GetInputState() {
     return this->inputState;
 }
 
@@ -47,7 +47,7 @@ gameInput_t *kCommonSystem::GetNewState() {
  */
 void kCommonSystem::SwapAndClearState() {
     gameInput_t *temp = this->newState;
-    this->oldState = {};
+    *this->oldState = {};
     this->newState = this->oldState;
     this->oldState = temp;
 }
@@ -65,7 +65,7 @@ void kCommonSystem::PollEvents() const {
 }
 
 void ToggleButton( gameButtonState_t *oldButton, gameButtonState_t *newButton, const i32 action ) {
-    ++( newButton->toggleCount );
+    (newButton->toggleCount)++;
     if( action != GLFW_PRESS && oldButton->endedDown ) {
         newButton->endedDown = true;
     } else if ( action == GLFW_PRESS ) {
@@ -79,11 +79,13 @@ void ToggleButton( gameButtonState_t *oldButton, gameButtonState_t *newButton, c
  * TODO(Kasper): check if we need double
  */
 void CursorPositionCallback( GLFWwindow* wnd, const f64 posx, const f64 posy ) {
+    if( !g_Common ) return;
     g_Common->GetNewState()->mouseInput.posx = (f32)posx;
     g_Common->GetNewState()->mouseInput.posx = (f32)posy;
 }
 
 void MouseButtonCallback( GLFWwindow* wnd, const i32 button, const i32 action, const i32 mods) {
+    if( !g_Common ) return;
     switch( button )
     {
         case ( GLFW_MOUSE_BUTTON_RIGHT ): {
@@ -109,7 +111,7 @@ void MouseButtonCallback( GLFWwindow* wnd, const i32 button, const i32 action, c
  * TODO(Kasper): Map actions to keys somewhere else
  */
 void KeyCallback( GLFWwindow* wnd, const i32 key, const i32 scancode, const i32 action, const i32 mods) {
-
+    if( !g_Common ) return;
     /*
      * TODO(Kasper): Handle this properly in the gamecode
      */

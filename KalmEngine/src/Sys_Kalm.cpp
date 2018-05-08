@@ -75,7 +75,7 @@ b32 InitializeGlfw() {
         PRINTL_STR("Failed to initialize glfw");
         return false;
     }
-    //TODO(Kasper): Move to Common
+    //TODO(Kasper): Move to Common?
     glfwSetErrorCallback(ErrorCallback);
 
 #ifdef GLAD_DEBUG
@@ -89,7 +89,7 @@ b32 InitializeGlfw() {
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, GL_Version_Major);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, GL_Version_Minor);
-    //TODO(Kasper): What do Opengl profiles do?
+    //TODO(Kasper): What do Opengl profiles even do?
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     GLFWmonitor *monitor = glfwGetPrimaryMonitor();

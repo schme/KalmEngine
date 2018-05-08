@@ -80,8 +80,6 @@ void KalmGame::LoadTestTestScene( kScene_t *scene) {
     g_System->renderSystem->LoadTestTestScene( scene );
 }
 
-
-
 void KalmGame::LoadScene( kScene_t *scene ) {
 }
 
