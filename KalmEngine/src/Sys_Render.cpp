@@ -164,11 +164,19 @@ void kRender::DrawTestScene( kScene_t *scene) const {
     glPolygonMode( GL_FRONT_AND_BACK, GL_LINE);
 
     shader.Use();
-    mat4 view = Transpose( Translate( Vec3( 0.0f, -0.0f, -4.22f)));
+    mat4 view = Transpose( Translate( Vec3( 1.0f, -2.35f, -4.22f)));
 
     for( int i=0; i < 5; ++i) {
 
-        mat4 model = Transpose( Translate( scene->objects[i]->position ));
+        mat4 model = GetIdentityMat();
+
+        model = Transpose(Translate( model, scene->objects[i]->position ));
+        //model = model * (RotationX( Radians(angle) ) * RotationY( Radians(angle) *0.3f) * RotationZ( Radians(angle)*0.5f));
+
+        model = Scale( model, Vec3(10.0f));
+
+        f32 angle = 20.0f * i;
+        model = model * RotationX( Radians(angle)) * RotationY( Radians(angle) * 0.3f) * RotationZ( Radians( angle ) * 0.5f);
 
         mat4 modelViewMatrix = model * view;
         SetModelViewMatrix( modelViewMatrix);

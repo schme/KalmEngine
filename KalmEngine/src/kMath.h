@@ -50,6 +50,16 @@ inline f32 Radians( f32 degrees ) {
     return degrees * PI / 180.0f;
 }
 
+inline mat4 Scale( mat4 A, vec3 scale) {
+    mat4 M = A;
+
+    M.A[0][0] *= scale.x;
+    M.A[1][1] *= scale.y;
+    M.A[2][2] *= scale.z;
+
+    return M;
+}
+
 /** TODO(Kasper): Optimise */
 inline vec4 Transform( mat4 A, vec4 p) {
     vec4 r;
