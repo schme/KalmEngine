@@ -79,13 +79,11 @@ void ToggleButton( gameButtonState_t *oldButton, gameButtonState_t *newButton, c
  * TODO(Kasper): check if we need double
  */
 void CursorPositionCallback( GLFWwindow* wnd, const f64 posx, const f64 posy ) {
-    if( !g_Common ) return;
     g_Common->GetNewState()->mouseInput.posx = (f32)posx;
-    g_Common->GetNewState()->mouseInput.posx = (f32)posy;
+    g_Common->GetNewState()->mouseInput.posy = (f32)posy;
 }
 
 void MouseButtonCallback( GLFWwindow* wnd, const i32 button, const i32 action, const i32 mods) {
-    if( !g_Common ) return;
     switch( button )
     {
         case ( GLFW_MOUSE_BUTTON_RIGHT ): {
@@ -111,7 +109,6 @@ void MouseButtonCallback( GLFWwindow* wnd, const i32 button, const i32 action, c
  * TODO(Kasper): Map actions to keys somewhere else
  */
 void KeyCallback( GLFWwindow* wnd, const i32 key, const i32 scancode, const i32 action, const i32 mods) {
-    if( !g_Common ) return;
     /*
      * TODO(Kasper): Handle this properly in the gamecode
      */
@@ -119,71 +116,74 @@ void KeyCallback( GLFWwindow* wnd, const i32 key, const i32 scancode, const i32 
         glfwSetWindowShouldClose(wnd, GLFW_TRUE);
     }
 
+    gameInput_t *oldState = g_Common->GetOldState();
+    gameInput_t *newState = g_Common->GetNewState();
+
     switch( key )
     {
         case ( GLFW_KEY_W ): {
-            gameButtonState_t *oldButton = &g_Common->GetOldState()->up;
-            gameButtonState_t *newButton = &g_Common->GetNewState()->up;
+            gameButtonState_t *oldButton = &oldState->up;
+            gameButtonState_t *newButton = &newState->up;
             ToggleButton( oldButton, newButton, action );
             break;
         }
         case ( GLFW_KEY_A ): {
-            gameButtonState_t *oldButton = &g_Common->GetOldState()->left;
-            gameButtonState_t *newButton = &g_Common->GetNewState()->left;
+            gameButtonState_t *oldButton = &oldState->left;
+            gameButtonState_t *newButton = &newState->left;
             ToggleButton( oldButton, newButton, action );
             break;
         }
         case ( GLFW_KEY_S ): {
-            gameButtonState_t *oldButton = &g_Common->GetOldState()->down;
-            gameButtonState_t *newButton = &g_Common->GetNewState()->down;
+            gameButtonState_t *oldButton = &oldState->down;
+            gameButtonState_t *newButton = &newState->down;
             ToggleButton( oldButton, newButton, action );
             break;
         }
         case ( GLFW_KEY_D ): {
-            gameButtonState_t *oldButton = &g_Common->GetOldState()->right;
-            gameButtonState_t *newButton = &g_Common->GetNewState()->right;
+            gameButtonState_t *oldButton = &oldState->right;
+            gameButtonState_t *newButton = &newState->right;
             ToggleButton( oldButton, newButton, action );
             break;
         }
         case ( GLFW_KEY_SPACE ): {
-            gameButtonState_t *oldButton = &g_Common->GetOldState()->actionSpace;
-            gameButtonState_t *newButton = &g_Common->GetNewState()->actionSpace;
+            gameButtonState_t *oldButton = &oldState->actionSpace;
+            gameButtonState_t *newButton = &newState->actionSpace;
             ToggleButton( oldButton, newButton, action );
             break;
         }
         case ( GLFW_KEY_ENTER ): {
-            gameButtonState_t *oldButton = &g_Common->GetOldState()->actionEnter;
-            gameButtonState_t *newButton = &g_Common->GetNewState()->actionEnter;
+            gameButtonState_t *oldButton = &oldState->actionEnter;
+            gameButtonState_t *newButton = &newState->actionEnter;
             ToggleButton( oldButton, newButton, action );
             break;
         }
         case ( GLFW_KEY_ESCAPE ): {
-            gameButtonState_t *oldButton = &g_Common->GetOldState()->actionEsc;
-            gameButtonState_t *newButton = &g_Common->GetNewState()->actionEsc;
+            gameButtonState_t *oldButton = &oldState->actionEsc;
+            gameButtonState_t *newButton = &newState->actionEsc;
             ToggleButton( oldButton, newButton, action );
             break;
         }
         case ( GLFW_KEY_Q ): {
-            gameButtonState_t *oldButton = &g_Common->GetOldState()->actionQ;
-            gameButtonState_t *newButton = &g_Common->GetNewState()->actionQ;
+            gameButtonState_t *oldButton = &oldState->actionQ;
+            gameButtonState_t *newButton = &newState->actionQ;
             ToggleButton( oldButton, newButton, action );
             break;
         }
         case ( GLFW_KEY_E ): {
-            gameButtonState_t *oldButton = &g_Common->GetOldState()->actionE;
-            gameButtonState_t *newButton = &g_Common->GetNewState()->actionE;
+            gameButtonState_t *oldButton = &oldState->actionE;
+            gameButtonState_t *newButton = &newState->actionE;
             ToggleButton( oldButton, newButton, action );
             break;
         }
         case ( GLFW_KEY_R ): {
-            gameButtonState_t *oldButton = &g_Common->GetOldState()->actionR;
-            gameButtonState_t *newButton = &g_Common->GetNewState()->actionR;
+            gameButtonState_t *oldButton = &oldState->actionR;
+            gameButtonState_t *newButton = &newState->actionR;
             ToggleButton( oldButton, newButton, action );
             break;
         }
         case ( GLFW_KEY_F ): {
-            gameButtonState_t *oldButton = &g_Common->GetOldState()->actionF;
-            gameButtonState_t *newButton = &g_Common->GetNewState()->actionF;
+            gameButtonState_t *oldButton = &oldState->actionF;
+            gameButtonState_t *newButton = &newState->actionF;
             ToggleButton( oldButton, newButton, action );
             break;
         }
