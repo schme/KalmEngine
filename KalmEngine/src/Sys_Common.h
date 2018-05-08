@@ -8,23 +8,32 @@
 #ifndef COMMONSYSTEM_H_
 #define COMMONSYSTEM_H_
 
-#include "Systems.h"
-#include "Types.h"
 #include "../include/glfw/glfw3.h"
 
+#include "Systems.h"
+#include "Types.h"
+#include "KalmShared.h"
+
 class kCommonSystem : public CommonSystem {
+    static gameInput_t inputState[2];
+    static gameInput_t *oldState;
+    static gameInput_t *newState;
+
     public:
-        void    Initialize();
-        void    SetWindow( GLFWwindow *new_window);
-        b32     IfWindowShouldClose() const;
-        f64     GetTime() const;
-        void    PollEvents() const;
+
+        gameInput_t *   GetOldState();
+        gameInput_t *   GetNewState();
+
+        void            Initialize();
+        void            SetWindow( GLFWwindow *new_window);
+        gameInput_t *   GetInput() const;
+        b32             IfWindowShouldClose() const;
+        f64             GetTime() const;
+        void            PollEvents() const;
     private:
         GLFWwindow *    window;
+
+        void            ToggleButton( gameButtonState_t *key, const i32 action);
 };
-
-
-static void KeyCallback( GLFWwindow* window, const i32 key, const i32 scancode, const i32 action, const i32 mods);
-
 
 #endif /* end of include guard: COMMONSYSTEM_H_ */

@@ -4,7 +4,6 @@
 #include "CommonIncludes.h"
 #include "KalmShared.h"
 #include "KalmTypes.h"
-#include "Scene.h"
 
 class KalmGame : public kGame {
     public:

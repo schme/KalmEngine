@@ -50,7 +50,8 @@ kScene_t * KalmGame::CreateTestScene() {
     scene->camera = camera;
 
 #if 1
-    kMesh_t *mesh = g_System->assetSystem->LoadMesh( "Assets/Models/dragon_vrip_res4.ply" );
+    //kMesh_t *mesh = g_System->assetSystem->LoadMesh( "Assets/Models/dragon_vrip_res4.ply" );
+    kMesh_t *mesh = g_System->assetSystem->LoadMesh( "Assets/Models/bunny.ply" );
 
     vec3 testPositions[] = {
         Vec3( 0.0f, 0.0f, 0.0f),

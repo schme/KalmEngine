@@ -173,7 +173,7 @@ void kRender::DrawTestScene( kScene_t *scene) const {
         model = Transpose(Translate( model, scene->objects[i]->position ));
         //model = model * (RotationX( Radians(angle) ) * RotationY( Radians(angle) *0.3f) * RotationZ( Radians(angle)*0.5f));
 
-        model = Scale( model, Vec3(10.0f));
+        model = Scale( model, Vec3(20.0f));
 
         f32 angle = 20.0f * i;
         model = model * RotationX( Radians(angle)) * RotationY( Radians(angle) * 0.3f) * RotationZ( Radians( angle ) * 0.5f);
