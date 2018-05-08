@@ -49,9 +49,8 @@ kScene_t * KalmGame::CreateTestScene() {
     scene->player = player;
     scene->camera = camera;
 
-#if 1
-    //kMesh_t *mesh = g_System->assetSystem->LoadMesh( "Assets/Models/dragon_vrip_res4.ply" );
-    kMesh_t *mesh = g_System->assetSystem->LoadMesh( "Assets/Models/bunny.ply" );
+    kMesh_t *mesh = g_System->assetSystem->LoadMesh( "Assets/Models/dragon_vrip_res4.ply" );
+    //kMesh_t *mesh = g_System->assetSystem->LoadMesh( "Assets/Models/bunny.ply" );
 
     vec3 testPositions[] = {
         Vec3( 0.0f, 0.0f, 0.0f),
@@ -69,80 +68,7 @@ kScene_t * KalmGame::CreateTestScene() {
         obj->position = testPositions[i];
         scene->objects[i] = obj;
     }
-#else
 
-    f32 vertices[] = {
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
-    };
-
-    vec3 testPositions[] = {
-        Vec3( 0.0f,  0.0f,  0.0f),
-        Vec3( 2.0f,  5.0f, -15.0f),
-        Vec3(-1.5f, -2.2f, -2.5f),
-        Vec3(-3.8f, -2.0f, -12.3f),
-        Vec3( 2.4f, -0.4f, -3.5f),
-        Vec3(-1.7f,  3.0f, -7.5f),
-        Vec3( 1.3f, -2.0f, -2.5f),
-        Vec3( 1.5f,  2.0f, -2.5f),
-        Vec3( 1.5f,  0.2f, -1.5f),
-        Vec3(-1.3f,  1.0f, -1.5f)
-    };
-
-    MeshComponent *meshComp = (MeshComponent*)GetMemory( sizeof( MeshComponent));
-    meshComp->mesh = (kMesh_t*)GetMemory( sizeof(kMesh_t));
-    meshComp->mesh->vertices = (f32*)GetMemory( sizeof( vertices));
-    meshComp->mesh->vertices_n = 41;
-
-    std::memcpy( meshComp->mesh->vertices, vertices, sizeof(vertices));
-
-    for( int i=0; i < 5; i++) {
-        kObject *obj = (kObject*)GetMemory( sizeof( kObject ));
-        obj->components[0] = meshComp;
-        obj->position = testPositions[i];
-        scene->objects[i] = obj;
-    }
-
-#endif
     return scene;
 }
 
@@ -187,6 +113,7 @@ i32 KalmGame::Loop() {
     while(!g_System->commonSystem->IfWindowShouldClose()) {
 
         /** Get input */
+        HandleInput();
 
         static r64 lastTime = 0;
         static r64 time = g_System->commonSystem->GetTime();
@@ -213,6 +140,13 @@ void KalmGame::Terminate() {
  * Private
  */
 
+
+void KalmGame::HandleInput() {
+    gameInput_t *oldState = g_System->commonSystem->GetOldState();
+    gameInput_t *newState = g_System->commonSystem->GetNewState();
+
+    g_System->commonSystem->SwapAndClearState();
+}
 
 void KalmGame::SetCurrentScene( kScene_t *scene) {
     this->currentScene = scene;

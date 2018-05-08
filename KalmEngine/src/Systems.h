@@ -21,8 +21,10 @@ class CommonSystem {
     virtual b32             IfWindowShouldClose() const =0;
     virtual f64             GetTime() const =0;
     virtual void            PollEvents() const =0;
+    virtual gameInput_t *   GetInput() =0;
     virtual gameInput_t *   GetNewState() =0;
     virtual gameInput_t *   GetOldState() =0;
+    virtual void            SwapAndClearState() =0;
 };
 
 class FileSystem {

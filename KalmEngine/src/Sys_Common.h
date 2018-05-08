@@ -21,19 +21,20 @@ class kCommonSystem : public CommonSystem {
 
     public:
 
+        gameInput_t *   GetInput();
         gameInput_t *   GetOldState();
         gameInput_t *   GetNewState();
+        void            SwapAndClearState();
 
         void            Initialize();
         void            SetWindow( GLFWwindow *new_window);
-        gameInput_t *   GetInput() const;
         b32             IfWindowShouldClose() const;
         f64             GetTime() const;
         void            PollEvents() const;
     private:
         GLFWwindow *    window;
 
-        void            ToggleButton( gameButtonState_t *key, const i32 action);
+        void    ToggleButton( gameButtonState_t *oldButton, gameButtonState_t *newButton, const i32 action);
 };
 
 #endif /* end of include guard: COMMONSYSTEM_H_ */
