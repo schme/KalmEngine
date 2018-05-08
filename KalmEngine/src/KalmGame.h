@@ -26,6 +26,7 @@ class KalmGame : public kGame {
          *  Some other class will do the creating */
         kScene_t* CreateTestScene();
         void LoadTestScene( kScene_t* scene );
+        void LoadTestTestScene( kScene_t* scene );
 };
 
 

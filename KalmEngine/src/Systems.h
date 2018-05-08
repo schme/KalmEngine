@@ -39,10 +39,12 @@ class RenderSystem {
     public:
     virtual void    Draw() const =0;
     virtual void    SetModelViewMatrix( mat4 modelView) const =0;
-    virtual void    SetProjectionMatrix( mat4 projection) =0;
+    virtual void    SetProjectionMatrix( mat4 projection) const =0;
 
     virtual void    LoadTestScene( kScene_t *scene) const =0;
+    virtual void    LoadTestTestScene( kScene_t *scene) const =0;
     virtual void    DrawTestScene( kScene_t *scene) const =0;
+    virtual void    DrawTestTestScene( kScene_t *scene) const =0;
 };
 
 class AssetSystem {

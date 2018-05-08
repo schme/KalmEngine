@@ -76,9 +76,9 @@ kMesh_t * MeshLoader::LoadPLY( const char *filename) const {
         catch (const std::exception & e) { std::cerr << "tinyply exception: " << e.what() << std::endl; }
 
         /* readtime */
-        f64 before = g_Common->GetTime() / 1000.0;
+        f64 before = g_Common->GetTime() * 1000.0;
         file.read(ss);
-        f64 after = g_Common->GetTime() / 1000.0;
+        f64 after = g_Common->GetTime() * 1000.0;
 
         // Good place to put a breakpoint!
         std::cout << "Parsing took " << after - before << " ms: " << std::endl;

@@ -23,22 +23,22 @@ class Shader {
         glUseProgram(ID);
     }
     void SetInt( const char *name, s32 value ) const {
-        glUniform1i( glGetUniformLocation(ID, name), value);
+        glUniform1i( glGetUniformLocation(this->ID, name), value);
     }
     void SetFloat( const char *name, f32 value ) const {
-        glUniform1f( glGetUniformLocation(ID, name), value);
+        glUniform1f( glGetUniformLocation(this->ID, name), value);
     };
     void SetVec2( const char *name, vec2 value ) const {
-        glUniform2fv( glGetUniformLocation(ID, name), 1, value.Q);
+        glUniform2fv( glGetUniformLocation(this->ID, name), 1, value.Q);
     };
     void SetVec3( const char *name, vec3 value ) const {
-        glUniform3fv( glGetUniformLocation(ID, name), 1, value.Q);
+        glUniform3fv( glGetUniformLocation(this->ID, name), 1, value.Q);
     };
     void SetVec4( const char *name, vec4 value ) const {
-        glUniform4fv( glGetUniformLocation(ID, name), 1, value.Q);
+        glUniform4fv( glGetUniformLocation(this->ID, name), 1, value.Q);
     };
     void SetMat4( const char *name, mat4 value ) const {
-        glUniformMatrix4fv( glGetUniformLocation(ID, name), GL_FALSE, 1, (f32*)value.A);
+        glUniformMatrix4fv( glGetUniformLocation(this->ID, name), 1, GL_FALSE, (f32*)value.A);
     };
 };
 
