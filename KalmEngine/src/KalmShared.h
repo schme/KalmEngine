@@ -59,29 +59,36 @@ struct mouseInput_t {
 
 struct gameInput_t {
     mouseInput_t mouseInput;
+    union {
+        struct {
+            gameButtonState_t up;
+            gameButtonState_t left;
+            gameButtonState_t right;
+            gameButtonState_t down;
 
-    gameButtonState_t up;
-    gameButtonState_t left;
-    gameButtonState_t right;
-    gameButtonState_t down;
+            gameButtonState_t actionQ;
+            gameButtonState_t actionE;
+            gameButtonState_t actionR;
+            gameButtonState_t actionF;
+            gameButtonState_t actionSpace;
+            gameButtonState_t actionEnter;
+            gameButtonState_t actionEsc;
+            gameButtonState_t action0;
+            gameButtonState_t action1;
+            gameButtonState_t action2;
+            gameButtonState_t action3;
+            gameButtonState_t action4;
+            gameButtonState_t action5;
+            gameButtonState_t action6;
+            gameButtonState_t action7;
+            gameButtonState_t action8;
+            gameButtonState_t action9;
+        };
+        /** TODO(Kasper): Actually get this value properly */
+        gameButtonState_t buttons[21];
+    };
 
-    gameButtonState_t actionQ;
-    gameButtonState_t actionE;
-    gameButtonState_t actionR;
-    gameButtonState_t actionF;
-    gameButtonState_t actionSpace;
-    gameButtonState_t actionEnter;
-    gameButtonState_t actionEsc;
-    gameButtonState_t action0;
-    gameButtonState_t action1;
-    gameButtonState_t action2;
-    gameButtonState_t action3;
-    gameButtonState_t action4;
-    gameButtonState_t action5;
-    gameButtonState_t action6;
-    gameButtonState_t action7;
-    gameButtonState_t action8;
-    gameButtonState_t action9;
+    u32 inputArrayLength = 21;
 };
 
 #endif /* end of include guard: KALMSHARED_H_ */

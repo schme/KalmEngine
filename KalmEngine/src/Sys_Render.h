@@ -19,9 +19,7 @@ class kRender : public RenderSystem {
         /** RenderSystem overrides */
         void Draw() const;
         void LoadTestScene( kScene_t *scene ) const;
-        void LoadTestTestScene( kScene_t *scene ) const;
         void DrawTestScene( kScene_t *scene) const;
-        void DrawTestTestScene( kScene_t *scene) const;
         void SetProjectionMatrix( mat4 projection) const;
         void SetModelViewMatrix( mat4 modelView) const;
         void SetMatrixUniform( const char *name, mat4 matrix) const;

@@ -42,7 +42,7 @@ kScene_t * KalmGame::CreateTestScene() {
     kPlayer * player = (kPlayer*)GetMemory( sizeof( kPlayer));
     kCamera * camera = (kCamera*)GetMemory( sizeof( kCamera));
     *player = {};
-    *camera = {};
+    camera->Initialize( Vec3( 0.0f, 0.0f, 0.0f), Vec3( 0.0f, 1.0f, 0.0f));
 
     /** positive y is the up axis */
 
@@ -60,7 +60,7 @@ kScene_t * KalmGame::CreateTestScene() {
         Vec3( -4.2f, 0.1f, -2.0f)
     };
 
-    for( int i=0; i < 5; ++i ) {
+    for( int i=0; i < DEBUG_OBJ_MAX_CHILDREN; ++i ) {
         kObject *obj = (kObject*)GetMemory( sizeof( kObject ));
         MeshComponent *meshComp = (MeshComponent*)GetMemory( sizeof( MeshComponent));
         meshComp->mesh = mesh;
@@ -76,18 +76,21 @@ void KalmGame::LoadTestScene( kScene_t *scene) {
     g_System->renderSystem->LoadTestScene( scene );
 }
 
-void KalmGame::LoadTestTestScene( kScene_t *scene) {
-    g_System->renderSystem->LoadTestTestScene( scene );
-}
-
 void KalmGame::LoadScene( kScene_t *scene ) {
 }
 
-void KalmGame::RunCurrentScene() {
+void KalmGame::RunCurrentScene( const f32 deltaTime ) {
     /** Run Logic on Objects */
+    //TODO(Kasper): HARD CODED CHILD VALUE
+
+    currentScene->camera->Update( deltaTime);
+    currentScene->player->Update( deltaTime);
+    for( int i=0; i < DEBUG_OBJ_MAX_CHILDREN; i++) {
+        currentScene->objects[i]->Update( deltaTime );
+    }
 }
 
-void KalmGame::RenderCurrentScene() {
+void KalmGame::RenderCurrentScene( const f32 deltaTime) {
     /** Setup per-frame modifications */
 
 }
@@ -107,18 +110,26 @@ i32 KalmGame::Loop() {
     kScene_t *testScene = this->CreateTestScene();
     this->SetCurrentScene( testScene );
     this->LoadTestScene( testScene);
+    static f32 deltaTime = 0;
+    static f64 lastTime = 0;
+    static f64 time = 0;
 
     while(!g_System->commonSystem->IfWindowShouldClose()) {
+
+        time = g_System->commonSystem->GetTime();
+
+        deltaTime = (f32)(time - lastTime);
+
+        //printf( "deltaTime: %f\n", deltaTime);
+
+
+        /** Update objects */
+        RunCurrentScene( deltaTime );
 
         /** Get input */
         HandleInput();
 
-        static r64 lastTime = 0;
-        static r64 time = g_System->commonSystem->GetTime();
-
-
-        RunCurrentScene();
-        RenderCurrentScene();
+        RenderCurrentScene( deltaTime );
 
         g_System->renderSystem->DrawTestScene( currentScene);
 
@@ -143,7 +154,7 @@ void KalmGame::HandleInput() {
     gameInput_t *oldState = g_System->commonSystem->GetOldState();
     gameInput_t *newState = g_System->commonSystem->GetNewState();
 
-    g_System->commonSystem->SwapAndClearState();
+    //g_System->commonSystem->SwapAndClearState();
 }
 
 void KalmGame::SetCurrentScene( kScene_t *scene) {

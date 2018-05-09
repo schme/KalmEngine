@@ -21,14 +21,13 @@ class KalmGame : public kGame {
 
         void        LoadScene( kScene_t* scene );
 
-        void        RunCurrentScene();
-        void        RenderCurrentScene();
+        void        RunCurrentScene( const f32 deltaTime);
+        void        RenderCurrentScene( const f32 deltaTime);
 
         /** Dev method, normally we'd load one, not create it.
          *  Some other class will do the creating */
         kScene_t*   CreateTestScene();
         void        LoadTestScene( kScene_t* scene );
-        void        LoadTestTestScene( kScene_t* scene );
 };
 
 

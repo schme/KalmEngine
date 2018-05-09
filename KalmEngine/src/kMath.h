@@ -295,10 +295,24 @@ CameraTransform( vec3 x, vec3 y, vec3 z, vec3 p) {
     return result;
 }
 
-
-/* TODO(Kasper): Implement.*/
-inline mat4 LookAt( vec3 cameraPosition, vec3 targetPosition, vec3 worldUpVector ) {
+inline mat4 LookAt( vec3 cameraPosition, vec3 cameraDirection, vec3 cameraRight, vec3 cameraUp ) {
     mat4 M;
+
+    M = Rows3x3( cameraRight, cameraUp, cameraDirection );
+    M = M * Transpose(Translate( -cameraPosition));
+    return M;
+}
+
+inline mat4 LookAt( vec3 cameraPosition, vec3 cameraTarget, vec3 worldUpVector ) {
+    mat4 M;
+
+    vec3 cameraDirection = Normalized( cameraPosition - cameraTarget);
+    vec3 cameraRight = Normalized( Cross( worldUpVector, cameraDirection));
+    vec3 cameraUp = Cross( cameraDirection, cameraRight);
+
+    M = Rows3x3( cameraRight, cameraUp, cameraDirection );
+    M = M * Translate( -cameraPosition );
+
     return M;
 }
 

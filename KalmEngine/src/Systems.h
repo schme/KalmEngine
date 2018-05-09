@@ -49,9 +49,9 @@ class RenderSystem {
     virtual void    SetProjectionMatrix( mat4 projection) const =0;
 
     virtual void    LoadTestScene( kScene_t *scene) const =0;
-    virtual void    LoadTestTestScene( kScene_t *scene) const =0;
+    //virtual void    LoadTestTestScene( kScene_t *scene) const =0;
     virtual void    DrawTestScene( kScene_t *scene) const =0;
-    virtual void    DrawTestTestScene( kScene_t *scene) const =0;
+    //virtual void    DrawTestTestScene( kScene_t *scene) const =0;
 };
 
 class AssetSystem {

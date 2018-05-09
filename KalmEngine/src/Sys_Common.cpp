@@ -31,15 +31,18 @@ void kCommonSystem::SetWindow( GLFWwindow *new_window) {
 }
 
 gameInput_t *kCommonSystem::GetInputState() {
-    return this->inputState;
+    gameInput_t *r = this->inputState;
+    return r;
 }
 
 gameInput_t *kCommonSystem::GetOldState() {
-    return this->oldState;
+    gameInput_t *r = this->oldState;
+    return r;
 }
 
 gameInput_t *kCommonSystem::GetNewState() {
-    return this->newState;
+    gameInput_t *r = this->newState;
+    return r;
 }
 
 /**
@@ -47,9 +50,13 @@ gameInput_t *kCommonSystem::GetNewState() {
  */
 void kCommonSystem::SwapAndClearState() {
     gameInput_t *temp = this->newState;
-    *this->oldState = {};
     this->newState = this->oldState;
+    *this->newState = {};
     this->oldState = temp;
+
+    for( u32 i=0; i < this->newState->inputArrayLength; i++) {
+        this->newState->buttons[i].endedDown = this->oldState->buttons[i].endedDown;
+    }
 }
 
 f64 kCommonSystem::GetTime() const {
@@ -65,8 +72,10 @@ void kCommonSystem::PollEvents() const {
 }
 
 void ToggleButton( gameButtonState_t *oldButton, gameButtonState_t *newButton, const i32 action ) {
+    if( action == GLFW_REPEAT ) return;
+
     (newButton->toggleCount)++;
-    if( action != GLFW_PRESS && oldButton->endedDown ) {
+    if( oldButton->endedDown && action != GLFW_RELEASE ) {
         newButton->endedDown = true;
     } else if ( action == GLFW_PRESS ) {
         newButton->endedDown = true;

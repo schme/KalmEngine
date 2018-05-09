@@ -72,34 +72,6 @@ void kRender::LoadTestScene( kScene_t *scene ) const {
 
 }
 
-void kRender::LoadTestTestScene( kScene_t *scene) const {
-
-    kShaderLoader shaderLoader;
-    shaderLoader.LoadShader( &shader, through_vert, through_frag);
-
-    mat4 p = GetPerspectiveMat( 60.0f, (f32)frameBufferWidth / (f32)frameBufferHeight, 0.1f, 100.0f);
-    SetProjectionMatrix( p );
-
-    MeshComponent* meshComp = (MeshComponent*)scene->objects[0]->components[0];
-    kMesh_t *mesh = meshComp->mesh;
-    currentMesh = mesh;
-
-
-    glBindVertexArray( VertexArrays[ 0 ]);
-
-    glBindBuffer( GL_ARRAY_BUFFER, VertexBuffers[ 0 ]);
-    glBufferData( GL_ARRAY_BUFFER, mesh->vertices_n * 5 * sizeof( f32), mesh->vertices, GL_STATIC_DRAW);
-
-    u32 stride = 5 * sizeof(f32);
-    /* position */
-    glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer( 1, 2, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(f32)));
-    glEnableVertexAttribArray(1);
-
-}
-
 void kRender::LoadVertices( kMesh_t *mesh, const u32 buffer_id) const {
 
     u32 bytesPerVertice = (3 + (3 * mesh->hasNormals) + (2 * mesh->hasTexcoords)) * sizeof(f32);
@@ -133,38 +105,14 @@ void kRender::LoadVertices( kMesh_t *mesh, const u32 buffer_id) const {
 
 }
 
-void kRender::DrawTestTestScene( kScene_t *scene) const {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    //glClear(GL_COLOR_BUFFER_BIT );
-    glPolygonMode( GL_FRONT_AND_BACK, GL_LINE);
-
-    shader.Use();
-
-    mat4 view = Transpose(Translate( Vec3( 1.0f * sinf( (f32)g_Common->GetTime()), 2.0f * sinf( (f32)g_Common->GetTime()), -10.0f)));
-
-    for( int i=0; i < 5; ++i) {
-
-        mat4 model = Transpose(Translate( scene->objects[i]->position));
-        f32 angle = 20.0f * i;
-        model = model * RotationX( Radians(angle) ) * RotationY( Radians(angle) *0.3f) * RotationZ( Radians(angle)*0.5f);
-
-        mat4 modelView = model * view;
-
-        this->SetModelViewMatrix( modelView );
-
-        glDrawArrays( GL_TRIANGLES, 0, 36);
-    }
-
-    glfwSwapBuffers((GLFWwindow*)window);
-}
-
 void kRender::DrawTestScene( kScene_t *scene) const {
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glPolygonMode( GL_FRONT_AND_BACK, GL_LINE);
 
     shader.Use();
-    mat4 view = Transpose( Translate( Vec3( 1.0f, -2.35f, -4.22f)));
+    kCamera *camera = scene->camera;
+    mat4 view = LookAt( camera->position, camera->front, camera->right, camera->up );
 
     for( int i=0; i < 5; ++i) {
 

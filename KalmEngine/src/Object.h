@@ -13,17 +13,38 @@
 #include "KalmTypes.h"
 #include "Component.h"
 
+#define DEBUG_OBJ_MAX_CHILDREN 5
+#define DEBUG_OBJ_MAX_COMPONENTS 5
+
 class kObject {
     public:
     vec3 position = {};
 
-    /* TODO(Kasper): make dynamic*/
-    kObject *children[5] = {};
+    /* TODO(Kasper): make dynamic?*/
+    kObject *children[DEBUG_OBJ_MAX_CHILDREN] = {};
 
-    /* TODO(Kasper): make dynamic*/
-    kComponent *components[5] = {};
+    /* TODO(Kasper): make dynamic?*/
+    kComponent *components[DEBUG_OBJ_MAX_COMPONENTS] = {};
 
-    void Run() {}
+    /** recursive */
+    void Update() {
+        for (int i = 0; i < DEBUG_OBJ_MAX_CHILDREN; ++i) {
+            kObject *child = this->children[i];
+            if( child ) {
+                this->children[i]->Update();
+            }
+        }
+    }
+
+    /** recursive */
+    void Update( f32 deltaTime ) {
+        for (int i = 0; i < DEBUG_OBJ_MAX_CHILDREN; ++i) {
+            kObject *child = this->children[i];
+            if( child ) {
+                this->children[i]->Update( deltaTime );
+            }
+        }
+    }
 };
 
 
