@@ -73,6 +73,7 @@ struct gameInput_t {
             gameButtonState_t actionR;
             gameButtonState_t actionF;
             gameButtonState_t actionSpace;
+            gameButtonState_t actionC;
             gameButtonState_t actionEnter;
             gameButtonState_t actionEsc;
             gameButtonState_t action0;
@@ -85,12 +86,20 @@ struct gameInput_t {
             gameButtonState_t action7;
             gameButtonState_t action8;
             gameButtonState_t action9;
+
+            gameButtonState_t l_shift;
+            gameButtonState_t l_ctrl;
+            gameButtonState_t l_alt;
         };
-        /** TODO(Kasper): Actually get this value properly */
-        gameButtonState_t buttons[21];
+        /*
+         * TODO(Kasper): Actually get this value properly
+         * REMEMBER TO UPDATE THIS WITH WHEN ADDING NEW VALUES
+         */
+        gameButtonState_t buttons[25];
     };
 
-    u32 inputArrayLength = 21;
+    /** THIS TOO */
+    u32 inputArrayLength = 25;
 };
 
 #endif /* end of include guard: KALMSHARED_H_ */

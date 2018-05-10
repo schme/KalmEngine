@@ -30,23 +30,30 @@ void kCamera::Input( const f32 deltaTime ) {
 
     UpdateVectors();
 
+    f32 movSpeedModifier = 3.0f;
+    f32 movSpeed = this->movementSpeed;
+
+    if( input->l_shift.endedDown ) {
+        movSpeed *= movSpeedModifier;
+    }
+
     if( input->up.endedDown ) {
-        this->velocity += (this->front * this->movementSpeed) * deltaTime;
+        this->velocity += (this->front * movSpeed);
     }
     if( input->down.endedDown ) {
-        this->velocity += (-this->front * this->movementSpeed) * deltaTime;
+        this->velocity += (-this->front * movSpeed);
     }
     if( input->left.endedDown ) {
-        this->velocity += (-this->right * this->movementSpeed) * deltaTime;
+        this->velocity += (-this->right * movSpeed);
     }
     if( input->right.endedDown ) {
-        this->velocity += (this->right * this->movementSpeed) * deltaTime;
+        this->velocity += (this->right * movSpeed);
     }
-    if( input->actionR.endedDown ) {
-        this->velocity += (this->up * this->movementSpeed) * deltaTime;
+    if( input->actionR.endedDown || input->actionSpace.endedDown ) {
+        this->velocity += (this->up * movSpeed);
     }
-    if( input->actionF.endedDown ) {
-        this->velocity += (-this->up * this->movementSpeed) * deltaTime;
+    if( input->actionF.endedDown || input->actionC.endedDown) {
+        this->velocity += (-this->up * movSpeed);
     }
 
 }
@@ -56,7 +63,7 @@ void kCamera::Input( const f32 deltaTime ) {
  * TODO(Kasper): Switch Update functions to a script
  */
 void kCamera::Update( const f32 deltaTime ) {
-    this->position += this->velocity;
+    this->position += this->velocity * deltaTime;
     this->velocity = Vec3(0.0f);
 }
 

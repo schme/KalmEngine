@@ -30,6 +30,7 @@ class kRender : public RenderSystem {
         void LoadTexture( kTexture_t* image);
         void LoadScene( kScene_t *scene);
         void LoadVertices( kMesh_t *verts, const u32 buffer_id ) const;
+        void DrawDebug() const;
 
     private:
         GLFWwindow *    window;

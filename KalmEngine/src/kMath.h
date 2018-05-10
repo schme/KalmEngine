@@ -34,7 +34,7 @@ inline f32 Length( vec3 a ) {
 }
 
 inline vec3 Normalized( vec3 a ) {
-    vec3 result = a * 1.0f;
+    vec3 result = a * (1.0f / Length(a));
     return result;
 }
 

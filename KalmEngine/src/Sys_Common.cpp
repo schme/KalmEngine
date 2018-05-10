@@ -87,14 +87,21 @@ void ToggleButton( gameButtonState_t *oldButton, gameButtonState_t *newButton, c
  * TODO(Kasper): check if we need double
  */
 void CursorPositionCallback( GLFWwindow* wnd, const f64 posx, const f64 posy ) {
+
+    static f32 lastPosX = 0;
+    static f32 lastPosY = 0;
+
     mouseInput_t * newMouse = &g_Common->GetNewState()->mouseInput;
-    mouseInput_t * oldMouse = &g_Common->GetOldState()->mouseInput;
 
     newMouse->posX = (f32)posx;
     newMouse->posY = (f32)posy;
 
-    newMouse->offsetX = newMouse->posX - oldMouse->posX;
-    newMouse->offsetY = oldMouse->posY - newMouse->posY;
+    newMouse->offsetX = newMouse->posX - lastPosX;
+    newMouse->offsetY = lastPosY - newMouse->posY;
+
+    lastPosX = newMouse->posX;
+    lastPosY = newMouse->posY;
+
 }
 
 void MouseButtonCallback( GLFWwindow* wnd, const i32 button, const i32 action, const i32 mods) {
@@ -165,6 +172,12 @@ void KeyCallback( GLFWwindow* wnd, const i32 key, const i32 scancode, const i32 
             ToggleButton( oldButton, newButton, action );
             break;
         }
+        case ( GLFW_KEY_C ): {
+            gameButtonState_t *oldButton = &oldState->actionC;
+            gameButtonState_t *newButton = &newState->actionC;
+            ToggleButton( oldButton, newButton, action );
+            break;
+        }
         case ( GLFW_KEY_ENTER ): {
             gameButtonState_t *oldButton = &oldState->actionEnter;
             gameButtonState_t *newButton = &newState->actionEnter;
@@ -198,6 +211,12 @@ void KeyCallback( GLFWwindow* wnd, const i32 key, const i32 scancode, const i32 
         case ( GLFW_KEY_F ): {
             gameButtonState_t *oldButton = &oldState->actionF;
             gameButtonState_t *newButton = &newState->actionF;
+            ToggleButton( oldButton, newButton, action );
+            break;
+        }
+        case ( GLFW_KEY_LEFT_SHIFT ): {
+            gameButtonState_t *oldButton = &oldState->l_shift;
+            gameButtonState_t *newButton = &newState->l_shift;
             ToggleButton( oldButton, newButton, action );
             break;
         }

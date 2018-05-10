@@ -13,14 +13,18 @@
 
 #include "Shader.cpp"
 
+#if KALM_INTERNAL
+#include "_stb/stb_easy_font.h"
+#endif
+
 static void ResizeCallback( GLFWwindow* window, const i32 numer, const i32 denom);
 static void FramebufferResizeCallback( GLFWwindow *window, const i32 width, const i32 height);
 
 
-const u32 VERTEX_ARRAYS = 1;
+const u32 VERTEX_ARRAYS = 2;
 const u32 VERTEX_BUFFERS = 5;
 const u32 ELEMENT_BUFFERS = VERTEX_BUFFERS;
-const u32 SHADER_PROGRAMS = 1;
+const u32 SHADER_PROGRAMS = 2;
 const u32 TEXTURES = 1;
 
 static u32 VertexArrays[VERTEX_ARRAYS];
@@ -28,9 +32,9 @@ static u32 VertexBuffers[VERTEX_BUFFERS];
 static u32 ElementBuffers[ELEMENT_BUFFERS];
 static u32 ShaderPrograms[SHADER_PROGRAMS];
 static u32 Textures[TEXTURES];
+static Shader shaders[SHADER_PROGRAMS];
 
 /** TODO(Kasper): Figure out how best to do multiple shaders */
-static Shader shader = {};
 static u32 currentSceneID = 0;
 
 static kMesh_t *currentMesh = nullptr;
@@ -58,7 +62,9 @@ void kRender::LoadTestScene( kScene_t *scene ) const {
 
     /** shader */
     kShaderLoader shaderLoader;
-    shaderLoader.LoadShader( &shader, through_vert, through_frag);
+    shaderLoader.LoadShader( &shaders[0], through_vert, through_frag);
+    /** debug info shader */
+    shaderLoader.LoadShader( &shaders[ SHADER_PROGRAMS - 1], debug_vert, debug_frag);
 
     MeshComponent* meshComp = (MeshComponent*)scene->objects[0]->components[0];
     kMesh_t *mesh = meshComp->mesh;
@@ -107,20 +113,20 @@ void kRender::LoadVertices( kMesh_t *mesh, const u32 buffer_id) const {
 
 void kRender::DrawTestScene( kScene_t *scene) const {
 
+    glBindVertexArray( VertexArrays[0]);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glPolygonMode( GL_FRONT_AND_BACK, GL_LINE);
 
-    shader.Use();
+    shaders[0].Use();
     kCamera *camera = scene->camera;
+
     mat4 view = LookAt( camera->position, camera->position + camera->front, camera->right, camera->up );
+    view = Transpose(view);
 
     for( int i=0; i < 5; ++i) {
 
         mat4 model = GetIdentityMat();
-
         model = ( Translate( model, scene->objects[i]->position ));
-        //model = model * (RotationX( Radians(angle) ) * RotationY( Radians(angle) *0.3f) * RotationZ( Radians(angle)*0.5f));
-
         model = Scale( model, Vec3(20.0f));
 
         f32 angle = 20.0f * i;
@@ -165,27 +171,28 @@ void kRender::Initialize() {
     glGenBuffers( VERTEX_BUFFERS, VertexBuffers);
     glGenBuffers( ELEMENT_BUFFERS, ElementBuffers);
     glGenTextures( TEXTURES, Textures);
+
+    /** load debug shaders */
+    kShaderLoader shaderLoader;
+    shaderLoader.LoadShader( &shaders[ SHADER_PROGRAMS - 1], debug_vert, debug_frag);
 }
 
+/** TODO(Kasper): Support multiple shaders */
 void kRender::SetMatrixUniform( const char *name, mat4 matrix) const {
-    shader.Use();
-    shader.SetMat4( name, matrix );
+    shaders[0].Use();
+    shaders[0].SetMat4( name, matrix );
 }
 
 void kRender::SetModelViewMatrix( mat4 modelView ) const {
-    shader.Use();
-    shader.SetMat4( "modelView", modelView );
+    shaders[0].Use();
+    shaders[0].SetMat4( "modelView", modelView );
 }
 
 
-/**
- * Changes infrequently
- * TODO(Kasper): Constify
- */
 void kRender::SetProjectionMatrix( mat4 projection ) const {
     projectionMatrix = projection;
-    shader.Use();
-    shader.SetMat4( "projection", projection);
+    shaders[0].Use();
+    shaders[0].SetMat4( "projection", projection);
 }
 
 

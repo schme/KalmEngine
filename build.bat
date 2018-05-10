@@ -12,7 +12,7 @@ set PROJ=KalmEngine
 
 REM Compiling tinyply 
 set CommonCompilerFlags= -nologo -WX -Oi -Gm -GR -W4 -Zi -Zo -EHsc -wd4100 -wd4189 -wd4458 -wd4201 -wd4505 /I\%PROJ%\include\
-set CommonCompilerFlags= -DKALM2D_WIN32=1 -DK_ASSERT=1 %CommonCompilerFlags%
+set CommonCompilerFlags= -DKALM2D_WIN32=1 -DK_ASSERT=1 -DKALM_INTERNAL=1 %CommonCompilerFlags%
 set CommonLinkerFlags= /nologo /LIBPATH:%PROJ%\lib\ -incremental:no user32.lib gdi32.lib winmm.lib kernel32.lib /NODEFAULTLIB:msvcrt.lib -MACHINE:x64
 
 REM 4267: type conversion, possible loss of data
