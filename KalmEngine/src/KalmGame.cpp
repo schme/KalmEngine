@@ -13,6 +13,8 @@
 #include "Object.cpp"
 #include "Scene.cpp"
 
+#include "Sys_Config.h"
+
 /** Entry point for KalmGame.exe to the Game64.dll */
 gameExport_t * GetGameAPI( gameImport_t * system) {
 
@@ -42,7 +44,7 @@ kScene_t * KalmGame::CreateTestScene() {
     kPlayer * player = (kPlayer*)GetMemory( sizeof( kPlayer));
     kCamera * camera = (kCamera*)GetMemory( sizeof( kCamera));
     *player = {};
-    camera->Initialize( Vec3( 0.0f, 0.0f, 0.0f), Vec3( 0.0f, 1.0f, 0.0f));
+    camera->Initialize( Vec3( 0.0f, 0.0f, 5.0f), Vec3( 0.0f, 1.0f, 0.0f));
 
     /** positive y is the up axis */
 
@@ -53,11 +55,11 @@ kScene_t * KalmGame::CreateTestScene() {
     //kMesh_t *mesh = g_System->assetSystem->LoadMesh( "Assets/Models/bunny.ply" );
 
     vec3 testPositions[] = {
-        Vec3( 0.0f, 0.0f, 0.0f),
-        Vec3( 0.2f, 2.1f, 2.0f),
-        Vec3( 3.2f, 3.1f, 5.0f),
-        Vec3( -2.2f, -1.1f, 2.0f),
-        Vec3( -4.2f, 0.1f, -2.0f)
+        Vec3( 0.0f, 0.0f, 10.0f),
+        Vec3( 10.0f, 0.0f, 0.0f),
+        Vec3( 0.0f, 0.0f, -10.0f),
+        Vec3( -10.0f, 0.0f, 0.0f),
+        Vec3( 0.0f, 0.0f,  0.0f)
     };
 
     for( int i=0; i < DEBUG_OBJ_MAX_CHILDREN; ++i ) {
@@ -151,6 +153,8 @@ void KalmGame::Terminate() {
 
 
 void KalmGame::HandleInput( const f32 deltaTime) {
+
+    ((kConfig*)g_System->configSystem->Get())->Input( GetGameInput() );
 
     currentScene->camera->Input( deltaTime);
     currentScene->player->Input( deltaTime);

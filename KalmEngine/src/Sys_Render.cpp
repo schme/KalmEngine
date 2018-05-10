@@ -12,6 +12,7 @@
 #include "KalmShared.h"
 
 #include "Shader.cpp"
+#include "Sys_Config.h"
 
 #if KALM_INTERNAL
 #include "_stb/stb_easy_font.h"
@@ -33,6 +34,8 @@ static u32 ElementBuffers[ELEMENT_BUFFERS];
 static u32 ShaderPrograms[SHADER_PROGRAMS];
 static u32 Textures[TEXTURES];
 static Shader shaders[SHADER_PROGRAMS];
+
+b32 drawWireframe = false;
 
 /** TODO(Kasper): Figure out how best to do multiple shaders */
 static u32 currentSceneID = 0;
@@ -111,11 +114,20 @@ void kRender::LoadVertices( kMesh_t *mesh, const u32 buffer_id) const {
 
 }
 
+/*
+ * When making modelView matrix:
+ * 1) Transpose view
+ * 2) Translate objects, Transpose result
+ * 3) Scale
+ * 4) RotationX() * model
+ * 5) model * view TODO(Kasper): Would changing order to view * model get rid of transposes?
+ */
 void kRender::DrawTestScene( kScene_t *scene) const {
+
+    CheckToggleWireframe();
 
     glBindVertexArray( VertexArrays[0]);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glPolygonMode( GL_FRONT_AND_BACK, GL_LINE);
 
     shaders[0].Use();
     kCamera *camera = scene->camera;
@@ -126,11 +138,14 @@ void kRender::DrawTestScene( kScene_t *scene) const {
     for( int i=0; i < 5; ++i) {
 
         mat4 model = GetIdentityMat();
-        model = ( Translate( model, scene->objects[i]->position ));
+
+        /** the order of translate and scale does not seem to matter */
+        model = Transpose(Translate( model, scene->objects[i]->position ));
+
         model = Scale( model, Vec3(20.0f));
 
-        f32 angle = 20.0f * i;
-        model = model * RotationX( Radians(angle)) * RotationY( Radians(angle) * 0.3f) * RotationZ( Radians( angle ) * 0.5f);
+        f32 angle = 90.0f * i;
+        model = RotationY( Radians(angle)) * model;
 
         mat4 modelViewMatrix = model * view;
         SetModelViewMatrix( modelViewMatrix);
@@ -207,7 +222,7 @@ void ResizeCallback( GLFWwindow* wnd, const i32 numer, const i32 denom) {
 }
 
 void FramebufferResizeCallback( GLFWwindow* wnd, const i32 width, const i32 height) {
-    glViewport(0, 0, frameBufferWidth, frameBufferHeight);
+    glViewport(0, 0, width, height);
 }
 
 
@@ -223,4 +238,19 @@ void kRender::PrintOpenGLShaderError( u32 shaderID, const char *message) const {
     glGetShaderInfoLog( shaderID, 512, NULL, infoLog);
     PRINTL_STR(message);
     PRINTL_STR( infoLog);
+}
+
+void kRender::CheckToggleWireframe() const {
+    if( g_Config->GetPreferences()->drawWireframe == drawWireframe) {
+        return;
+    }
+
+    /* we switched drawWireframe on */
+    if( !drawWireframe ) {
+        drawWireframe = true;
+        glPolygonMode( GL_FRONT_AND_BACK, GL_LINE);
+    } else {
+        drawWireframe = false;
+        glPolygonMode( GL_FRONT_AND_BACK, GL_FILL);
+    }
 }

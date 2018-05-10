@@ -11,7 +11,7 @@
 #include "Sys_Filesystem.cpp"
 #include "Sys_Render.cpp"
 #include "Sys_Assets.cpp"
-
+#include "Sys_Config.cpp"
 
 #undef GLAD_DEBUG
 
@@ -156,6 +156,9 @@ int main(int argc, char *argv[])
     /* assets */
     kAssets assetSystem;
     g_Assets = &assetSystem;
+    /* config */
+    kConfig configSystem;
+    g_Config = &configSystem;
 
     /** prepare an export for game.dll */
     g_gameImport.version = 1;
@@ -165,6 +168,7 @@ int main(int argc, char *argv[])
     g_gameImport.fileSystem = &fileSystem;
     g_gameImport.renderSystem = &render;
     g_gameImport.assetSystem = &assetSystem;
+    g_gameImport.configSystem = &configSystem;
 
     /** load game API */
     win_LoadGame();
@@ -175,6 +179,8 @@ int main(int argc, char *argv[])
     commonSystem.Initialize();
     render.SetWindow( g_window );
     render.Initialize();
+
+    configSystem.Initialize();
 
     /** prepare game */
     game->Initialize();

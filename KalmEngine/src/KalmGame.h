@@ -5,14 +5,14 @@
 #include "KalmShared.h"
 #include "KalmTypes.h"
 
+
 class KalmGame : public kGame {
     public:
-        static gameExport_t gameExport;
+        static gameExport_t     gameExport;
 
         b32         Initialize();
         i32         Loop ();
         void        Terminate();
-
     private:
         void        HandleInput( const f32 deltaTime );
 

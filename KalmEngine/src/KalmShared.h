@@ -30,6 +30,12 @@ class kGame {
 extern "C"
 gameExport_t * GetGameAPI( gameImport_t * system);
 
+
+struct preferences_t {
+    b32 drawWireframe = false;
+};
+
+
 struct gameExport_t {
     kGame *game;
 };
@@ -41,6 +47,7 @@ struct gameImport_t {
     FileSystem *            fileSystem;
     RenderSystem *          renderSystem;
     AssetSystem *           assetSystem;
+    ConfigSystem *          configSystem;
 };
 
 
@@ -90,16 +97,30 @@ struct gameInput_t {
             gameButtonState_t l_shift;
             gameButtonState_t l_ctrl;
             gameButtonState_t l_alt;
+
+            gameButtonState_t actionF1;
+            gameButtonState_t actionF2;
+            gameButtonState_t actionF3;
+            gameButtonState_t actionF4;
+            gameButtonState_t actionF5;
+            gameButtonState_t actionF6;
+            gameButtonState_t actionF7;
+            gameButtonState_t actionF8;
+            gameButtonState_t actionF9;
+            gameButtonState_t actionF10;
+            gameButtonState_t actionF11;
+            gameButtonState_t actionF12;
+
         };
         /*
          * TODO(Kasper): Actually get this value properly
          * REMEMBER TO UPDATE THIS WITH WHEN ADDING NEW VALUES
          */
-        gameButtonState_t buttons[25];
+        gameButtonState_t buttons[37];
     };
 
     /** THIS TOO */
-    u32 inputArrayLength = 25;
+    u32 inputArrayLength = 37;
 };
 
 #endif /* end of include guard: KALMSHARED_H_ */

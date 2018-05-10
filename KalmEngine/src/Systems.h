@@ -15,6 +15,7 @@
 
 /** forward declaration */
 struct gameInput_t;
+struct preferences_t;
 
 class CommonSystem {
     public:
@@ -52,12 +53,18 @@ class RenderSystem {
     //virtual void    LoadTestTestScene( kScene_t *scene) const =0;
     virtual void    DrawTestScene( kScene_t *scene) const =0;
     //virtual void    DrawTestTestScene( kScene_t *scene) const =0;
-};
-
+}; 
 class AssetSystem {
     public:
     virtual kImage_t*   LoadImage( const char *filename) const =0;
     virtual kMesh_t*    LoadMesh( const char *filename) const =0;
+};
+
+class ConfigSystem {
+    public:
+    virtual void            Initialize() =0;
+    virtual ConfigSystem *  Get() =0;
+    virtual preferences_t * GetPreferences() =0;
 };
 
 #endif /* end of include guard: SYSTEMS_H_ */
