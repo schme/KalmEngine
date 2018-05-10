@@ -112,13 +112,13 @@ void kRender::DrawTestScene( kScene_t *scene) const {
 
     shader.Use();
     kCamera *camera = scene->camera;
-    mat4 view = LookAt( camera->position, camera->front, camera->right, camera->up );
+    mat4 view = LookAt( camera->position, camera->position + camera->front, camera->right, camera->up );
 
     for( int i=0; i < 5; ++i) {
 
         mat4 model = GetIdentityMat();
 
-        model = Transpose(Translate( model, scene->objects[i]->position ));
+        model = ( Translate( model, scene->objects[i]->position ));
         //model = model * (RotationX( Radians(angle) ) * RotationY( Radians(angle) *0.3f) * RotationZ( Radians(angle)*0.5f));
 
         model = Scale( model, Vec3(20.0f));

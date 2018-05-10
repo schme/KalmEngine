@@ -295,11 +295,12 @@ CameraTransform( vec3 x, vec3 y, vec3 z, vec3 p) {
     return result;
 }
 
-inline mat4 LookAt( vec3 cameraPosition, vec3 cameraDirection, vec3 cameraRight, vec3 cameraUp ) {
+inline mat4 LookAt( vec3 cameraPosition, vec3 cameraTarget, vec3 cameraRight, vec3 cameraUp ) {
     mat4 M;
 
+    vec3 cameraDirection = Normalized( cameraPosition - cameraTarget);
     M = Rows3x3( cameraRight, cameraUp, cameraDirection );
-    M = M * Transpose(Translate( -cameraPosition));
+    M = M * Translate( -cameraPosition);
     return M;
 }
 

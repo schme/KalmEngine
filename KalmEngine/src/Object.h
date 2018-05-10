@@ -19,12 +19,23 @@
 class kObject {
     public:
     vec3 position = {};
+    vec3 velocity = {};
 
     /* TODO(Kasper): make dynamic?*/
     kObject *children[DEBUG_OBJ_MAX_CHILDREN] = {};
 
     /* TODO(Kasper): make dynamic?*/
     kComponent *components[DEBUG_OBJ_MAX_COMPONENTS] = {};
+
+    /** recursive */
+    void Input( const f32 deltaTime ) {
+        for (int i = 0; i < DEBUG_OBJ_MAX_CHILDREN; ++i) {
+            kObject *child = this->children[i];
+            if( child ) {
+                this->children[i]->Input( deltaTime );
+            }
+        }
+    }
 
     /** recursive */
     void Update() {
@@ -37,7 +48,7 @@ class kObject {
     }
 
     /** recursive */
-    void Update( f32 deltaTime ) {
+    void Update( const f32 deltaTime ) {
         for (int i = 0; i < DEBUG_OBJ_MAX_CHILDREN; ++i) {
             kObject *child = this->children[i];
             if( child ) {

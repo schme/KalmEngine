@@ -123,11 +123,11 @@ i32 KalmGame::Loop() {
         //printf( "deltaTime: %f\n", deltaTime);
 
 
+        /** Get input */
+        HandleInput( deltaTime );
+
         /** Update objects */
         RunCurrentScene( deltaTime );
-
-        /** Get input */
-        HandleInput();
 
         RenderCurrentScene( deltaTime );
 
@@ -150,11 +150,16 @@ void KalmGame::Terminate() {
  */
 
 
-void KalmGame::HandleInput() {
-    gameInput_t *oldState = g_System->commonSystem->GetOldState();
-    gameInput_t *newState = g_System->commonSystem->GetNewState();
+void KalmGame::HandleInput( const f32 deltaTime) {
 
-    //g_System->commonSystem->SwapAndClearState();
+    currentScene->camera->Input( deltaTime);
+    currentScene->player->Input( deltaTime);
+
+    for( int i=0; i < DEBUG_OBJ_MAX_CHILDREN; i++) {
+        currentScene->objects[i]->Input( deltaTime);
+    }
+
+    g_System->commonSystem->SwapAndClearState();
 }
 
 void KalmGame::SetCurrentScene( kScene_t *scene) {

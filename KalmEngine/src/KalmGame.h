@@ -14,7 +14,7 @@ class KalmGame : public kGame {
         void        Terminate();
 
     private:
-        void        HandleInput();
+        void        HandleInput( const f32 deltaTime );
 
         kScene_t *  currentScene = nullptr;
         void        SetCurrentScene( kScene_t *scene);

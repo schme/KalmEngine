@@ -13,39 +13,51 @@ void kCamera::Update() {
     UpdateVectors();
 }
 
+void kCamera::Input( const f32 deltaTime ) {
+
+    gameInput_t * input = GetGameInput();
+    mouseInput_t * mouse = &input->mouseInput;
+
+    this->yaw += mouse->offsetX * mouseSensitivity;
+    this->pitch += mouse->offsetY * mouseSensitivity;
+
+    if( this->pitch > 89.0f) {
+        this->pitch = 89.0f;
+    }
+    if( this->pitch < -89.0f) {
+        this->pitch = -89.0f;
+    }
+
+    UpdateVectors();
+
+    if( input->up.endedDown ) {
+        this->velocity += (this->front * this->movementSpeed) * deltaTime;
+    }
+    if( input->down.endedDown ) {
+        this->velocity += (-this->front * this->movementSpeed) * deltaTime;
+    }
+    if( input->left.endedDown ) {
+        this->velocity += (-this->right * this->movementSpeed) * deltaTime;
+    }
+    if( input->right.endedDown ) {
+        this->velocity += (this->right * this->movementSpeed) * deltaTime;
+    }
+    if( input->actionR.endedDown ) {
+        this->velocity += (this->up * this->movementSpeed) * deltaTime;
+    }
+    if( input->actionF.endedDown ) {
+        this->velocity += (-this->up * this->movementSpeed) * deltaTime;
+    }
+
+}
+
 /**
  * TODO(Kasper): Switch to a weighted sample buffer
  * TODO(Kasper): Switch Update functions to a script
  */
-void kCamera::Update( f32 deltaTime ) {
-    gameInput_t * input = GetGameInput();
-
-    if( input->up.endedDown ) {
-        this->position = this->position + (this->front * this->movementSpeed) * deltaTime;
-        printf("Camera pos: %f,%f,%f\nCamera front: %f,%f,%f\n\n", this->position.x, this->position.y, this->position.z, this->front.x, this->front.y, this->front.z);
-    }
-    if( input->down.endedDown ) {
-        this->position = this->position + (-this->front * this->movementSpeed) * deltaTime;
-        printf("Camera pos: %f,%f,%f\nCamera front: %f,%f,%f\n\n", this->position.x, this->position.y, this->position.z, this->front.x, this->front.y, this->front.z);
-    }
-    if( input->left.endedDown ) {
-        this->position = this->position + (-this->right * this->movementSpeed) * deltaTime;
-        printf("Camera pos: %f,%f,%f\nCamera front: %f,%f,%f\n\n", this->position.x, this->position.y, this->position.z, this->front.x, this->front.y, this->front.z);
-    }
-    if( input->right.endedDown ) {
-        this->position = this->position + (this->right * this->movementSpeed) * deltaTime;
-        printf("Camera pos: %f,%f,%f\nCamera front: %f,%f,%f\n\n", this->position.x, this->position.y, this->position.z, this->front.x, this->front.y, this->front.z);
-    }
-    if( input->actionR.endedDown ) {
-        this->position = this->position + (this->up * this->movementSpeed) * deltaTime;
-        printf("Camera pos: %f,%f,%f\nCamera front: %f,%f,%f\n\n", this->position.x, this->position.y, this->position.z, this->front.x, this->front.y, this->front.z);
-    }
-    if( input->actionF.endedDown ) {
-        this->position = this->position + (-this->up * this->movementSpeed) * deltaTime;
-        printf("Camera pos: %f,%f,%f\nCamera front: %f,%f,%f\n\n", this->position.x, this->position.y, this->position.z, this->front.x, this->front.y, this->front.z);
-    }
-
-    UpdateVectors();
+void kCamera::Update( const f32 deltaTime ) {
+    this->position += this->velocity;
+    this->velocity = Vec3(0.0f);
 }
 
 
@@ -69,9 +81,9 @@ void kCamera::Initialize( vec3 position, vec3 worldUp, f32 yaw, f32 pitch, f32 m
 mat4 kCamera::GetViewMatrix() const {
     mat4 M;
     if( cameraTargetObject ) {
-        M =  LookAt( this->position, cameraTargetObject->position, this->worldUp );
+        M =  LookAt( this->position, Normalized( this->position - cameraTargetObject->position), this->right, this->up );
     } else {
-        M = LookAt( this->position, this->position + this->front, this->worldUp );
+        M = LookAt( this->position, this->position + this->front, this->right, this->up );
     }
     return M;
 }
@@ -86,4 +98,5 @@ void kCamera::UpdateVectors() {
 
     this->right = Normalized( Cross( this->front, this->worldUp));
     this->up = Normalized( Cross( this->right, this->front));
+
 }

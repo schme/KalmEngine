@@ -14,7 +14,7 @@
 const f32 YAW = -90.0f;
 const f32 PITCH = 0.0f;
 const f32 SPEED = 2.5f;
-const f32 SENSITIVITY = 0.1f;
+const f32 SENSITIVITY = 0.2f;
 const f32 ZOOM = 60.0f;
 
 enum cameraMovement_e {
@@ -27,7 +27,8 @@ enum cameraMovement_e {
 class kCamera : public kObject {
 
     public:
-    vec3 position = Vec3( 0.0f, 0.0f, 0.0f);
+    vec3 position = Vec3( 0.0f );
+    vec3 velocity = Vec3( 0.0f );
     vec3 worldUp = Vec3( 0.0f, 1.0f, 0.0f);
     vec3 up = worldUp;
     vec3 front = Vec3( 0.0f, 0.0f, -1.0f);
@@ -42,6 +43,9 @@ class kCamera : public kObject {
     f32 mouseSensitivity = SENSITIVITY;
     f32 zoom = ZOOM;
 
+    f32 offset_x = 0;
+    f32 offset_y = 0;
+
 
     /**
      * methods
@@ -51,8 +55,9 @@ class kCamera : public kObject {
                                                                 f32 zoom = ZOOM);
     mat4 GetViewMatrix() const ;
 
+    void Input( const f32 deltaTime );
     void Update();
-    void Update( f32 deltaTime);
+    void Update( const f32 deltaTime);
     private:
     void UpdateVectors();
 };

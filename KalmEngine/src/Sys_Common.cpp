@@ -16,14 +16,13 @@ static void KeyCallback( GLFWwindow* window, const i32 key, const i32 scancode, 
 static void CursorPositionCallback( GLFWwindow* wnd, const f64 posx, const f64 posy);
 static void MouseButtonCallback( GLFWwindow* wnd, const i32 button, const i32 action, const i32 mods);
 
-//gameInput_t kCommonSystem::inputState[2] = {};
-//gameInput_t *kCommonSystem::oldState = &kCommonSystem::inputState[0];
-//gameInput_t *kCommonSystem::newState = &kCommonSystem::inputState[1];
 
 void kCommonSystem::Initialize() {
     glfwSetKeyCallback( this->window, KeyCallback);
     glfwSetCursorPosCallback( this->window, CursorPositionCallback);
     glfwSetMouseButtonCallback( this->window, MouseButtonCallback);
+
+    glfwSetInputMode( this->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
 void kCommonSystem::SetWindow( GLFWwindow *new_window) {
@@ -88,8 +87,14 @@ void ToggleButton( gameButtonState_t *oldButton, gameButtonState_t *newButton, c
  * TODO(Kasper): check if we need double
  */
 void CursorPositionCallback( GLFWwindow* wnd, const f64 posx, const f64 posy ) {
-    g_Common->GetNewState()->mouseInput.posx = (f32)posx;
-    g_Common->GetNewState()->mouseInput.posy = (f32)posy;
+    mouseInput_t * newMouse = &g_Common->GetNewState()->mouseInput;
+    mouseInput_t * oldMouse = &g_Common->GetOldState()->mouseInput;
+
+    newMouse->posX = (f32)posx;
+    newMouse->posY = (f32)posy;
+
+    newMouse->offsetX = newMouse->posX - oldMouse->posX;
+    newMouse->offsetY = oldMouse->posY - newMouse->posY;
 }
 
 void MouseButtonCallback( GLFWwindow* wnd, const i32 button, const i32 action, const i32 mods) {

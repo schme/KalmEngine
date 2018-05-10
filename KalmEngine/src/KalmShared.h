@@ -50,8 +50,10 @@ struct gameButtonState_t {
 };
 
 struct mouseInput_t {
-    f32 posx;
-    f32 posy;
+    f32 posX;
+    f32 posY;
+    f32 offsetX;
+    f32 offsetY;
     gameButtonState_t right;
     gameButtonState_t left;
 };
