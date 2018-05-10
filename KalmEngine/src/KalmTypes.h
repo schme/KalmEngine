@@ -24,6 +24,7 @@ struct kMesh_t {
     b32 hasVertices = 0;
     b32 hasNormals = 0;
     b32 hasTexcoords = 0;
+    b32 hasColors = 0;
     u32 vertices_n;
     u32 indices_n;
     f32 *vertices;
@@ -48,11 +49,11 @@ struct kTexture_t {
     kImage_t *image;
 };
 
-struct renderBufferGroup_t {
-    u32 ID;
-    Shader shader;
-    mat4 modelView;
-    kMesh_t *groupVerts;
+struct renderType_t {
+    i32 vertexArrayIndex = -1;
+    i32 vertexBufferIndex = -1;
+    i32 shaderIndex = -1;
 };
+
 
 #endif /* end of include guard: KALMTYPES_H_ */

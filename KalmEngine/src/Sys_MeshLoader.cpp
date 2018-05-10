@@ -100,17 +100,21 @@ kMesh_t * MeshLoader::LoadPLY( const char *filename) const {
             u32 norm_n = 0; size_t norm_bytes = 0;
             u32 texc_n = 0; size_t texc_bytes = 0;
             u32 indx_n = 0; size_t indx_bytes = 0;
+            u32 colors_n = 0; size_t color_bytes = 0;
 
             b32 hasVertices = 0;
             b32 hasNormals = 0;
             b32 hasTexcoords = 0;
+            b32 hasColors = 0;
 
+            struct float4 { f32 r,g,b,a; };
             struct float3 { f32 x,y,z; };
             struct float2 { f32 x,y; };
 
             float3 *norm_buffer = nullptr;
             float3 *vert_buffer = nullptr;
             float2 *texc_buffer = nullptr;
+            float4 *color_buffer = nullptr;
 
             if( vertices ) {
                 hasVertices = 1;
@@ -134,14 +138,20 @@ kMesh_t * MeshLoader::LoadPLY( const char *filename) const {
                 texc_bytes = texcoords->buffer.size_bytes();
                 texc_buffer = (float2*)texcoords->buffer.get();
             }
+            if( colors ) {
+                hasColors = 1;
+                colors_n = (u32)colors->count * 4;
+                color_bytes = colors->buffer.size_bytes();
+                color_buffer = (float4*)colors->buffer.get();
+            }
 
-            result->vertices_n = vert_n + norm_n + texc_n;
+            result->vertices_n = vert_n + norm_n + texc_n + colors_n;
             result->indices_n = indx_n;
 
-            result->vertices = (f32*)g_Memory->Alloc( u32(vert_bytes + norm_bytes + texc_bytes) );
+            result->vertices = (f32*)g_Memory->Alloc( u32(vert_bytes + norm_bytes + texc_bytes + color_bytes) );
             result->indices = (u32*)g_Memory->Alloc( u32(indx_bytes) );
 
-            u32 bufferSize = (3*hasVertices + 3*hasNormals + 2*hasTexcoords) * sizeof(f32);
+            u32 bufferSize = (3*hasVertices + 3*hasNormals + 2*hasTexcoords + 4*hasColors) * sizeof(f32);
 
             MemorySystem::Marker stackMark = g_Memory->GetMarker();
             f32 *buffer = (f32*)g_Memory->Alloc( bufferSize );
@@ -150,10 +160,13 @@ kMesh_t * MeshLoader::LoadPLY( const char *filename) const {
             for( u32 i=0; i < vert_n; ++i) {
                 *(float3*)buffer = *(vert_buffer + i);
                 if( hasNormals) {
-                    *(float3*)(buffer+3) = *(norm_buffer + i);
+                    *(float3*)(buffer + 3) = *(norm_buffer + i);
                 }
                 if( hasTexcoords) {
-                    *(float2*)(buffer+ 3*hasNormals + 3) = *(texc_buffer + i);
+                    *(float2*)(buffer + 3*hasNormals + 3) = *(texc_buffer + i);
+                }
+                if( hasColors) {
+                    *(float4*)(buffer + 4*hasColors + 6) = *(color_buffer + i);
                 }
                 std::memcpy( (result->vertices) + (bufferSize / sizeof(f32)) * i,
                                 buffer, bufferSize );
@@ -165,6 +178,7 @@ kMesh_t * MeshLoader::LoadPLY( const char *filename) const {
             result->hasVertices = hasVertices;
             result->hasNormals = hasNormals;
             result->hasTexcoords = hasTexcoords;
+            result->hasColors = hasColors;
         }
         std::cout << "\nENDOF MeshLoader::LoadPLY\n-------------------------\n";
 

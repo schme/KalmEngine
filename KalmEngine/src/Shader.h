@@ -54,6 +54,7 @@ class kShaderLoader {
 
 #include "../../Shaders/through.frag"
 #include "../../Shaders/through.vert"
+#include "../../Shaders/light.frag"
 #include "../../Shaders/debug.frag"
 #include "../../Shaders/debug.vert"
 

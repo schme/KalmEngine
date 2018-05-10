@@ -10,6 +10,7 @@
 
 #include "Player.h"
 #include "Camera.h"
+#include "Light.h"
 
 
 /**
@@ -17,14 +18,13 @@
  *
  * All scene objects have a camera and a player
  */
-struct kScene_t {
+struct kScene_t : public kObject {
     public:
     u32 ID;
     kPlayer *player;
     kCamera *camera;
 
     /* TODO(Kasper): Make dynamic */
-    kObject *objects[5] = {};
 
     private:
 };

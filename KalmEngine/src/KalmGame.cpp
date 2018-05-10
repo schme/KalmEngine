@@ -12,6 +12,7 @@
 #include "Camera.cpp"
 #include "Object.cpp"
 #include "Scene.cpp"
+#include "Light.cpp"
 
 #include "Sys_Config.h"
 
@@ -44,6 +45,7 @@ kScene_t * KalmGame::CreateTestScene() {
     kPlayer * player = (kPlayer*)GetMemory( sizeof( kPlayer));
     kCamera * camera = (kCamera*)GetMemory( sizeof( kCamera));
     *player = {};
+    *camera = {};
     camera->Initialize( Vec3( 0.0f, 0.0f, 5.0f), Vec3( 0.0f, 1.0f, 0.0f));
 
     /** positive y is the up axis */
@@ -51,25 +53,82 @@ kScene_t * KalmGame::CreateTestScene() {
     scene->player = player;
     scene->camera = camera;
 
-    kMesh_t *mesh = g_System->assetSystem->LoadMesh( "Assets/Models/dragon_vrip_res4.ply" );
-    //kMesh_t *mesh = g_System->assetSystem->LoadMesh( "Assets/Models/bunny.ply" );
+    kMesh_t *dragonMesh = g_System->assetSystem->LoadMesh( "Assets/Models/dragon_vrip_res4.ply" );
+    kMesh_t *cubeMesh = g_System->assetSystem->LoadMesh( "Assets/Models/cube.ply" );
+    kMesh_t *d20Mesh = g_System->assetSystem->LoadMesh( "Assets/Models/icosahedron_ascii.ply" );
 
-    vec3 testPositions[] = {
-        Vec3( 0.0f, 0.0f, 10.0f),
+    vec3 dragonPositions[] = {
+        Vec3( 0.0f, 0.0f, 0.0f),
         Vec3( 10.0f, 0.0f, 0.0f),
         Vec3( 0.0f, 0.0f, -10.0f),
         Vec3( -10.0f, 0.0f, 0.0f),
-        Vec3( 0.0f, 0.0f,  0.0f)
+        Vec3( 0.0f, 0.0f, 10.0f),
+        Vec3( 16.0f, 0.0f,  -24.0f)
     };
 
-    for( int i=0; i < DEBUG_OBJ_MAX_CHILDREN; ++i ) {
-        kObject *obj = (kObject*)GetMemory( sizeof( kObject ));
+    vec3 d20Positions[] = {
+        Vec3( -7.0f, 5.0f, 8.0f),
+        Vec3( 14.2f, 15.0f, 2.3f),
+        Vec3( 24.2f, 10.0f, -2.3f),
+        Vec3( -12.0f, 2.0f, 5.3f),
+        Vec3( -17.2f, 15.0f, -12.3f),
+    };
+
+    kObject *dragonObj = (kObject*)GetMemory( sizeof( kObject ));
+    *dragonObj = {};
+    dragonObj->children_n = 5;
+    dragonObj->scale = 20.0f;
+    MeshComponent *dragonMeshComp = (MeshComponent*)GetMemory( sizeof( MeshComponent));
+    dragonMeshComp->mesh = dragonMesh;
+    dragonObj->components[0] = dragonMeshComp;
+    dragonObj->position = dragonPositions[0];
+
+    for( u32 i=0; i < dragonObj->children_n; ++i ) {
+        kObject *childObj = (kObject*)GetMemory( sizeof( kObject ));
+        *childObj = {};
+        childObj->scale = 10.0f;
         MeshComponent *meshComp = (MeshComponent*)GetMemory( sizeof( MeshComponent));
-        meshComp->mesh = mesh;
-        obj->components[0] = meshComp;
-        obj->position = testPositions[i];
-        scene->objects[i] = obj;
+        meshComp->mesh = dragonMesh;
+        childObj->components[0] = meshComp;
+        childObj->position = dragonPositions[i+1];
+
+        dragonObj->children[i] = childObj;
     }
+
+    scene->children[0] = dragonObj;
+
+    kObject * d20Object = (kObject*)GetMemory( sizeof( kObject));
+    *d20Object = {};
+    d20Object->children_n = 3;
+    d20Object->scale = 2.0f;
+    d20Object->position = d20Positions[0];
+    MeshComponent *d20MeshComp = (MeshComponent*)GetMemory( sizeof( MeshComponent));
+    d20MeshComp->mesh = d20Mesh;
+    d20Object->components[0] = d20MeshComp;
+    scene->children[1] = d20Object;
+
+    for( u32 i=0; i < d20Object->children_n; ++i ) {
+        kObject *childObj = (kObject*)GetMemory( sizeof( kObject ));
+        *childObj = {};
+        childObj->scale = 1.0f;
+        MeshComponent *meshComp = (MeshComponent*)GetMemory( sizeof( MeshComponent));
+        meshComp->mesh = d20Mesh;
+        childObj->components[0] = meshComp;
+        childObj->position = d20Positions[i+1];
+
+        d20Object->children[i] = childObj;
+    }
+
+    kLightCube * lightCubeObj = (kLightCube*)GetMemory( sizeof( kObject ));
+    *lightCubeObj = {};
+    lightCubeObj->scale = 1.0f;
+    lightCubeObj->position = Vec3( 0.0f, 10.0f, 0.0f);
+    MeshComponent *cubeMeshComp = (MeshComponent*)GetMemory( sizeof( MeshComponent));
+    cubeMeshComp->mesh = cubeMesh;
+    lightCubeObj->components[0] = cubeMeshComp;
+    scene->children[2] = lightCubeObj;
+
+    scene->children_n = 3;
 
     return scene;
 }
@@ -83,12 +142,11 @@ void KalmGame::LoadScene( kScene_t *scene ) {
 
 void KalmGame::RunCurrentScene( const f32 deltaTime ) {
     /** Run Logic on Objects */
-    //TODO(Kasper): HARD CODED CHILD VALUE
 
     currentScene->camera->Update( deltaTime);
     currentScene->player->Update( deltaTime);
-    for( int i=0; i < DEBUG_OBJ_MAX_CHILDREN; i++) {
-        currentScene->objects[i]->Update( deltaTime );
+    for( u32 i=0; i < currentScene->children_n; i++) {
+        currentScene->children[i]->Update( deltaTime );
     }
 }
 
@@ -159,8 +217,8 @@ void KalmGame::HandleInput( const f32 deltaTime) {
     currentScene->camera->Input( deltaTime);
     currentScene->player->Input( deltaTime);
 
-    for( int i=0; i < DEBUG_OBJ_MAX_CHILDREN; i++) {
-        currentScene->objects[i]->Input( deltaTime);
+    for( u32 i=0; i < currentScene->children_n; i++) {
+        currentScene->children[i]->Input( deltaTime);
     }
 
     g_System->commonSystem->SwapAndClearState();

@@ -9,7 +9,6 @@
 #include "Types.h"
 #include "Sys_Render.h"
 #include "Sys_Shared.h"
-#include "KalmShared.h"
 
 #include "Shader.cpp"
 #include "Sys_Config.h"
@@ -22,10 +21,10 @@ static void ResizeCallback( GLFWwindow* window, const i32 numer, const i32 denom
 static void FramebufferResizeCallback( GLFWwindow *window, const i32 width, const i32 height);
 
 
-const u32 VERTEX_ARRAYS = 2;
+const u32 VERTEX_ARRAYS = 3;
 const u32 VERTEX_BUFFERS = 5;
 const u32 ELEMENT_BUFFERS = VERTEX_BUFFERS;
-const u32 SHADER_PROGRAMS = 2;
+const u32 SHADER_PROGRAMS = 5;
 const u32 TEXTURES = 1;
 
 static u32 VertexArrays[VERTEX_ARRAYS];
@@ -40,7 +39,6 @@ b32 drawWireframe = false;
 /** TODO(Kasper): Figure out how best to do multiple shaders */
 static u32 currentSceneID = 0;
 
-static kMesh_t *currentMesh = nullptr;
 static mat4 projectionMatrix = {};
 
 void kRender::LoadTexture( kTexture_t* text) {
@@ -63,38 +61,78 @@ void kRender::LoadTexture( kTexture_t* text) {
  */
 void kRender::LoadTestScene( kScene_t *scene ) const {
 
-    /** shader */
-    kShaderLoader shaderLoader;
-    shaderLoader.LoadShader( &shaders[0], through_vert, through_frag);
-    /** debug info shader */
-    shaderLoader.LoadShader( &shaders[ SHADER_PROGRAMS - 1], debug_vert, debug_frag);
-
-    MeshComponent* meshComp = (MeshComponent*)scene->objects[0]->components[0];
-    kMesh_t *mesh = meshComp->mesh;
-    currentMesh = mesh;
-
     mat4 p = GetPerspectiveMat( 60.0f, (f32)frameBufferWidth / (f32)frameBufferHeight, 0.1f, 100.0f);
 
-    SetProjectionMatrix( p);
+    /** shader */
+    kShaderLoader shaderLoader;
+    shaderLoader.LoadShader( &(shaders[0]), through_vert, through_frag);
+    shaders[0].Use();
+    shaders[0].SetMat4( "projection", p);
 
-    this->LoadVertices( currentMesh, 0);
+    shaderLoader.LoadShader( &(shaders[1]), through_vert, light_frag);
+    shaders[1].Use();
+    shaders[1].SetMat4( "projection", p);
 
+    /** debug info shader */
+    shaderLoader.LoadShader( &(shaders[2]), debug_vert, debug_frag);
+
+    /** Dragons */
+
+    MeshComponent* meshComp = (MeshComponent*)scene->children[0]->components[0];
+    kMesh_t *mesh = meshComp->mesh;
+
+    renderType_t type;
+    type.vertexArrayIndex = 0;
+    type.vertexBufferIndex = 0;
+    type.shaderIndex = 0;
+
+    this->LoadVertices( mesh, &type);
+    std::memcpy( (void*)(&renderGroups[0]), &type, sizeof( type ));
+
+
+    /** D20 */
+
+    MeshComponent* d20MeshComp = (MeshComponent*)scene->children[1]->components[0];
+    kMesh_t *d20Mesh = d20MeshComp->mesh;
+
+    renderType_t d20Type;
+    d20Type.vertexArrayIndex = 1;
+    d20Type.vertexBufferIndex = 1;
+    d20Type.shaderIndex = 0;
+
+    this->LoadVertices( d20Mesh, &d20Type);
+    std::memcpy( (void*)(&(renderGroups[1])), &d20Type, sizeof( d20Type ));
+
+
+    /** Lights */
+
+    MeshComponent* lightCubeMeshComp = (MeshComponent*)scene->children[2]->components[0];
+    kMesh_t *lightCubeMesh = lightCubeMeshComp->mesh;
+
+    renderType_t lightCubeType;
+    lightCubeType.vertexArrayIndex = 2;
+    lightCubeType.vertexBufferIndex = 2;
+    lightCubeType.shaderIndex = 1;
+
+    this->LoadVertices( lightCubeMesh, &lightCubeType);
+    std::memcpy( (void*)(&(renderGroups[2])), &lightCubeType, sizeof( lightCubeType ));
 }
 
-void kRender::LoadVertices( kMesh_t *mesh, const u32 buffer_id) const {
 
-    u32 bytesPerVertice = (3 + (3 * mesh->hasNormals) + (2 * mesh->hasTexcoords)) * sizeof(f32);
+void kRender::LoadVertices( const kMesh_t *mesh, const renderType_t *type) const {
 
-    glBindVertexArray( VertexArrays[ 0 ]);
+    u32 bytesPerVertice = (3 + (3 * mesh->hasNormals) + (2 * mesh->hasTexcoords) + (4 * mesh->hasColors)) * sizeof(f32);
 
-    glBindBuffer( GL_ARRAY_BUFFER, VertexBuffers[ buffer_id ]);
+    glBindVertexArray( VertexArrays[ type->vertexArrayIndex ]);
+
+    glBindBuffer( GL_ARRAY_BUFFER, VertexBuffers[ type->vertexBufferIndex ]);
     glBufferData( GL_ARRAY_BUFFER, mesh->vertices_n * bytesPerVertice, mesh->vertices, GL_STATIC_DRAW);
 
-    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ElementBuffers[ buffer_id ]);
+    glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ElementBuffers[ type->vertexBufferIndex ]);
     glBufferData( GL_ELEMENT_ARRAY_BUFFER, mesh->indices_n * sizeof( u32), mesh->indices, GL_STATIC_DRAW);
 
     /* f32[3] position, f32[3] normal, f32[2] texCoord */
-    const u32 stride = (3 * mesh->hasVertices + 3 * mesh->hasNormals + 2 * mesh->hasTexcoords) * sizeof(f32);
+    const u32 stride = (3 * mesh->hasVertices + 3 * mesh->hasNormals + 2 * mesh->hasTexcoords + 4 * mesh->hasColors ) * sizeof(f32);
 
     /* position */
     glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
@@ -108,8 +146,14 @@ void kRender::LoadVertices( kMesh_t *mesh, const u32 buffer_id) const {
 
     if( mesh->hasTexcoords) {
         /* texcoord */
-        glVertexAttribPointer( 2, 2, GL_FLOAT, GL_FALSE, stride, (void*)(6 * sizeof(f32)));
+        glVertexAttribPointer( 2, 2, GL_FLOAT, GL_FALSE, stride, (void*)((3 + 3 * mesh->hasNormals) * sizeof(f32)));
         glEnableVertexAttribArray(2);
+    }
+
+    if( mesh->hasColors) {
+        /* color */
+        glVertexAttribPointer( 3, 4, GL_FLOAT, GL_FALSE, stride, (void*)((3 + 3 * mesh->hasNormals + 2 * mesh->hasTexcoords) * sizeof(f32)));
+        glEnableVertexAttribArray(3);
     }
 
 }
@@ -126,34 +170,46 @@ void kRender::DrawTestScene( kScene_t *scene) const {
 
     CheckToggleWireframe();
 
-    glBindVertexArray( VertexArrays[0]);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    shaders[0].Use();
     kCamera *camera = scene->camera;
 
     mat4 view = LookAt( camera->position, camera->position + camera->front, camera->right, camera->up );
     view = Transpose(view);
 
-    for( int i=0; i < 5; ++i) {
-
-        mat4 model = GetIdentityMat();
-
-        /** the order of translate and scale does not seem to matter */
-        model = Transpose(Translate( model, scene->objects[i]->position ));
-
-        model = Scale( model, Vec3(20.0f));
-
-        f32 angle = 90.0f * i;
-        model = RotationY( Radians(angle)) * model;
-
-        mat4 modelViewMatrix = model * view;
-        SetModelViewMatrix( modelViewMatrix);
-
-        glDrawElements( GL_TRIANGLES, currentMesh->indices_n, GL_UNSIGNED_INT, 0);
-    }
+    /* dragons */
+    DrawObject_r( scene->children[0], GetIdentityMat(), Vec3( 0.0f, 0.0f, 0.0f), view, &renderGroups[0] );
+    DrawObject_r( scene->children[1], GetIdentityMat(), Vec3( 0.0f, 0.0f, 0.0f), view, &renderGroups[1] );
+    DrawObject_r( scene->children[2], GetIdentityMat(), Vec3( 0.0f, 0.0f, 0.0f), view, &renderGroups[2] );
 
     glfwSwapBuffers((GLFWwindow*)window);
+}
+
+/**
+ * rotation should be in degrees
+ */
+void kRender::DrawObject_r( const kObject *obj, const mat4 parentModelView, const vec3 rotation, const mat4 view, const renderType_t *rndGroup) const {
+
+    glBindVertexArray( VertexArrays[ rndGroup->vertexArrayIndex]);
+
+    mat4 model = GetIdentityMat();
+
+    /** the order of translate and scale does not seem to matter */
+    model = Transpose(Translate( model, obj->position ));
+
+    model = Scale( model, Vec3( obj->scale));
+
+    model = RotationX( Radians(rotation.x)) * RotationY( Radians(rotation.y)) * RotationZ( Radians(rotation.z)) * model;
+
+    mat4 modelViewMatrix = model * view;
+
+    /** This also runs Use() on the shader object */
+    SetModelViewMatrix( rndGroup->shaderIndex, modelViewMatrix);
+    glDrawElements( GL_TRIANGLES, ((MeshComponent*)obj->components[0])->mesh->indices_n, GL_UNSIGNED_INT, 0);
+
+    for( u32 i = 0; i < obj->children_n; i++) {
+        DrawObject_r( obj->children[i], modelViewMatrix, Vec3(0.0f), view, rndGroup);
+    }
 }
 
 
@@ -187,27 +243,23 @@ void kRender::Initialize() {
     glGenBuffers( ELEMENT_BUFFERS, ElementBuffers);
     glGenTextures( TEXTURES, Textures);
 
-    /** load debug shaders */
-    kShaderLoader shaderLoader;
-    shaderLoader.LoadShader( &shaders[ SHADER_PROGRAMS - 1], debug_vert, debug_frag);
 }
 
 /** TODO(Kasper): Support multiple shaders */
-void kRender::SetMatrixUniform( const char *name, mat4 matrix) const {
-    shaders[0].Use();
-    shaders[0].SetMat4( name, matrix );
+void kRender::SetMatrixUniform( const u32 shaderID, const char *name, mat4 matrix) const {
+    shaders[shaderID].Use();
+    shaders[shaderID].SetMat4( name, matrix );
 }
 
-void kRender::SetModelViewMatrix( mat4 modelView ) const {
-    shaders[0].Use();
-    shaders[0].SetMat4( "modelView", modelView );
+void kRender::SetModelViewMatrix( const u32 shaderID, const mat4 modelView ) const {
+    shaders[shaderID].Use();
+    shaders[shaderID].SetMat4( "modelView", modelView );
 }
 
-
-void kRender::SetProjectionMatrix( mat4 projection ) const {
+void kRender::SetProjectionMatrix( const u32 shaderID, const mat4 projection ) const {
     projectionMatrix = projection;
-    shaders[0].Use();
-    shaders[0].SetMat4( "projection", projection);
+    shaders[shaderID].Use();
+    shaders[shaderID].SetMat4( "projection", projection);
 }
 
 

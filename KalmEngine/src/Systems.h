@@ -46,8 +46,9 @@ class MemorySystem {
 class RenderSystem {
     public:
     virtual void    Draw() const =0;
-    virtual void    SetModelViewMatrix( mat4 modelView) const =0;
-    virtual void    SetProjectionMatrix( mat4 projection) const =0;
+    virtual void    SetModelViewMatrix( const u32 shaderID, const mat4 modelView) const =0;
+    virtual void    SetProjectionMatrix( const u32 shaderID, const mat4 projection) const =0;
+    virtual void    SetMatrixUniform( const u32 shaderID, const char *name, const mat4 matrix) const =0;
 
     virtual void    LoadTestScene( kScene_t *scene) const =0;
     //virtual void    LoadTestTestScene( kScene_t *scene) const =0;

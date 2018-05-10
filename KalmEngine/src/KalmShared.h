@@ -50,7 +50,6 @@ struct gameImport_t {
     ConfigSystem *          configSystem;
 };
 
-
 struct gameButtonState_t {
     s32 toggleCount;
     b32 endedDown;

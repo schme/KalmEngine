@@ -12,7 +12,8 @@
 
 enum ComponentType_e {
     NO_TYPE,
-    MESH_COMPONENT
+    MESH_COMPONENT,
+    MOVER_COMPONENT
 };
 
 class kComponent {

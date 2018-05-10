@@ -60,7 +60,7 @@ void kCamera::Input( const f32 deltaTime ) {
 
 /**
  * TODO(Kasper): Switch to a weighted sample buffer
- * TODO(Kasper): Switch Update functions to a script
+ * TODO(Kasper): Move Update functions to a script
  */
 void kCamera::Update( const f32 deltaTime ) {
     this->position += this->velocity * deltaTime;
