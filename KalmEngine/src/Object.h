@@ -22,7 +22,7 @@ class kObject {
     vec3 velocity = {};
     f32 scale = 1.0f;
 
-    /* TODO(Kasper): make dynamic?*/
+    /* TODO(Kasper): make dynamic */
     kObject *children[DEBUG_OBJ_MAX_CHILDREN] = {};
     u32 children_n = 0;
 

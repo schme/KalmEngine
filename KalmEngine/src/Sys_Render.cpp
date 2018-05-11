@@ -21,11 +21,11 @@ static void ResizeCallback( GLFWwindow* window, const i32 numer, const i32 denom
 static void FramebufferResizeCallback( GLFWwindow *window, const i32 width, const i32 height);
 
 
-const u32 VERTEX_ARRAYS = 4;
+const u32 VERTEX_ARRAYS = 5;
 const u32 VERTEX_BUFFERS = 5;
 const u32 ELEMENT_BUFFERS = VERTEX_BUFFERS;
 const u32 SHADER_PROGRAMS = 5;
-const u32 TEXTURES = 1;
+const u32 TEXTURES = 5;
 
 static u32 VertexArrays[VERTEX_ARRAYS];
 static u32 VertexBuffers[VERTEX_BUFFERS];
@@ -115,7 +115,20 @@ void kRender::LoadTestScene( kScene_t *scene ) const {
     lightCubeType.shaderIndex = 1;
 
     this->LoadVertices( lightCubeMesh, &lightCubeType);
-    std::memcpy( (void*)(&(renderGroups[2])), &lightCubeType, sizeof( lightCubeType ));
+    std::memcpy( (void*)(&(this->renderGroups[2])), &lightCubeType, sizeof( lightCubeType ));
+
+    /** Ground */
+
+    MeshComponent* groundMeshComp = (MeshComponent*)scene->children[3]->components[ComponentType_e::MESH_COMPONENT];
+    kMesh_t *groundMesh = groundMeshComp->mesh;
+
+    renderType_t groundType;
+    groundType.vertexArrayIndex = 3;
+    groundType.vertexBufferIndex = 3;
+    groundType.shaderIndex = 0;
+
+    this->LoadVertices( groundMesh, &groundType);
+    std::memcpy( (void*)(&(this->renderGroups[3])), &groundType, sizeof( groundType ));
 }
 
 
@@ -189,6 +202,7 @@ void kRender::DrawTestScene( kScene_t *scene) const {
     DrawObject_r( scene->children[0], GetIdentityMat(), Vec3( 0.0f, 0.0f, 0.0f), view, &renderGroups[0] );
     DrawObject_r( scene->children[1], GetIdentityMat(), Vec3( 0.0f, 0.0f, 0.0f), view, &renderGroups[1] );
     DrawObject_r( scene->children[2], GetIdentityMat(), Vec3( 0.0f, 0.0f, 0.0f), view, &renderGroups[2] );
+    DrawObject_r( scene->children[3], GetIdentityMat(), Vec3( 90.0f, 0.0f, 0.0f), view, &renderGroups[3] );
 
     glfwSwapBuffers((GLFWwindow*)window);
 }
@@ -209,7 +223,7 @@ void kRender::DrawObject_r( const kObject *obj, const mat4 parentModelMatrix, co
 
     model = RotationX( Radians(rotation.x)) * RotationY( Radians(rotation.y)) * RotationZ( Radians(rotation.z)) * model;
 
-    /** This also runs Use() on the shader object */
+    /** Also runs Use() on the shader object */
     SetModelAndViewMatrix( rndGroup->shaderIndex, model, view);
 
     MaterialComponent *mat = (MaterialComponent *)obj->components[ ComponentType_e::MATERIAL_COMPONENT];

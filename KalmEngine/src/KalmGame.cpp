@@ -56,7 +56,7 @@ kScene_t * KalmGame::CreateTestScene() {
     kMesh_t *dragonMesh = g_System->assetSystem->LoadMesh( "Assets/Models/dragon.ply" );
     kMesh_t *cubeMesh = g_System->assetSystem->LoadMesh( "Assets/Models/cube.ply" );
     kMesh_t *d20Mesh = g_System->assetSystem->LoadMesh( "Assets/Models/icosahedron_ascii.ply" );
-    //kMesh_t *cubeMesh = d20Mesh;
+    kMesh_t *groundMesh = g_System->assetSystem->LoadMesh( "Assets/Models/plane.ply" );
 
     vec3 dragonPositions[] = {
         Vec3( 0.0f, 0.0f, 0.0f),
@@ -180,13 +180,31 @@ kScene_t * KalmGame::CreateTestScene() {
 
     MaterialComponent *cubeMatComp = (MaterialComponent*)GetMemory( sizeof( MaterialComponent));
     cubeMatComp->material.color = Vec3( 1.0f, 1.0f, 1.0f);
-    cubeMatComp->material.roughness = 32;
+    cubeMatComp->material.roughness = 32.0f;
 
     lightCubeObj->components[ComponentType_e::MESH_COMPONENT] = cubeMeshComp;
     lightCubeObj->components[ComponentType_e::MATERIAL_COMPONENT] = cubeMatComp;
     scene->children[2] = lightCubeObj;
 
-    scene->children_n = 3;
+    /** Ground Mesh */
+    kObject * groundObj = (kObject*)GetMemory( sizeof( kObject ));
+    *groundObj = {};
+    groundObj->scale = 50.0f;
+    groundObj->position = Vec3( 0.0f, 1.0f, 0.0f);
+
+    MeshComponent *groundMeshComp = (MeshComponent*)GetMemory( sizeof( MeshComponent));
+    groundMeshComp->mesh = groundMesh;
+
+    MaterialComponent *groundMatComp = (MaterialComponent*)GetMemory( sizeof( MaterialComponent));
+    groundMatComp->material.color = Vec3( 0.2f, 0.5f, 0.1f);
+    groundMatComp->material.roughness = 0.0f;
+
+    groundObj->components[ ComponentType_e::MESH_COMPONENT] = groundMeshComp;
+    groundObj->components[ ComponentType_e::MATERIAL_COMPONENT] = groundMatComp;
+
+    scene->children[3] = groundObj;
+
+    scene->children_n = 4;
 
     return scene;
 }
