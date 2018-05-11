@@ -145,6 +145,17 @@ inline vec4 Vec4( f32 x, f32 y, f32 z, f32 w ) {
     return result;
 }
 
+
+inline vec4 Vec4( vec3 v, f32 w ) {
+    vec4 result;
+
+    result.x = v.x;
+    result.y = v.y;
+    result.z = v.z;
+    result.w = w;
+
+    return result;
+}
 /**
  * Operators
  */

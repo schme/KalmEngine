@@ -53,12 +53,14 @@ kScene_t * KalmGame::CreateTestScene() {
     scene->player = player;
     scene->camera = camera;
 
-    kMesh_t *dragonMesh = g_System->assetSystem->LoadMesh( "Assets/Models/dragon_vrip_res4.ply" );
+    kMesh_t *dragonMesh = g_System->assetSystem->LoadMesh( "Assets/Models/dragon.ply" );
     kMesh_t *cubeMesh = g_System->assetSystem->LoadMesh( "Assets/Models/cube.ply" );
     kMesh_t *d20Mesh = g_System->assetSystem->LoadMesh( "Assets/Models/icosahedron_ascii.ply" );
+    //kMesh_t *cubeMesh = d20Mesh;
 
     vec3 dragonPositions[] = {
         Vec3( 0.0f, 0.0f, 0.0f),
+
         Vec3( 10.0f, 0.0f, 0.0f),
         Vec3( 0.0f, 0.0f, -10.0f),
         Vec3( -10.0f, 0.0f, 0.0f),
@@ -68,28 +70,56 @@ kScene_t * KalmGame::CreateTestScene() {
 
     vec3 d20Positions[] = {
         Vec3( -7.0f, 5.0f, 8.0f),
+
         Vec3( 14.2f, 15.0f, 2.3f),
         Vec3( 24.2f, 10.0f, -2.3f),
         Vec3( -12.0f, 2.0f, 5.3f),
         Vec3( -17.2f, 15.0f, -12.3f),
+        Vec3( 9.2f, 0.0f, 3.2f),
     };
+
+    kMaterial_t dragonMaterials[6] = {};
+    dragonMaterials[0].color = Vec3( 0.2f, 0.7f, 0.7f); dragonMaterials[0].roughness = 32.0f;
+    dragonMaterials[1].color = Vec3( 0.7f, 0.2f, 0.3f); dragonMaterials[1].roughness = 32.0f;
+    dragonMaterials[2].color = Vec3( 0.5f, 0.6f, 0.7f); dragonMaterials[2].roughness = 128.0f;
+    dragonMaterials[3].color = Vec3( 0.4f, 0.3f, 0.7f); dragonMaterials[3].roughness = 24.0f;
+    dragonMaterials[4].color = Vec3( 0.54f, 0.61f, 0.33f); dragonMaterials[4].roughness = 64.0f;
+    dragonMaterials[5].color = Vec3( 0.15f, 0.15f, 0.15f); dragonMaterials[5].roughness = 8.0f;
+
+    /** Dragons */
 
     kObject *dragonObj = (kObject*)GetMemory( sizeof( kObject ));
     *dragonObj = {};
     dragonObj->children_n = 5;
     dragonObj->scale = 20.0f;
+
     MeshComponent *dragonMeshComp = (MeshComponent*)GetMemory( sizeof( MeshComponent));
     dragonMeshComp->mesh = dragonMesh;
-    dragonObj->components[0] = dragonMeshComp;
+
+    MaterialComponent *dragonMaterialComp = (MaterialComponent*)GetMemory( sizeof( MaterialComponent));
+    dragonMaterialComp->material = dragonMaterials[0];
+
+    dragonObj->components[ComponentType_e::MESH_COMPONENT] = dragonMeshComp;
+    dragonObj->components[ComponentType_e::MATERIAL_COMPONENT] = dragonMaterialComp;
+
     dragonObj->position = dragonPositions[0];
+
+    /** Dragon children */
 
     for( u32 i=0; i < dragonObj->children_n; ++i ) {
         kObject *childObj = (kObject*)GetMemory( sizeof( kObject ));
         *childObj = {};
-        childObj->scale = 10.0f;
+        childObj->scale = 15.0f;
+
         MeshComponent *meshComp = (MeshComponent*)GetMemory( sizeof( MeshComponent));
         meshComp->mesh = dragonMesh;
-        childObj->components[0] = meshComp;
+
+        MaterialComponent *matComp = (MaterialComponent*)GetMemory( sizeof( MaterialComponent));
+        matComp->material = dragonMaterials[i+1];
+
+        childObj->components[ComponentType_e::MESH_COMPONENT] = meshComp;
+        childObj->components[ComponentType_e::MATERIAL_COMPONENT] = matComp;
+
         childObj->position = dragonPositions[i+1];
 
         dragonObj->children[i] = childObj;
@@ -97,41 +127,70 @@ kScene_t * KalmGame::CreateTestScene() {
 
     scene->children[0] = dragonObj;
 
+    /** D20 */
+
     kObject * d20Object = (kObject*)GetMemory( sizeof( kObject));
     *d20Object = {};
-    d20Object->children_n = 3;
+    d20Object->children_n = 5;
     d20Object->scale = 2.0f;
     d20Object->position = d20Positions[0];
     MeshComponent *d20MeshComp = (MeshComponent*)GetMemory( sizeof( MeshComponent));
     d20MeshComp->mesh = d20Mesh;
-    d20Object->components[0] = d20MeshComp;
+
+    MaterialComponent *d20MaterialComp = (MaterialComponent*)GetMemory( sizeof( MaterialComponent));
+    d20MaterialComp->material.color = Vec3( 0.6f, 0.4f, 0.0f);
+    d20MaterialComp->material.roughness = 64;
+
+    d20Object->components[ComponentType_e::MESH_COMPONENT] = d20MeshComp;
+    d20Object->components[ComponentType_e::MATERIAL_COMPONENT] = d20MaterialComp;
+
     scene->children[1] = d20Object;
+
+    /** D20 children */
 
     for( u32 i=0; i < d20Object->children_n; ++i ) {
         kObject *childObj = (kObject*)GetMemory( sizeof( kObject ));
         *childObj = {};
-        childObj->scale = 1.0f;
+        childObj->scale = 1.1f;
+
         MeshComponent *meshComp = (MeshComponent*)GetMemory( sizeof( MeshComponent));
         meshComp->mesh = d20Mesh;
-        childObj->components[0] = meshComp;
+
+        MaterialComponent *matComp = (MaterialComponent*)GetMemory( sizeof( MaterialComponent));
+        matComp->material.color = Vec3( 1.0f * sinf((f32)i), 1.0f - sinf((f32)i), 1.0f / sinf((f32)i));
+        matComp->material.roughness = 128/1+(f32)i;
+
+        childObj->components[ComponentType_e::MESH_COMPONENT] = meshComp;
+        childObj->components[ComponentType_e::MATERIAL_COMPONENT] = matComp;
         childObj->position = d20Positions[i+1];
 
         d20Object->children[i] = childObj;
     }
 
-    kLightCube * lightCubeObj = (kLightCube*)GetMemory( sizeof( kObject ));
+    /** Light Cubes */
+
+    kPointLight * lightCubeObj = (kPointLight*)GetMemory( sizeof( kPointLight ));
     *lightCubeObj = {};
-    lightCubeObj->scale = 1.0f;
+    lightCubeObj->scale = 0.5f;
     lightCubeObj->position = Vec3( 0.0f, 10.0f, 0.0f);
+    ((kPointLight*)lightCubeObj)->color = Vec3( 1.0f, 1.0f, 1.0f);
+
     MeshComponent *cubeMeshComp = (MeshComponent*)GetMemory( sizeof( MeshComponent));
     cubeMeshComp->mesh = cubeMesh;
-    lightCubeObj->components[0] = cubeMeshComp;
+
+    MaterialComponent *cubeMatComp = (MaterialComponent*)GetMemory( sizeof( MaterialComponent));
+    cubeMatComp->material.color = Vec3( 1.0f, 1.0f, 1.0f);
+    cubeMatComp->material.roughness = 32;
+
+    lightCubeObj->components[ComponentType_e::MESH_COMPONENT] = cubeMeshComp;
+    lightCubeObj->components[ComponentType_e::MATERIAL_COMPONENT] = cubeMatComp;
     scene->children[2] = lightCubeObj;
 
     scene->children_n = 3;
 
     return scene;
 }
+
 
 void KalmGame::LoadTestScene( kScene_t *scene) {
     g_System->renderSystem->LoadTestScene( scene );

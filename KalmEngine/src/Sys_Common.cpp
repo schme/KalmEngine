@@ -235,6 +235,12 @@ void KeyCallback( GLFWwindow* wnd, const i32 key, const i32 scancode, const i32 
             ToggleButton( oldButton, newButton, action );
             break;
         }
+        case ( GLFW_KEY_LEFT_CONTROL ): {
+            gameButtonState_t *oldButton = &oldState->l_ctrl;
+            gameButtonState_t *newButton = &newState->l_ctrl;
+            ToggleButton( oldButton, newButton, action );
+            break;
+        }
         case ( GLFW_KEY_F1 ): {
             gameButtonState_t *oldButton = &oldState->actionF1;
             gameButtonState_t *newButton = &newState->actionF1;

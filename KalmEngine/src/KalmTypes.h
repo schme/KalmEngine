@@ -55,5 +55,10 @@ struct renderType_t {
     i32 shaderIndex = -1;
 };
 
+struct kMaterial_t {
+    vec3 color = Vec3(1.0f, 0.0f, 1.0f);
+    f32 roughness = 32.0f;
+};
+
 
 #endif /* end of include guard: KALMTYPES_H_ */

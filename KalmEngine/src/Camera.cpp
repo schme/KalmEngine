@@ -30,11 +30,14 @@ void kCamera::Input( const f32 deltaTime ) {
 
     UpdateVectors();
 
-    f32 movSpeedModifier = 3.0f;
+    f32 movSpeedSprintModifier = 3.0f;
+    f32 movSpeedCrawlModifier = 0.3f;
     f32 movSpeed = this->movementSpeed;
 
     if( input->l_shift.endedDown ) {
-        movSpeed *= movSpeedModifier;
+        movSpeed *= movSpeedSprintModifier;
+    } else if( input->l_ctrl.endedDown ) {
+        movSpeed *= movSpeedCrawlModifier;
     }
 
     if( input->up.endedDown ) {

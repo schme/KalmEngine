@@ -52,10 +52,16 @@ class kShaderLoader {
     void CheckCompileErrors( u32 ID, const char* type) const ;
 };
 
-#include "../../Shaders/through.frag"
 #include "../../Shaders/through.vert"
+#include "../../Shaders/through.frag"
+
+#include "../../Shaders/phong.vert"
+#include "../../Shaders/phong.frag"
+
+#include "../../Shaders/light.vert"
 #include "../../Shaders/light.frag"
-#include "../../Shaders/debug.frag"
+
 #include "../../Shaders/debug.vert"
+#include "../../Shaders/debug.frag"
 
 #endif /* end of include guard: SHADER_H_ */

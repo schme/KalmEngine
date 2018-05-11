@@ -13,11 +13,17 @@
 #include "Object.h"
 
 class kLight : public kObject {
+    public:
     vec3 color = {};
+};
+
+class kPointLight : public kLight {
+    public:
 };
 
 
 class kLightCube : public kLight {
+    public:
 };
 
 

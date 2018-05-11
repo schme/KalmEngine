@@ -46,7 +46,7 @@ void kShaderLoader::CheckCompileErrors(GLuint shader, const char* type) const {
         if(!success)
         {
             glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-            printf( "Failed shader compilation: %s\n%s\n", type, infoLog);
+            printf( "Failed shader compilation: %u\t%s\n%s\n", shader, type, infoLog);
         }
     }
     else {
@@ -54,7 +54,7 @@ void kShaderLoader::CheckCompileErrors(GLuint shader, const char* type) const {
         if(!success)
         {
             glGetProgramInfoLog(shader, 1024, NULL, infoLog);
-            printf( "Failed shader linking: %s\n%s\n", type, infoLog);
+            printf( "Failed shader linking: %u\t%s\n%s\n", shader, type, infoLog);
         }
     }
 }

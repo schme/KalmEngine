@@ -23,10 +23,14 @@ class kRender : public RenderSystem {
         void Draw() const;
         void LoadTestScene( kScene_t *scene ) const;
         void DrawTestScene( kScene_t *scene) const;
-        void DrawObject_r(const kObject *obj, const mat4 parentModelView, const vec3 rotation, const mat4 view, const renderType_t *rndGroup ) const;
+        void DrawObject_r(const kObject *obj, const mat4 parentModelMatrix, const vec3 rotation, const mat4 view, const renderType_t *rndGroup ) const;
         void SetProjectionMatrix( const u32 shaderID, const mat4 projection) const;
         void SetModelViewMatrix( const u32 shaderId, const mat4 modelView) const;
+        void SetModelAndViewMatrix( const u32 shaderID, const mat4 model, const mat4 view) const;
         void SetMatrixUniform( const u32 shaderID, const char *name, const mat4 matrix) const;
+        void SetLightsUniform( Shader *shader, const kPointLight *lights, const u32 lights_n ) const;
+        void SetViewPosUniform( Shader *shader, const vec3 position) const;
+        void SetMaterialUniform( Shader *shader, const MaterialComponent *mat) const;
 
         /** SystemLocal methods */
         void Initialize();

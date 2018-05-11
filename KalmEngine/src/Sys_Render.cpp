@@ -21,7 +21,7 @@ static void ResizeCallback( GLFWwindow* window, const i32 numer, const i32 denom
 static void FramebufferResizeCallback( GLFWwindow *window, const i32 width, const i32 height);
 
 
-const u32 VERTEX_ARRAYS = 3;
+const u32 VERTEX_ARRAYS = 4;
 const u32 VERTEX_BUFFERS = 5;
 const u32 ELEMENT_BUFFERS = VERTEX_BUFFERS;
 const u32 SHADER_PROGRAMS = 5;
@@ -65,11 +65,11 @@ void kRender::LoadTestScene( kScene_t *scene ) const {
 
     /** shader */
     kShaderLoader shaderLoader;
-    shaderLoader.LoadShader( &(shaders[0]), through_vert, through_frag);
+    shaderLoader.LoadShader( &(shaders[0]), phong_vert, phong_frag);
     shaders[0].Use();
     shaders[0].SetMat4( "projection", p);
 
-    shaderLoader.LoadShader( &(shaders[1]), through_vert, light_frag);
+    shaderLoader.LoadShader( &(shaders[1]), light_vert, light_frag);
     shaders[1].Use();
     shaders[1].SetMat4( "projection", p);
 
@@ -78,21 +78,21 @@ void kRender::LoadTestScene( kScene_t *scene ) const {
 
     /** Dragons */
 
-    MeshComponent* meshComp = (MeshComponent*)scene->children[0]->components[0];
+    MeshComponent* meshComp = (MeshComponent*)scene->children[0]->components[ComponentType_e::MESH_COMPONENT];
     kMesh_t *mesh = meshComp->mesh;
 
-    renderType_t type;
-    type.vertexArrayIndex = 0;
-    type.vertexBufferIndex = 0;
-    type.shaderIndex = 0;
+    renderType_t dragonType;
+    dragonType.vertexArrayIndex = 0;
+    dragonType.vertexBufferIndex = 0;
+    dragonType.shaderIndex = 0;
 
-    this->LoadVertices( mesh, &type);
-    std::memcpy( (void*)(&renderGroups[0]), &type, sizeof( type ));
+    this->LoadVertices( mesh, &dragonType);
+    std::memcpy( (void*)(&renderGroups[0]), &dragonType, sizeof( dragonType ));
 
 
     /** D20 */
 
-    MeshComponent* d20MeshComp = (MeshComponent*)scene->children[1]->components[0];
+    MeshComponent* d20MeshComp = (MeshComponent*)scene->children[1]->components[ComponentType_e::MESH_COMPONENT];
     kMesh_t *d20Mesh = d20MeshComp->mesh;
 
     renderType_t d20Type;
@@ -106,7 +106,7 @@ void kRender::LoadTestScene( kScene_t *scene ) const {
 
     /** Lights */
 
-    MeshComponent* lightCubeMeshComp = (MeshComponent*)scene->children[2]->components[0];
+    MeshComponent* lightCubeMeshComp = (MeshComponent*)scene->children[2]->components[ComponentType_e::MESH_COMPONENT];
     kMesh_t *lightCubeMesh = lightCubeMeshComp->mesh;
 
     renderType_t lightCubeType;
@@ -177,6 +177,14 @@ void kRender::DrawTestScene( kScene_t *scene) const {
     mat4 view = LookAt( camera->position, camera->position + camera->front, camera->right, camera->up );
     view = Transpose(view);
 
+    /**
+     * TODO(Kasper): Make light implementation more generic. Currently we store all of them in children[2],
+     * but this is silly
+     */
+
+    SetLightsUniform( &shaders[0], (kPointLight*)scene->children[2], 1 );
+    SetViewPosUniform( &shaders[0], scene->camera->position);
+
     /* dragons */
     DrawObject_r( scene->children[0], GetIdentityMat(), Vec3( 0.0f, 0.0f, 0.0f), view, &renderGroups[0] );
     DrawObject_r( scene->children[1], GetIdentityMat(), Vec3( 0.0f, 0.0f, 0.0f), view, &renderGroups[1] );
@@ -188,7 +196,7 @@ void kRender::DrawTestScene( kScene_t *scene) const {
 /**
  * rotation should be in degrees
  */
-void kRender::DrawObject_r( const kObject *obj, const mat4 parentModelView, const vec3 rotation, const mat4 view, const renderType_t *rndGroup) const {
+void kRender::DrawObject_r( const kObject *obj, const mat4 parentModelMatrix, const vec3 rotation, const mat4 view, const renderType_t *rndGroup) const {
 
     glBindVertexArray( VertexArrays[ rndGroup->vertexArrayIndex]);
 
@@ -201,14 +209,17 @@ void kRender::DrawObject_r( const kObject *obj, const mat4 parentModelView, cons
 
     model = RotationX( Radians(rotation.x)) * RotationY( Radians(rotation.y)) * RotationZ( Radians(rotation.z)) * model;
 
-    mat4 modelViewMatrix = model * view;
-
     /** This also runs Use() on the shader object */
-    SetModelViewMatrix( rndGroup->shaderIndex, modelViewMatrix);
-    glDrawElements( GL_TRIANGLES, ((MeshComponent*)obj->components[0])->mesh->indices_n, GL_UNSIGNED_INT, 0);
+    SetModelAndViewMatrix( rndGroup->shaderIndex, model, view);
+
+    MaterialComponent *mat = (MaterialComponent *)obj->components[ ComponentType_e::MATERIAL_COMPONENT];
+    SetMaterialUniform( &shaders[rndGroup->shaderIndex], mat);
+
+    kMesh_t *mesh = ((MeshComponent*)(obj->components[ComponentType_e::MESH_COMPONENT]))->mesh;
+    glDrawElements( GL_TRIANGLES, mesh->indices_n, GL_UNSIGNED_INT, 0);
 
     for( u32 i = 0; i < obj->children_n; i++) {
-        DrawObject_r( obj->children[i], modelViewMatrix, Vec3(0.0f), view, rndGroup);
+        DrawObject_r( obj->children[i], model, Vec3(0.0f), view, rndGroup);
     }
 }
 
@@ -244,11 +255,42 @@ void kRender::Initialize() {
     glGenTextures( TEXTURES, Textures);
 
 }
+void kRender::SetMaterialUniform( Shader *shader, const MaterialComponent *mat ) const {
+    shader->Use();
+    glUniform3fv( glGetUniformLocation( shader->ID, "material.color"), 1, mat->material.color.Q);
+    glUniform1f( glGetUniformLocation( shader->ID, "material.roughness"), mat->material.roughness);
+}
 
-/** TODO(Kasper): Support multiple shaders */
+void kRender::SetViewPosUniform(Shader *shader, const vec3 position) const {
+    shader->Use();
+    shader->SetVec3( "viewPos", position);
+}
+
+void kRender::SetLightsUniform( Shader *shader, const kPointLight *lights, const u32 lights_n ) const {
+    kMemory::Marker mark = g_Memory->GetMarker();
+    vec4 *buffer = (vec4*)g_Memory->Alloc( lights_n * 2 * sizeof(vec4));
+    for( u32 i=0; i < lights_n; i++) {
+        *buffer = {};
+        buffer[i] = Vec4( lights->color, 1.0f);
+        buffer[i+1] = Vec4( lights->position, 1.0f);
+    }
+
+    shader->Use();
+    glUniform4fv ( glGetUniformLocation( shader->ID, "lights[0].color"), 1, (f32*)buffer);
+    glUniform4fv ( glGetUniformLocation( shader->ID, "lights[0].position"), 1, (f32*)(buffer + 1));
+
+    g_Memory->Free( mark );
+}
+
 void kRender::SetMatrixUniform( const u32 shaderID, const char *name, mat4 matrix) const {
     shaders[shaderID].Use();
     shaders[shaderID].SetMat4( name, matrix );
+}
+
+void kRender::SetModelAndViewMatrix( const u32 shaderID, const mat4 model, const mat4 view) const {
+    shaders[shaderID].Use();
+    shaders[shaderID].SetMat4( "model", model);
+    shaders[shaderID].SetMat4( "view", view);
 }
 
 void kRender::SetModelViewMatrix( const u32 shaderID, const mat4 modelView ) const {

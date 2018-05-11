@@ -10,10 +10,13 @@
 
 #include "KalmTypes.h"
 
+/** used as indices */
 enum ComponentType_e {
-    NO_TYPE,
+    NO_TYPE = -1,
     MESH_COMPONENT,
-    MOVER_COMPONENT
+    MATERIAL_COMPONENT,
+    MOVER_COMPONENT,
+    COMPONENTS_N
 };
 
 class kComponent {
@@ -25,7 +28,16 @@ class kComponent {
 class MeshComponent : public kComponent {
     public:
     ComponentType_e type = MESH_COMPONENT;
+
     kMesh_t *mesh = {};
+};
+
+
+class MaterialComponent : public kComponent {
+    public:
+    ComponentType_e type = MATERIAL_COMPONENT;
+
+    kMaterial_t material = {};
 };
 
 #endif /* end of include guard: COMPONENT_H_ */
