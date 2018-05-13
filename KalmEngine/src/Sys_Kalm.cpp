@@ -13,7 +13,7 @@
 #include "Sys_Assets.cpp"
 #include "Sys_Config.cpp"
 
-#undef GLAD_DEBUG
+//#undef GLAD_DEBUG
 
 
 // GLAD_DEBUG is only defined if the c-debug generator was used
@@ -24,12 +24,22 @@ void pre_gl_call(const char *name, void *funcptr, int len_args, ...) {
 }
 
 void pre_gl_clear(u32 thing) {
-    printf("glClear() thing: %u\n", thing);
+    //printf("glClear() thing: %u\n", thing);
+    // call glClear here without calling glClear (infinite recursion)
+}
+
+void post_gl_call( const char *name, void *funcptr, int len_args, ...) {
+    GLenum error_code;
+    error_code = glad_glGetError();
+
+    if (error_code != GL_NO_ERROR) {
+        fprintf(stderr, "ERROR %d in %s\n", error_code, name);
+    }
 }
 #endif
 
 
-const u8 GL_Version_Major = 3;
+const u8 GL_Version_Major = 4;
 const u8 GL_Version_Minor = 3;
 
 static const u32 memoryByteSize = Megabytes( 64 );
@@ -80,11 +90,12 @@ b32 InitializeGlfw() {
 
 #ifdef GLAD_DEBUG
     // before every opengl call call pre_gl_call
-    glad_set_pre_callback(pre_gl_call);
+    //glad_set_pre_callback(pre_gl_call);
     // post callback checks for glGetError by default
+    glad_set_post_callback(post_gl_call);
     // don't use the callback for glClear
     // (glClear could be replaced with your own function)
-    glad_debug_glClear = pre_gl_clear;
+    //glad_debug_glClear = pre_gl_clear;
 #endif
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, GL_Version_Major);

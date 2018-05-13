@@ -1,18 +1,17 @@
-const char *phong_frag = R"foo(
+const char *phong_texture_frag = R"foo(
 #version 430 core
 
 #define LIGHTS_N 1
 
-#define LIGHT_COLOR_I 0
-#define LIGHT_POSITION_I 1
-
 /** Material */
 struct Material_t {
+    sampler2D diffuseTexture;
+    sampler2D specularTexture;
     vec3 diffuse;
     vec3 specular;
     float roughness;
 };
-layout( location = 0) uniform Material_t material = { vec3( 1.0, 1.0, 0.0), vec3(1.0, 1.0, 0.0), 0.0 };
+layout( location = 0) uniform Material_t material;
 
 /** Lights */
 struct Light {
@@ -21,7 +20,7 @@ struct Light {
     vec4 ambient;
     vec4 specular;
 };
-layout( location = 4) uniform Light lights[ LIGHTS_N ];
+layout( location = 5) uniform Light lights[ LIGHTS_N ];
 
 uniform vec3 viewPos;
 
@@ -47,15 +46,18 @@ void main()
     vec3 norm = normalize(Normal);
 
     vec3 viewDir = normalize(viewPos - FragPosition.xyz);
+    vec3 diffuseTextureColor = vec3( texture( material.diffuseTexture, TexCoord));
+    vec3 specularTextureColor = vec3( texture( material.specularTexture, TexCoord));
 
     for( int i=0; i < LIGHTS_N; i++ ) {
-        ambient += material.diffuse.rgb * lights[i].ambient.rgb;
+
+        ambient += diffuseTextureColor * lights[i].ambient.rgb;
         vec3 lightDir = normalize( (lights[i].position - FragPosition).xyz);
         float diff = max(dot(norm, lightDir), 0.0);
-        diffuse += lights[0].diffuse.rgb * diff * material.diffuse.rgb;
+        diffuse += lights[i].diffuse.rgb * diff * diffuseTextureColor;
         vec3 reflectDir = reflect(-lightDir, norm);
         float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.roughness);
-        specular += lights[0].specular.rgb * (spec * material.specular.rgb);
+        specular += lights[i].specular.rgb * spec * specularTextureColor;
     }
 
     vec3 result = saturate(ambient + diffuse + specular);

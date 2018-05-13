@@ -57,6 +57,7 @@ class kShaderLoader {
 
 #include "../../Shaders/phong.vert"
 #include "../../Shaders/phong.frag"
+#include "../../Shaders/phong_texture.frag"
 
 #include "../../Shaders/light.vert"
 #include "../../Shaders/light.frag"

@@ -9,6 +9,7 @@
 #include <windows.h>
 #include "WinBase.h"
 #include "Sys_MemoryStack.h"
+#include "kcl.hpp"
 
 
 //TODO(Kasper): Change mark to be relative from the storage (as it stands it's kinda useless);
@@ -113,6 +114,7 @@ void kMemoryStack::Clear() {
 void *kMemoryStack::Alloc( u32 size_bytes ) {
     //TODO(Kasper): Check if needs to be >=
     if( this->maxMark < (this->topMark + size_bytes)) {
+        ASSERT(!"Tried to allocate more memory than kMemoryStack has available");
         PRINTL_STR( "Tried to allocate more memory than kMemoryStack has available");
         return nullptr;
     }

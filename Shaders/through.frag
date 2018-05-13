@@ -1,5 +1,5 @@
 const char *through_frag = R"foo(
-#version 330 core
+#version 430 core
 
 out vec4 FragColor;
 

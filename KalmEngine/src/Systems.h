@@ -45,16 +45,18 @@ class MemorySystem {
 
 class RenderSystem {
     public:
-    virtual void    Draw() const =0;
-    virtual void    SetModelViewMatrix( const u32 shaderID, const mat4 modelView) const =0;
-    virtual void    SetProjectionMatrix( const u32 shaderID, const mat4 projection) const =0;
-    virtual void    SetMatrixUniform( const u32 shaderID, const char *name, const mat4 matrix) const =0;
+    virtual void            Draw() const =0;
+    virtual void            SetModelViewMatrix( const u32 shaderID, const mat4 modelView) const =0;
+    virtual void            SetProjectionMatrix( const u32 shaderID, const mat4 projection) const =0;
+    virtual void            SetMatrixUniform( const u32 shaderID, const char *name, const mat4 matrix) const =0;
 
-    virtual void    LoadTestScene( kScene_t *scene) const =0;
-    //virtual void    LoadTestTestScene( kScene_t *scene) const =0;
-    virtual void    DrawTestScene( kScene_t *scene) const =0;
-    //virtual void    DrawTestTestScene( kScene_t *scene) const =0;
+    virtual void            LoadTestScene( kScene_t *scene) const =0;
+    //virtual void          LoadTestTestScene( kScene_t *scene) const =0;
+    virtual void            DrawTestScene( kScene_t *scene) const =0;
+    //virtual void          DrawTestTestScene( kScene_t *scene) const =0;
+    virtual kTexture_t *    LoadTexture( kImage_t *image ) =0;
 }; 
+
 class AssetSystem {
     public:
     virtual kImage_t*   LoadImage( const char *filename) const =0;

@@ -47,6 +47,7 @@ struct kImage_t {
 struct kTexture_t {
     u32 ID;
     kImage_t *image;
+
 };
 
 struct renderType_t {
@@ -55,9 +56,25 @@ struct renderType_t {
     i32 shaderIndex = -1;
 };
 
+enum MaterialType_e {
+    BASE_MATERIAL = 0,
+    DIFFUSE_MATERIAL,
+    TEXTURE_MATERIAL
+};
+
 struct kMaterial_t {
-    vec3 color = Vec3(1.0f, 0.0f, 1.0f);
+    MaterialType_e type = BASE_MATERIAL;
+};
+
+struct DiffuseMaterial : public kMaterial_t {
+    vec3 diffuse = Vec3( 1.0f, 0.0f, 1.0f);
+    vec3 specular = diffuse;
     f32 roughness = 32.0f;
+};
+
+struct TextureMaterial : public DiffuseMaterial {
+    kTexture_t *diffuseTexture = nullptr;
+    kTexture_t *specularTexture = nullptr;
 };
 
 

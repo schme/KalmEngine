@@ -31,11 +31,11 @@ class kRender : public RenderSystem {
         void SetLightsUniform( Shader *shader, const kPointLight *lights, const u32 lights_n ) const;
         void SetViewPosUniform( Shader *shader, const vec3 position) const;
         void SetMaterialUniform( Shader *shader, const MaterialComponent *mat) const;
+        kTexture_t * LoadTexture( kImage_t* image);
 
         /** SystemLocal methods */
         void Initialize();
         void SetWindow( GLFWwindow * window);
-        void LoadTexture( kTexture_t* image);
         void LoadScene( kScene_t *scene);
         void LoadVertices( const kMesh_t *verts, const renderType_t *type ) const;
         void CheckToggleWireframe() const;

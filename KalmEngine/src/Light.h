@@ -14,7 +14,9 @@
 
 class kLight : public kObject {
     public:
-    vec3 color = {};
+    vec3 diffuse = {};
+    vec3 ambient = {};
+    vec3 specular = {};
 };
 
 class kPointLight : public kLight {

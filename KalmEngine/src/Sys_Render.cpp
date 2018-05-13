@@ -17,6 +17,9 @@
 #include "_stb/stb_easy_font.h"
 #endif
 
+#define SHADER_MATERIAL_LOC 0
+#define SHADER_LIGHTS_LOC 4
+
 static void ResizeCallback( GLFWwindow* window, const i32 numer, const i32 denom);
 static void FramebufferResizeCallback( GLFWwindow *window, const i32 width, const i32 height);
 
@@ -41,18 +44,26 @@ static u32 currentSceneID = 0;
 
 static mat4 projectionMatrix = {};
 
-void kRender::LoadTexture( kTexture_t* text) {
+kTexture_t * kRender::LoadTexture( kImage_t* img) {
+    static u32 usedID = 0;
+    ASSERT( usedID < TEXTURES );
 
-    glBindTexture( GL_TEXTURE_2D, Textures[text->ID]);
+    kTexture_t *texture = (kTexture_t*)g_Memory->Alloc( sizeof(texture));
+    texture->image = img;
+    texture->ID = Textures[usedID];
+    usedID++;
 
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+    glBindTexture( GL_TEXTURE_2D, texture->ID);
 
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, text->image->width, text->image->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, text->image->imageBuffer);
+    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, img->width, img->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, img->imageBuffer);
     glGenerateMipmap( GL_TEXTURE_2D);
+
+    return texture;
 }
 
 
@@ -73,8 +84,14 @@ void kRender::LoadTestScene( kScene_t *scene ) const {
     shaders[1].Use();
     shaders[1].SetMat4( "projection", p);
 
+    shaderLoader.LoadShader( &(shaders[2]), phong_vert, phong_texture_frag);
+    shaders[2].Use();
+    shaders[2].SetMat4( "projection", p);
+    shaders[2].SetInt( "material.diffuseTexture", 0);
+    shaders[2].SetInt( "material.specularTexture", 1);
+
     /** debug info shader */
-    shaderLoader.LoadShader( &(shaders[2]), debug_vert, debug_frag);
+    shaderLoader.LoadShader( &(shaders[3]), debug_vert, debug_frag);
 
     /** Dragons */
 
@@ -90,18 +107,18 @@ void kRender::LoadTestScene( kScene_t *scene ) const {
     std::memcpy( (void*)(&renderGroups[0]), &dragonType, sizeof( dragonType ));
 
 
-    /** D20 */
+    /** Barrels */
 
-    MeshComponent* d20MeshComp = (MeshComponent*)scene->children[1]->components[ComponentType_e::MESH_COMPONENT];
-    kMesh_t *d20Mesh = d20MeshComp->mesh;
+    MeshComponent* barrelMeshComp = (MeshComponent*)scene->children[1]->components[ComponentType_e::MESH_COMPONENT];
+    kMesh_t *barrelMesh = barrelMeshComp->mesh;
 
-    renderType_t d20Type;
-    d20Type.vertexArrayIndex = 1;
-    d20Type.vertexBufferIndex = 1;
-    d20Type.shaderIndex = 0;
+    renderType_t barrelType;
+    barrelType.vertexArrayIndex = 1;
+    barrelType.vertexBufferIndex = 1;
+    barrelType.shaderIndex = 2;
 
-    this->LoadVertices( d20Mesh, &d20Type);
-    std::memcpy( (void*)(&(renderGroups[1])), &d20Type, sizeof( d20Type ));
+    this->LoadVertices( barrelMesh, &barrelType);
+    std::memcpy( (void*)(&(renderGroups[1])), &barrelType, sizeof( barrelType ));
 
 
     /** Lights */
@@ -198,6 +215,9 @@ void kRender::DrawTestScene( kScene_t *scene) const {
     SetLightsUniform( &shaders[0], (kPointLight*)scene->children[2], 1 );
     SetViewPosUniform( &shaders[0], scene->camera->position);
 
+    SetLightsUniform( &shaders[2], (kPointLight*)scene->children[2], 1 );
+    SetViewPosUniform( &shaders[2], scene->camera->position);
+
     /* dragons */
     DrawObject_r( scene->children[0], GetIdentityMat(), Vec3( 0.0f, 0.0f, 0.0f), view, &renderGroups[0] );
     DrawObject_r( scene->children[1], GetIdentityMat(), Vec3( 0.0f, 0.0f, 0.0f), view, &renderGroups[1] );
@@ -215,21 +235,22 @@ void kRender::DrawObject_r( const kObject *obj, const mat4 parentModelMatrix, co
     glBindVertexArray( VertexArrays[ rndGroup->vertexArrayIndex]);
 
     mat4 model = GetIdentityMat();
-
     /** the order of translate and scale does not seem to matter */
     model = Transpose(Translate( model, obj->position ));
-
     model = Scale( model, Vec3( obj->scale));
-
     model = RotationX( Radians(rotation.x)) * RotationY( Radians(rotation.y)) * RotationZ( Radians(rotation.z)) * model;
-
     /** Also runs Use() on the shader object */
     SetModelAndViewMatrix( rndGroup->shaderIndex, model, view);
 
-    MaterialComponent *mat = (MaterialComponent *)obj->components[ ComponentType_e::MATERIAL_COMPONENT];
-    SetMaterialUniform( &shaders[rndGroup->shaderIndex], mat);
-
     kMesh_t *mesh = ((MeshComponent*)(obj->components[ComponentType_e::MESH_COMPONENT]))->mesh;
+
+    MaterialComponent *matComp = (MaterialComponent *)obj->components[ ComponentType_e::MATERIAL_COMPONENT];
+    if( matComp->type == ComponentType_e::DIFFUSE_COMPONENT || 
+      ( matComp->type == ComponentType_e::TEXTURE_COMPONENT )) {
+
+        SetMaterialUniform( &shaders[rndGroup->shaderIndex], matComp);
+
+    }
     glDrawElements( GL_TRIANGLES, mesh->indices_n, GL_UNSIGNED_INT, 0);
 
     for( u32 i = 0; i < obj->children_n; i++) {
@@ -269,10 +290,34 @@ void kRender::Initialize() {
     glGenTextures( TEXTURES, Textures);
 
 }
-void kRender::SetMaterialUniform( Shader *shader, const MaterialComponent *mat ) const {
+
+
+void kRender::SetMaterialUniform( Shader *shader, const MaterialComponent *matComp ) const {
     shader->Use();
-    glUniform3fv( glGetUniformLocation( shader->ID, "material.color"), 1, mat->material.color.Q);
-    glUniform1f( glGetUniformLocation( shader->ID, "material.roughness"), mat->material.roughness);
+
+    if( matComp->type == ComponentType_e::TEXTURE_COMPONENT) {
+
+        TextureMaterialComponent* mc = (TextureMaterialComponent*)matComp;
+        TextureMaterial* material = (TextureMaterial*)mc->material;
+        glUniform3fv( glGetUniformLocation( shader->ID, "material.diffuse"), 1, material->diffuse.Q);
+        glUniform3fv( glGetUniformLocation( shader->ID, "material.specular"), 1, material->specular.Q);
+        glUniform1f( glGetUniformLocation( shader->ID, "material.roughness"), material->roughness);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, material->diffuseTexture->ID);
+
+        glActiveTexture(GL_TEXTURE0 + 1);
+        glBindTexture(GL_TEXTURE_2D, material->specularTexture->ID);
+
+    } else if (matComp->type == ComponentType_e::DIFFUSE_COMPONENT) {
+        DiffuseMaterialComponent* mc = (DiffuseMaterialComponent*)matComp;
+
+        DiffuseMaterial* material = (DiffuseMaterial*)mc->material;
+        glUniform3fv( glGetUniformLocation( shader->ID, "material.diffuse"), 1, material->diffuse.Q);
+        glUniform3fv( glGetUniformLocation( shader->ID, "material.specular"), 1, material->specular.Q);
+        glUniform1f( glGetUniformLocation( shader->ID, "material.roughness"), material->roughness);
+    }
+
 }
 
 void kRender::SetViewPosUniform(Shader *shader, const vec3 position) const {
@@ -280,18 +325,38 @@ void kRender::SetViewPosUniform(Shader *shader, const vec3 position) const {
     shader->SetVec3( "viewPos", position);
 }
 
-void kRender::SetLightsUniform( Shader *shader, const kPointLight *lights, const u32 lights_n ) const {
+void kRender::SetLightsUniform( Shader *shader, const kPointLight *light, const u32 lights_n ) const {
+
     kMemory::Marker mark = g_Memory->GetMarker();
-    vec4 *buffer = (vec4*)g_Memory->Alloc( lights_n * 2 * sizeof(vec4));
+    u32 lightBytes = lights_n * 4 * sizeof(vec4);
+    vec4 *buffer = (vec4*)g_Memory->Alloc( lightBytes);
     for( u32 i=0; i < lights_n; i++) {
         *buffer = {};
-        buffer[i] = Vec4( lights->color, 1.0f);
-        buffer[i+1] = Vec4( lights->position, 1.0f);
+        buffer[i] = Vec4( light->position, 1.0f);
+        buffer[i+1] = Vec4( light->diffuse, 1.0f);
+        buffer[i+2] = Vec4( light->ambient, 1.0f);
+        buffer[i+3] = Vec4( light->specular, 1.0f);
     }
 
     shader->Use();
-    glUniform4fv ( glGetUniformLocation( shader->ID, "lights[0].color"), 1, (f32*)buffer);
-    glUniform4fv ( glGetUniformLocation( shader->ID, "lights[0].position"), 1, (f32*)(buffer + 1));
+
+    for( u32 i=0; i < lights_n; i++) {
+        const u32 arrBufSize = 10;
+        const u32 nameBufSize = 20;
+
+        char arrayBuffer[arrBufSize];
+        snprintf( arrayBuffer, arrBufSize, "lights[%u]", i);
+        char uniformNameBuffer[nameBufSize];
+
+        snprintf( uniformNameBuffer, nameBufSize, "%s.position", arrayBuffer);
+        glUniform4fv ( glGetUniformLocation( shader->ID, uniformNameBuffer), 1, (f32*)(buffer));
+        snprintf( uniformNameBuffer, nameBufSize, "%s.diffuse", arrayBuffer);
+        glUniform4fv ( glGetUniformLocation( shader->ID, uniformNameBuffer), 1, (f32*)(buffer + 1));
+        snprintf( uniformNameBuffer, nameBufSize, "%s.ambient", arrayBuffer);
+        glUniform4fv ( glGetUniformLocation( shader->ID, uniformNameBuffer), 1, (f32*)(buffer + 2));
+        snprintf( uniformNameBuffer, nameBufSize, "%s.specular", arrayBuffer);
+        glUniform4fv ( glGetUniformLocation( shader->ID, uniformNameBuffer), 1, (f32*)(buffer + 3));
+    }
 
     g_Memory->Free( mark );
 }

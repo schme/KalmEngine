@@ -66,14 +66,20 @@ kMesh_t * MeshLoader::LoadPLY( const char *filename) const {
         try { normals = file.request_properties_from_element("vertex", { "nx", "ny", "nz" }); }
         catch (const std::exception & e) { std::cerr << "tinyply exception: " << e.what() << std::endl; }
 
+        /** This is where Blender likes to put texture coordinatess? */
+        try { texcoords = file.request_properties_from_element("vertex", { "s", "t" }); }
+        catch (const std::exception & e) { std::cerr << "tinyply exception: " << e.what() << std::endl; }
+
         try { colors = file.request_properties_from_element("vertex", { "red", "green", "blue", "alpha" }); }
         catch (const std::exception & e) { std::cerr << "tinyply exception: " << e.what() << std::endl; }
 
         try { faces = file.request_properties_from_element("face", { "vertex_indices" }); }
         catch (const std::exception & e) { std::cerr << "tinyply exception: " << e.what() << std::endl; }
 
-        try { texcoords = file.request_properties_from_element("face", { "texcoord" }); }
-        catch (const std::exception & e) { std::cerr << "tinyply exception: " << e.what() << std::endl; }
+        if( !texcoords ) {
+            try { texcoords = file.request_properties_from_element("face", { "texcoord" }); }
+            catch (const std::exception & e) { std::cerr << "tinyply exception: " << e.what() << std::endl; }
+        }
 
         /* readtime */
         f64 before = g_Common->GetTime() * 1000.0;
