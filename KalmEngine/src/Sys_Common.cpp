@@ -15,13 +15,15 @@
 static void KeyCallback( GLFWwindow* window, const i32 key, const i32 scancode, const i32 action, const i32 mods);
 static void CursorPositionCallback( GLFWwindow* wnd, const f64 posx, const f64 posy);
 static void MouseButtonCallback( GLFWwindow* wnd, const i32 button, const i32 action, const i32 mods);
-static void WindowFocusCallback( GLFWwindow* wnd, i32 focused);
+static void MouseScrollCallback(GLFWwindow* window, const f64 xoffset, const f64 yoffset);
+static void WindowFocusCallback( GLFWwindow* wnd, const i32 focused);
 
 
 void kCommonSystem::Initialize() {
     glfwSetKeyCallback( this->window, KeyCallback);
     glfwSetCursorPosCallback( this->window, CursorPositionCallback);
     glfwSetMouseButtonCallback( this->window, MouseButtonCallback);
+    glfwSetScrollCallback( this->window, MouseScrollCallback);
 
     glfwSetInputMode( this->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
@@ -89,6 +91,8 @@ void ToggleButton( gameButtonState_t *oldButton, gameButtonState_t *newButton, c
  */
 void CursorPositionCallback( GLFWwindow* wnd, const f64 posx, const f64 posy ) {
 
+    (void)wnd;
+
     static b32 firstRun = true;
 
     static f32 lastPosX = 0;
@@ -112,6 +116,9 @@ void CursorPositionCallback( GLFWwindow* wnd, const f64 posx, const f64 posy ) {
 }
 
 void MouseButtonCallback( GLFWwindow* wnd, const i32 button, const i32 action, const i32 mods) {
+    (void)wnd;
+    (void)mods;
+
     switch( button )
     {
         case ( GLFW_MOUSE_BUTTON_RIGHT ): {
@@ -133,7 +140,15 @@ void MouseButtonCallback( GLFWwindow* wnd, const i32 button, const i32 action, c
     }
 }
 
-void WindowFocusCallback( GLFWwindow* wnd, i32 focused) {
+void MouseScrollCallback( GLFWwindow* wnd, const f64 xoffset, const f64 yoffset) {
+
+    (void)xoffset;
+    (void)wnd;
+
+    g_Common->GetNewState()->mouseInput.scrollOffsetY = (f32)yoffset;
+}
+
+void WindowFocusCallback( GLFWwindow* wnd, const i32 focused) {
     if( !focused) {
         glfwSetCursorPosCallback( wnd, nullptr);
     } else {
@@ -145,6 +160,8 @@ void WindowFocusCallback( GLFWwindow* wnd, i32 focused) {
  * TODO(Kasper): Map actions to keys somewhere else
  */
 void KeyCallback( GLFWwindow* wnd, const i32 key, const i32 scancode, const i32 action, const i32 mods) {
+    (void)scancode;
+    (void)mods;
     /*
      * TODO(Kasper): Handle this properly in the gamecode
      */

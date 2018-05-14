@@ -55,7 +55,7 @@ class RenderSystem {
     virtual void            DrawTestScene( kScene_t *scene) const =0;
     //virtual void          DrawTestTestScene( kScene_t *scene) const =0;
     virtual kTexture_t *    LoadTexture( kImage_t *image ) =0;
-}; 
+};
 
 class AssetSystem {
     public:
@@ -68,6 +68,7 @@ class ConfigSystem {
     virtual void            Initialize() =0;
     virtual ConfigSystem *  Get() =0;
     virtual preferences_t * GetPreferences() =0;
+    virtual void            Input() =0;
 };
 
 #endif /* end of include guard: SYSTEMS_H_ */

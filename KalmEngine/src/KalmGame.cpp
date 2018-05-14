@@ -13,8 +13,8 @@
 #include "Object.cpp"
 #include "Scene.cpp"
 #include "Light.cpp"
-
 #include "Sys_Config.h"
+
 
 /** Entry point for KalmGame.exe to the Game64.dll */
 gameExport_t * GetGameAPI( gameImport_t * system) {
@@ -215,7 +215,7 @@ kScene_t * KalmGame::CreateTestScene() {
     lightCubeObj->scale = 0.5f;
     lightCubeObj->position = Vec3( 0.0f, 10.0f, 0.0f);
     lightCubeObj->diffuse = Vec3( 0.5f, 0.5f, 0.5f);
-    lightCubeObj->ambient = Vec3( 0.2f, 0.2f, 0.2f);
+    lightCubeObj->ambient = Vec3( 0.0f );
     lightCubeObj->specular = Vec3( 1.0f, 1.0f, 1.0f);
 
     MeshComponent *cubeMeshComp = (MeshComponent*)GetMemory( sizeof( MeshComponent));
@@ -268,6 +268,7 @@ void KalmGame::LoadTestScene( kScene_t *scene) {
 }
 
 void KalmGame::LoadScene( kScene_t *scene ) {
+    (void) scene;
 }
 
 void KalmGame::RunCurrentScene( const f32 deltaTime ) {
@@ -281,6 +282,7 @@ void KalmGame::RunCurrentScene( const f32 deltaTime ) {
 }
 
 void KalmGame::RenderCurrentScene( const f32 deltaTime) {
+    (void) deltaTime;
     /** Setup per-frame modifications */
 
 }
@@ -342,7 +344,7 @@ void KalmGame::Terminate() {
 
 void KalmGame::HandleInput( const f32 deltaTime) {
 
-    ((kConfig*)g_System->configSystem->Get())->Input( GetGameInput() );
+    g_System->configSystem->Get()->Input();
 
     currentScene->camera->Input( deltaTime);
     currentScene->player->Input( deltaTime);

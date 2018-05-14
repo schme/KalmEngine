@@ -33,6 +33,7 @@ gameExport_t * GetGameAPI( gameImport_t * system);
 
 struct preferences_t {
     b32 drawWireframe = false;
+    f32 field_of_view = 45.0f;
 };
 
 
@@ -60,6 +61,8 @@ struct mouseInput_t {
     f32 posY;
     f32 offsetX;
     f32 offsetY;
+    f32 scrollOffsetX;
+    f32 scrollOffsetY;
     gameButtonState_t right;
     gameButtonState_t left;
 };

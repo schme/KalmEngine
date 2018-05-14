@@ -72,26 +72,20 @@ kTexture_t * kRender::LoadTexture( kImage_t* img) {
  */
 void kRender::LoadTestScene( kScene_t *scene ) const {
 
-    mat4 p = GetPerspectiveMat( 60.0f, (f32)frameBufferWidth / (f32)frameBufferHeight, 0.1f, 100.0f);
-
     /** shader */
     kShaderLoader shaderLoader;
     shaderLoader.LoadShader( &(shaders[0]), phong_vert, phong_frag);
-    shaders[0].Use();
-    shaders[0].SetMat4( "projection", p);
-
     shaderLoader.LoadShader( &(shaders[1]), light_vert, light_frag);
-    shaders[1].Use();
-    shaders[1].SetMat4( "projection", p);
-
     shaderLoader.LoadShader( &(shaders[2]), phong_vert, phong_texture_frag);
+    /** debug info shader */
+    shaderLoader.LoadShader( &(shaders[3]), debug_vert, debug_frag);
+
+    this->UpdateFieldOfView( g_Config->GetPreferences()->field_of_view );
+
     shaders[2].Use();
-    shaders[2].SetMat4( "projection", p);
     shaders[2].SetInt( "material.diffuseTexture", 0);
     shaders[2].SetInt( "material.specularTexture", 1);
 
-    /** debug info shader */
-    shaderLoader.LoadShader( &(shaders[3]), debug_vert, debug_frag);
 
     /** Dragons */
 
@@ -198,6 +192,8 @@ void kRender::LoadVertices( const kMesh_t *mesh, const renderType_t *type) const
  */
 void kRender::DrawTestScene( kScene_t *scene) const {
 
+    f32 time = (f32)g_Common->GetTime();
+
     CheckToggleWireframe();
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -220,8 +216,11 @@ void kRender::DrawTestScene( kScene_t *scene) const {
 
     /* dragons */
     DrawObject_r( scene->children[0], GetIdentityMat(), Vec3( 0.0f, 0.0f, 0.0f), view, &renderGroups[0] );
-    DrawObject_r( scene->children[1], GetIdentityMat(), Vec3( 0.0f, 0.0f, 0.0f), view, &renderGroups[1] );
+    /* barrels */
+    DrawObject_r( scene->children[1], GetIdentityMat(), Vec3( 39.1f * sinf(time * 0.25f), 180.0f * sinf(time * 0.01f), 90.0f * cos(time * 0.1f)), view, &renderGroups[1] );
+    /* lights */
     DrawObject_r( scene->children[2], GetIdentityMat(), Vec3( 0.0f, 0.0f, 0.0f), view, &renderGroups[2] );
+    /* ground */
     DrawObject_r( scene->children[3], GetIdentityMat(), Vec3( 90.0f, 0.0f, 0.0f), view, &renderGroups[3] );
 
     glfwSwapBuffers((GLFWwindow*)window);
@@ -231,6 +230,10 @@ void kRender::DrawTestScene( kScene_t *scene) const {
  * rotation should be in degrees
  */
 void kRender::DrawObject_r( const kObject *obj, const mat4 parentModelMatrix, const vec3 rotation, const mat4 view, const renderType_t *rndGroup) const {
+
+    f32 time = (f32)g_Common->GetTime();
+
+    (void)parentModelMatrix;
 
     glBindVertexArray( VertexArrays[ rndGroup->vertexArrayIndex]);
 
@@ -254,7 +257,7 @@ void kRender::DrawObject_r( const kObject *obj, const mat4 parentModelMatrix, co
     glDrawElements( GL_TRIANGLES, mesh->indices_n, GL_UNSIGNED_INT, 0);
 
     for( u32 i = 0; i < obj->children_n; i++) {
-        DrawObject_r( obj->children[i], model, Vec3(0.0f), view, rndGroup);
+        DrawObject_r( obj->children[i], model, rotation * sinf((f32)i*time), view, rndGroup);
     }
 }
 
@@ -389,12 +392,17 @@ void kRender::SetProjectionMatrix( const u32 shaderID, const mat4 projection ) c
  */
 
 void ResizeCallback( GLFWwindow* wnd, const i32 numer, const i32 denom) {
+    (void)numer;
+    (void)denom;
+
     i32 width, height;
     glfwGetFramebufferSize( wnd, &width, &height);
     glfwSetWindowSize( wnd, width, height);
 }
 
 void FramebufferResizeCallback( GLFWwindow* wnd, const i32 width, const i32 height) {
+    (void)wnd;
+
     glViewport(0, 0, width, height);
 }
 
@@ -426,4 +434,19 @@ void kRender::CheckToggleWireframe() const {
         drawWireframe = false;
         glPolygonMode( GL_FRONT_AND_BACK, GL_FILL);
     }
+}
+
+
+void kRender::UpdateFieldOfView( const f32 fov ) const {
+    mat4 p = GetPerspectiveMat( fov, (f32)frameBufferWidth / (f32)frameBufferHeight, 0.1f, 100.0f);
+
+    /** shader */
+    shaders[0].Use();
+    shaders[0].SetMat4( "projection", p);
+
+    shaders[1].Use();
+    shaders[1].SetMat4( "projection", p);
+
+    shaders[2].Use();
+    shaders[2].SetMat4( "projection", p);
 }

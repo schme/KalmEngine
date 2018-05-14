@@ -20,15 +20,22 @@
 #ifdef GLAD_DEBUG
 // logs every gl call to the console
 void pre_gl_call(const char *name, void *funcptr, int len_args, ...) {
+    (void)funcptr;
+
     printf("Calling: %s (%d arguments)\n", name, len_args);
 }
 
 void pre_gl_clear(u32 thing) {
+    (void)thing;
+
     //printf("glClear() thing: %u\n", thing);
     // call glClear here without calling glClear (infinite recursion)
 }
 
 void post_gl_call( const char *name, void *funcptr, int len_args, ...) {
+    (void)funcptr;
+    (void)len_args;
+
     GLenum error_code;
     error_code = glad_glGetError();
 
@@ -103,7 +110,9 @@ b32 InitializeGlfw() {
     //TODO(Kasper): What do Opengl profiles even do?
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+    /* TODO(Kasper): Add fullscreen toggle */
     GLFWmonitor *monitor = glfwGetPrimaryMonitor();
+    (void)monitor;
 
     g_window = glfwCreateWindow( frameBufferWidth, frameBufferHeight, title, nullptr, nullptr);
     if (!g_window)

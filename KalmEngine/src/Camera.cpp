@@ -15,6 +15,8 @@ void kCamera::Update() {
 
 void kCamera::Input( const f32 deltaTime ) {
 
+    (void)deltaTime;
+
     gameInput_t * input = GetGameInput();
     mouseInput_t * mouse = &input->mouseInput;
 
@@ -58,6 +60,7 @@ void kCamera::Input( const f32 deltaTime ) {
     if( input->actionF.endedDown || input->actionC.endedDown) {
         this->velocity += (-this->up * movSpeed);
     }
+
 
 }
 

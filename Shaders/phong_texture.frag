@@ -60,7 +60,8 @@ void main()
         specular += lights[i].specular.rgb * spec * specularTextureColor;
     }
 
-    vec3 result = saturate(ambient + diffuse + specular);
+    /*vec3 result = saturate(ambient + diffuse + specular);*/
+    vec3 result = ambient + diffuse + specular;
     FragColor =  vec4( result, 1.0f);
 }
 

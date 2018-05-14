@@ -39,6 +39,7 @@ class kRender : public RenderSystem {
         void LoadScene( kScene_t *scene);
         void LoadVertices( const kMesh_t *verts, const renderType_t *type ) const;
         void CheckToggleWireframe() const;
+        void UpdateFieldOfView( const f32 fov ) const;
 
     private:
         GLFWwindow *    window;
